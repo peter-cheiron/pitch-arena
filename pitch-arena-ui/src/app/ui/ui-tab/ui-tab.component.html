@@ -1,0 +1,27 @@
+<div class="p-4 border-b border-[color:var(--color-border,#e5e7eb)] mb-4 bg-[color:var(--color-surface,#ffffff)] text-[color:var(--color-text,#1f2937)]">
+  <div class="flex items-center justify-between">
+    <div class="text-sm text-(--color-muted,#6b7280)">
+      <ng-content select="[left-actions]"></ng-content>
+    </div>
+
+    <div class="flex flex-wrap gap-2 md:justify-center flex-1">
+      @for (tab of tabs; track tab) {
+      <button
+        type="button"
+        (click)="selectTab(tab.key)"
+        class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+        [ngClass]="{
+          'border-[color:var(--color-primary,#10b981)] text-[color:var(--color-primary,#10b981)]': activeTab === tab.key,
+          'border-transparent text-(--color-muted,#6b7280) hover:text-[color:var(--color-primary,#10b981)] hover:border-[color:var(--color-border,#e5e7eb)]': activeTab !== tab.key
+        }"
+      >
+        {{ tab.label }}
+      </button>
+      }
+    </div>
+
+    <div class="text-sm text-(--color-muted,#6b7280) text-right flex gap-2">
+      <ng-content class="flex" select="[right-actions]"></ng-content>
+    </div>
+  </div>
+</div>

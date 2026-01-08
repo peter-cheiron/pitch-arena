@@ -1,0 +1,32 @@
+<label class="inline-flex items-center gap-3 cursor-pointer select-none">
+  <span
+    class="text-sm font-medium text-[color:var(--color-text,#111827)]"
+    [class.hidden]="!label">
+    {{ label }}
+  </span>
+
+  <span class="relative inline-flex items-center">
+    <input
+      type="checkbox"
+      class="sr-only peer"
+      role="switch"
+      [checked]="selected"
+      [attr.aria-checked]="selected"
+      (change)="onToggle($event)"
+    />
+
+    <span
+      class="block w-11 h-6 rounded-full border border-[color:var(--color-border,#d1d5db)]
+             bg-[color-mix(in_oklab,var(--color-border,#d1d5db),transparent)]
+             transition-colors duration-200 ease-out
+             peer-checked:bg-[var(--color-primary,#2563eb)]
+             peer-focus:ring-2 peer-focus:ring-offset-1 peer-focus:ring-[var(--color-ring,var(--color-primary,#2563eb))]">
+    </span>
+
+    <span
+      class="absolute left-1 top-1 w-4 h-4 rounded-full bg-[var(--color-surface,#ffffff)] shadow-sm
+             transition-transform duration-200 ease-out
+             peer-checked:translate-x-[18px]">
+    </span>
+  </span>
+</label>

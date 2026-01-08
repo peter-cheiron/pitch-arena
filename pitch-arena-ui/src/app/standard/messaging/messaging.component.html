@@ -1,0 +1,36 @@
+<div
+  class="fixed left-0 right-0 top-[57px] flex h-[calc(100dvh-57px)] flex-col gap-4 overflow-hidden rounded-[14px] border border-(--color-border) bg-[var(--color-surface)] p-2 shadow-[var(--shadow-elev)] md:h-[calc(100vh-57px)] md:p-5"
+>
+  <div class="flex flex-wrap items-center gap-3">
+    <input
+      [(ngModel)]="newRecipientEmail"
+      [placeholder]="'messaging.enter_recipient_placeholder' | translate"
+      class="min-w-[220px] flex-1 rounded-full border border-(--color-border) bg-[color-mix(in_oklab,var(--color-surface)_92%,transparent)] px-4 py-2.5 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-primary)_25%,transparent)] focus:ring-offset-0"
+    />
+    <ui-button-pill (onClick)="startNewConversation()">{{ 'messaging.start_new_conversation' | translate }}</ui-button-pill>
+  </div>
+
+  <div class="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
+    <div
+      class="flex min-h-0 w-full flex-col overflow-hidden rounded-[12px] border border-(--color-border) bg-[color-mix(in_oklab,var(--color-surface)_94%,#ffffff_6%)] lg:w-[280px] lg:min-w-[240px]"
+    >
+      <app-conversation-list
+        [conversations]="conversations"
+        (conversationSelected)="selectConversation($event)"
+        class="block h-full w-full overflow-y-auto"
+      >
+      </app-conversation-list>
+    </div>
+
+    <div
+      class="flex min-h-0 flex-1 overflow-hidden rounded-[12px] border border-(--color-border) bg-[color-mix(in_oklab,var(--color-surface)_96%,#ffffff_4%)]"
+    >
+      <app-chat-window
+        [selectedConversation]="selectedConversation"
+        [messages]="messages"
+        class="block h-full w-full min-h-0"
+      >
+      </app-chat-window>
+    </div>
+  </div>
+</div>

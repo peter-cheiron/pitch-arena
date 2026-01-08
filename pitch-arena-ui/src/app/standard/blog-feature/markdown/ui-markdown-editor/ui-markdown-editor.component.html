@@ -1,0 +1,27 @@
+@if(showPreview){
+  <ui-tab-section
+    [tabs]="tabs"
+    (tabChanged)="setTab($event)"
+  ></ui-tab-section>
+}
+
+<div class="flex flex-col h-full min-h-0 overflow-hidden">
+  @if (activeTab === 'editor') {
+  <div class="flex-1 min-h-0 flex flex-col">
+    <textarea
+      #editor
+      [rows]="rows"
+      class="flex-1 min-h-0 w-full resize-none border p-2 rounded overflow-auto"
+      [ngModel]="markdown"
+      (ngModelChange)="onTextChange($event)"
+      (drop)="onDrop($event)"
+      (dragover)="onDragOver($event)"
+      (paste)="onPaste($event)"
+    ></textarea>
+  </div>
+  } @if (activeTab === 'preview') {
+  <div class="flex-1 min-h-0 overflow-auto">
+    <div [innerHTML]="rendered" class="prose prose-img:block max-w-none" appCopyCode></div>
+  </div>
+  }
+</div>

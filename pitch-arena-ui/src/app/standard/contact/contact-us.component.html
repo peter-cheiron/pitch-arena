@@ -1,0 +1,54 @@
+<div class="flex flex-col mt-12 p-6 ml-6 mr-6 lg:ml-20 lg:mr-20 ">
+
+  <div class="text-2xl">{{ 'contact_form.header' | translate }}</div>
+
+  <p>{{ 'contact_form.feedback_invite' | translate }}</p>
+
+  <ui-input
+    class="mt-6"
+    [(value)]="name"
+    [label]="'contact_form.name_label' | translate"
+    [placeholder]="'contact_form.name_placeholder' | translate"
+    required="true"
+  />
+
+  <ui-input
+  class="mt-6"
+  [(value)]="email"
+  [label]="'contact_form.email_label' | translate"
+  [placeholder]="'contact_form.email_placeholder' | translate"
+  required="true"
+  />
+
+  <ui-textarea
+    rows="8" 
+    class="mt-6"
+    [placeholder]="'contact_form.feedback_placeholder' | translate"
+    [(value)]="message"></ui-textarea>
+
+  <p style="color: var(--Deep-red)">{{errorMessage}}</p>
+
+  <!-- Form Footer -->
+  <div class="flex justify-between">
+    <span class="">{{ 'contact_form.mandatory_note' | translate }}</span>
+    <ui-button-pill color="primary" class="justify-center mt-4" (onClick)="sendMessage()">{{ 'contact_form.submit_button' | translate }}</ui-button-pill>
+  </div>
+
+</div>
+
+<!-- Terms & Conditions Dialog 
+<ui-dialog [(open)]="thanksDialog" width="600">
+  <div class="flex">
+    <ui-button-pill class="p-2 ml-auto" type="button" (click)="close()">
+      <span class="mr-4">{{ "wedding_form.close"  }}</span>
+      <ui-icon-x></ui-icon-x>
+    </ui-button-pill>
+  </div>
+  <div class="flex pl-12 pr-12 pb-12">
+    <div class="ml-6">
+      <h4 class="text-xl font-bold">{{ 'contact_form.modal_thanks_header'  }}</h4>
+      <p class="text-muted">{{ 'contact_form.modal_thanks_body'  }}</p>
+    </div>
+  </div>
+</ui-dialog>
+-->

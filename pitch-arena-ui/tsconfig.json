@@ -1,0 +1,74 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "strict": false,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "#environments/*": [
+        "src/environments/*"
+      ],
+      "#services/*": [
+        "src/app/services/*"
+      ],
+      "#workers/*": [
+        "src/app/workers/*"
+      ],
+      "#directives/*": [
+        "src/app/directives/*"
+      ],
+      "#components/*": [
+        "src/app/components/*"
+      ],
+      "#models/*": [
+        "src/app/models/*"
+      ],
+      "#pipes/*": [
+        "src/app/pipes/*"
+      ],
+      "#pages/*": [
+        "src/app/pages/*"
+      ],
+      "#ui": [
+        "src/app/ui"
+      ],
+      "#db": [
+        "src/app/services/db"
+      ],
+      "#api": [
+        "src/app/services/api"
+      ],
+      "#auth": [
+        "src/app/services/auth"
+      ],
+      "#stripe": [
+        "src/app/services/stripe"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

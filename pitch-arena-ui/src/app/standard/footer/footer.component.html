@@ -1,0 +1,43 @@
+<footer class="py-2 bg-gray-50 text-center text-sm text-gray-600">
+  <p class="mb-4">© 2025 Your App. Built for MVPs.</p>
+  <div class="flex justify-center items-center space-x-6 text-lg">
+
+    <ng-container *ngFor="let link of footerLinks">
+      <a
+        *ngIf="link.route"
+        [routerLink]="link.route"
+        class="hover:text-gray-800"
+      >
+        {{ link.label }}
+      </a>
+      <a
+        *ngIf="link.href"
+        [href]="link.href"
+        target="_blank"
+        rel="noopener"
+        class="hover:text-gray-800"
+      >
+        {{ link.label }}
+      </a>
+    </ng-container>
+
+    <ng-container *ngFor="let social of socialLinks">
+      <a
+        [href]="social.href"
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-2 text-gray-700 hover:text-black transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          class="h-5 w-5"
+          [attr.viewBox]="social.icon.viewBox"
+        >
+          <path [attr.d]="social.icon.path" />
+        </svg>
+        <span>{{ social.label }}</span>
+      </a>
+    </ng-container>
+  </div>
+</footer>

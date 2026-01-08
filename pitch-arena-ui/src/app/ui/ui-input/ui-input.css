@@ -1,0 +1,6 @@
+:host ::ng-deep ui-input.h-12 input,
+:host ::ng-deep ui-input.h-12 .input,
+:host ::ng-deep ui-input.h-12 textarea {
+  height: 3rem;       /* 48px = h-12 */
+  line-height: 3rem;
+}

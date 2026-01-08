@@ -1,0 +1,20 @@
+###
+POST http://127.0.0.1:5001/pitch-arena-cfb00/europe-west1/textToSpeech
+Content-Type: application/json
+
+{
+    "data":{
+      "text": "can you talk for me?"
+    }
+}
+
+###
+POST https://europe-west1-pitch-arena-cfb00.cloudfunctions.net/textToSpeech
+Content-Type: application/json
+
+{
+    "data":{
+      "text": "can you talk for me?",
+      "voiceId" : "IKne3meq5aSn9XLyUdCD"
+    }
+}

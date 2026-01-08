@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:4200", "https://pitch-arena.com", "https://pitch-arena-cfb00.web.app"],
+    "method": ["GET", "HEAD"],
+    "responseHeader": ["Content-Type", "x-goog-meta-*", "Authorization"],
+    "maxAgeSeconds": 3600
+  }
+]

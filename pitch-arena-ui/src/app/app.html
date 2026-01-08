@@ -1,0 +1,25 @@
+
+  @if (showHeader()) {
+    <app-navigation-header></app-navigation-header>
+  }
+
+
+  <wait-dialog
+    [visible]="wait.visible()"
+    [message]="wait.message()"
+    [subtext]="wait.subtext()">
+  </wait-dialog>
+
+  <main class="min-h-screen">
+    <router-outlet></router-outlet>
+  </main>
+
+<!-- 
+TODO needs to be dependent on screen as we don  
+-->
+
+@if(showFooter()){
+  <app-footer></app-footer>
+}
+  
+

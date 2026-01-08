@@ -1,0 +1,60 @@
+<section class="max-w-3xl mx-auto px-4 py-12 text-[color:var(--color-text,#0f172a)]">
+  <h1 class="text-3xl font-bold mb-8 text-center text-[color:var(--color-primary,#0f172a)]">
+    SyndicAI
+  </h1>
+
+  <div class="flex justify-center mb-10">
+    <img
+      src="/assets/images/faq.png"
+      alt="FAQ"
+      class="w-32 h-32 object-cover rounded-full shadow-md"
+    />
+  </div>
+
+  <div class="space-y-4" itemscope itemtype="https://schema.org/FAQPage">
+    @for (faq of faqs; track faq) {
+      <div
+        itemprop="mainEntity"
+        itemscope
+        itemtype="https://schema.org/Question"
+        class="border border-[color:var(--color-border,#e5e7eb)] rounded-xl overflow-hidden shadow-[var(--shadow-elev,0_8px_30px_rgba(15,23,42,0.12))] bg-[var(--color-surface,#ffffff)]"
+      >
+        <button
+          (click)="toggleFaq(faq)"
+          class="w-full text-left px-4 py-4 font-medium text-[color:var(--color-text,#0f172a)] bg-[color-mix(in_oklab,var(--color-surface,#ffffff)_96%,var(--color-bg,#f8fafc)_4%)] hover:bg-[color-mix(in_oklab,var(--color-surface,#ffffff)_90%,var(--color-bg,#f8fafc)_10%)] transition flex justify-between items-center"
+        >
+          <span itemprop="name">{{ faq.question | translate }}</span>
+          <svg
+            class="w-5 h-5 transform transition-transform duration-300"
+            [ngClass]="{ 'rotate-180': faq.open, 'rotate-0': !faq.open }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
+        </button>
+
+        <div
+          [@toggleHeight]="faq.open ? 'open' : 'closed'"
+          itemprop="acceptedAnswer"
+          itemscope
+          itemtype="https://schema.org/Answer"
+          class="overflow-hidden transition-all duration-500 px-4 text-(--color-muted,#6b7280) bg-[var(--color-surface,#ffffff)] border-t border-[color:var(--color-border,#e5e7eb)]"
+        >
+          <div
+            class="prose prose-sm max-w-none py-4 text-[color:var(--color-text,#0f172a)]"
+            [innerHTML]="faq.answer | translate"
+            itemprop="text"
+          ></div>
+        </div>
+      </div>
+    }
+  </div>
+
+</section>

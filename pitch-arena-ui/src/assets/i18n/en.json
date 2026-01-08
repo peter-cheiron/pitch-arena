@@ -1,0 +1,385 @@
+{
+    "faq": {
+      "title": "syndicai",
+      "seo": {
+        "title": "syndicai the first ai powered digital syndic for ",
+        "description": "."
+      },
+      "items":[
+        {
+        "question": "What is this?",
+        "answer": "Well if you read the home page you should have an idea ..."
+        },
+        {
+        "question": "Can I try it?",
+        "answer": "Currently its only in alpha and being entered into a hackathon. If you are part of the jury then contact me, anyone else please leave a message and I will get back to you."
+        }
+      ]
+      },
+    "login": {
+      "title": "Login to pitch-arean",
+      "sub": "Please login in.",
+      "signin_email": "Sign in with email",
+      "signin_google": "Sign in with Google",
+      "email_label": "Email",
+      "email_placeholder": "Enter your email",
+      "password_label": "Password",
+      "password_placeholder": "Enter your password",
+      "google_only": "Currently only Google authentication is supported.",
+      "error_message": "Email or password invalid",
+      "forgot_password": "Forgot Password?",
+      "reset_password": "Reset password",
+      "back_to_login": "Back to login",
+      "password_reset_sent": "Email reset password sent!",
+      "no_account": "Don’t have an account yet?",
+      "signup": "Sign up",
+      "signup_email": "Sign up with email",
+      "signup_google": "Sign up with Google",
+      "already_have_account": "Already have an account?",
+      "signin": "Sign in",
+      "image_alt": "Login Page Image"
+    },
+    "signup": {
+      "displayName": "Display Name",
+      "displayNamePlaceHolder": "Display Name",
+      "title": "Sign up to Template",
+      "description": "Signup to unlock Template.",
+      "step1": "1. Login Information",
+      "email": "Email",
+      "email_placeholder": "Enter your email",
+      "password": "Password",
+      "password_placeholder": "Enter your password",
+      "confirm_password": "Confirm Password",
+      "step2": "2. About You",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "name_placeholder": "Enter your first name",
+      "surname_placeholder": "Enter your last name",
+      "instagram": "Instagram",
+      "instagram_placeholder": "Enter your Instagram username",
+      "tiktok": "TikTok",
+      "tiktok_placeholder": "Enter your TikTok username",
+      "submit": "Sign Up",
+      "terms_conditions": "By clicking Sign Up, you agree to our",
+      "terms": "Terms and Conditions",
+      "privacy_notice": "Read how we collect, use, and share your data in our",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy",
+      "image_alt": "Signup Page Image"
+    },
+    "landing": {
+      "hero": {
+        "title": "AI Assistant for Shared Residencies.",
+        "subtitle": "SyndicAI helps small buildings and volunteer property managers centralize meeting minutes, maintenance work, resident questions and more in any language.",
+        "request_demo": "Request a demo",
+        "see_how": "See how it works",
+        "video_title": "Residents AI Demo"
+      },
+      "problem": {
+        "title": "The Syndic Problem",
+        "description": "From the three maps below you can see all of the private residencies in Paris. The first one shows all buildings: blue are buildings managed by syndic pro, green are benevol and red means they do not have any management in place. The data is taken from a public data set and can be manipulated in the Paris page.",
+        "map_all": "Blue are professionally managed (34K).",
+        "map_benevol": "Green are self managed (1K).",
+        "map_unknown": "Red are not managed (14K)."
+      },
+      "helps": {
+        "title": "How SyndicAI helps",
+        "description_one": "In small residencies management often rests on one or two volunteers with little free time. Between general meetings, incidents, repairs and emails from neighbors, everything ends up blending together.",
+        "description_two": "SyndicAI starts from a simple idea: technology can help make management clearer without replacing human judgment or adding extra burden.",
+        "card_title": "What the tool aims to provide",
+        "point_overview": "A simple overview of the building.",
+        "point_documents": "Documents organized and findable in seconds.",
+        "point_answers": "Consistent answers to residents' recurring questions."
+      },
+      "how_it_works": {
+        "title": "How does it work?",
+        "description": "For the demo, everything revolves around a single building: its occupants, documents, events, and repairs. The AI receives this context and helps answer questions.",
+        "step1_label": "1. Building model",
+        "step1_title": "Building, units, residents",
+        "step1_description": "A simple structure that describes the building, the people, the documents, and the work.",
+        "step2_label": "2. Context for the AI",
+        "step2_title": "Structured context",
+        "step2_description": "This model is sent to Gemini, which stays focused on these data points without inventing meetings or repairs.",
+        "step3_label": "3. Practical answers",
+        "step3_title": "Text and voice",
+        "step3_description": "The interface offers concise answers, a voice summary, and, if needed, creation of a task."
+      },
+      "next": {
+        "title": "What's next?",
+        "description": "The goal is to test the concept with a few volunteer residencies, adjust what is useful day to day, then decide whether to turn it into a full product.",
+        "refine_model": "Refine the building data model.",
+        "test_voice": "Test the voice features with real exchanges.",
+        "validate_needs": "Validate needs for both volunteer managers and residents."
+      }
+    },
+    "FOOTER": {
+      "PRESS": "Press",
+      "LOGO_ALT": "Company Logo",
+      "ECO_INDEX": {
+        "TITLE": "EcoIndex:",
+        "VALUE": "A90"
+      },
+      "ABOUT_US": {
+        "TITLE": "About us",
+        "CONTACT": "Contact",
+        "FEEDBACKS": "Feedbacks",
+        "WHAT_WE_DO": "Meet the team!",
+        "NEWSLETTER": "Newsletter",
+        "CAREER": "Career"
+      },
+      "JOIN_ADVENTURE": {
+        "TITLE": "Join the adventure"
+      },
+      "SOCIAL_MEDIA": {
+        "TITLE": "Social media",
+        "INSTAGRAM": "Instagram",
+        "WHATSAPP": "WhatsApp",
+        "TWITTER": "Twitter"
+      },
+      "COPYRIGHT": "© 2024 All rights reserved",
+      "LEGAL": {
+        "PRIVACY_POLICY": "Privacy Policy",
+        "TERMS_OF_USE": "Terms of Use",
+        "TERMS_OF_SALE": "Terms of Sale",
+        "FAQ": "FAQ",
+        "SITE_MAP": "Site Map"
+      }
+    },
+    "header": {
+      "explore": "Explore",
+      "arena": "Arena",
+      "contact": "Contact Us",
+      "home": "Home",
+      "paris": "Paris",
+      "faq": "FAQ",
+      "login": "Login",
+      "locale": "Locale",
+      "myProfile": "My profile",
+      "messages": "Messages",
+      "logout": "Logout",
+      "menu": "Menu",
+      "profile": "Profile",
+      "logo_alt": "SyndicAI logo",
+      "unread_messages": "You have unread messages",
+      "user_menu": "User menu",
+      "dashboard": "Dashboard",
+      "ai": "AI",
+      "bulletin": "Bulletin",
+      "issues": "Issues",
+      "tasks": "Tasks",
+      "documents": "Documents"
+    },
+    "profile": {
+      "image_alt": "Profile picture of the user",
+      "verified_profile": "Verified profile",
+      "you": "you",
+      "name": "Name",
+      "surname": "Surname",
+      "tiktok": "TikTok",
+      "about_you": "About you",
+      "about_placeholder": "Tell us something about yourself ...",
+      "verified": "Verified Profile",
+      "unverified": "Unverified Profile",
+      "edit": "Edit Profile",
+      "about": "About {{ name }}"
+    },
+    "messaging": {
+      "enter_recipient_placeholder": "Enter recipient email",
+      "start_new_conversation": "Start New Conversation",
+      "avatar_alt": "Avatar",
+      "conversation_fallback": "Conversation",
+      "no_messages_yet": "No messages yet",
+      "speak_message_aria": "Read the message aloud",
+      "speak_button": "Read",
+      "you_label": "You",
+      "user_label": "User",
+      "recording": "Recording…",
+      "uploading_recording": "Uploading recording…",
+      "transcribing": "Transcribing…",
+      "aria_cancel_recording": "Cancel voice recording",
+      "aria_send_voice": "Send voice recording",
+      "aria_start_voice": "Start voice message",
+      "send": "Send",
+      "errors": {
+        "microphone": "Unable to access microphone.",
+        "transcription": "Unable to transcribe the audio.",
+        "upload": "Unable to send or transcribe the recording."
+      }
+    },
+    "ai_chat": {
+      "new_chat": "New chat",
+      "empty_conversation_title": "No conversation yet",
+      "empty_conversation_hint": "Type or tap the mic to ask \"What are the latest issues?\"",
+      "image_alt": "Sent image",
+      "reference": "Reference",
+      "sender_you": "You",
+      "sender_assistant": "Assistant",
+      "uploading_recording": "Uploading recording...",
+      "transcribing": "Transcribing...",
+      "cancel": "Cancel",
+      "stop_and_send": "Stop and send",
+      "open_attachment_options": "Open attachment options",
+      "take_picture": "Take a picture",
+      "upload_photo": "Upload a photo",
+      "message_placeholder": "Ask anything...",
+      "remove": "Remove",
+      "start_voice_message": "Start voice message",
+      "send": "Send",
+      "message_suggested": "Suggested message",
+      "recipient": "Recipient",
+      "task_suggested": "Suggested task",
+      "reference_label": "Reference",
+      "create": "Create",
+      "topic": "Topic",
+      "no_topics": "No topics available.",
+      "display": {
+        "topic": "Topic",
+        "resident": "Resident",
+        "issue": "Issue",
+        "announcement": "Announcement",
+        "work": "Work",
+        "document": "Document"
+      },
+      "resident": {
+        "owner": "Owner",
+        "tenant": "Tenant",
+        "lot": "Lot {{value}}",
+        "thousandths": "{{value}}‰"
+      },
+      "work": {
+        "contractor": "Contractor: {{contractor}}",
+        "budget": "Budget: {{budget}}€",
+        "status": "Status: {{status}}"
+      },
+      "wait": {
+        "generatingReply": "Generating a reply..."
+      },
+      "errors": {
+        "microphoneAccess": "Unable to access the microphone.",
+        "transcriptionFailed": "Unable to transcribe the audio.",
+        "recordingFailed": "Unable to send or transcribe the recording.",
+        "assistantUnavailable": "I couldn't reach the assistant service right now. Please try again in a moment.",
+        "authRequiredTask": "You must be logged in to create a task.",
+        "taskCreationFailed": "Unable to create the task.",
+        "authRequiredMessage": "You must be logged in to send a message.",
+        "recipientNotFound": "Recipient not found for this message.",
+        "messageSendFailed": "Unable to send the message right now."
+      }
+    },
+    "dashboard": {
+      "title": "Building overview",
+      "subtitle": "Bulletins, open incidents and building tasks.",
+      "count": "{{count}} item(s)",
+      "aiSummary": "AI summary",
+      "residence": "Residence",
+      "management": {
+        "volunteer": "Volunteer syndic",
+        "pro": "Pro syndic"
+      },
+      "manager": "Manager: {{name}}",
+      "capacity": "Capacity",
+      "lots": "Lots",
+      "residents": "Residents",
+      "building": "Building",
+      "floors": "Floors",
+      "built": "Built",
+      "sections": {
+        "bulletins": "Bulletins",
+        "issues": "Open incidents",
+        "tasks": "Tasks"
+      },
+      "status": {
+        "bulletins": {
+          "label": "Active",
+          "title": "Bulletins"
+        },
+        "issues": {
+          "label": "Critical",
+          "title": "Incidents"
+        },
+        "tasks": {
+          "label": "In progress",
+          "title": "Tasks"
+        }
+      },
+      "empty": {
+        "bulletins": "No recent bulletin.",
+        "issues": "No open incident. 🎉",
+        "tasks": "No task for now."
+      },
+      "labels": {
+        "bulletin": "Bulletin",
+        "issue": "Incident",
+        "task": "Task"
+      }
+    },
+    "syndic_map": {
+      "title": "Map of syndics in Paris (data.gouv.fr)",
+      "subtitle": "Each point represents a building with or without a syndic. Use the left panel to filter and inspect.",
+      "filters": {
+        "title": "Filters",
+        "search_syndic": {
+          "label": "Search for a syndic",
+          "placeholder": "Syndic name..."
+        },
+        "search_address": {
+          "label": "Search an address",
+          "placeholder": "Address..."
+        },
+        "manager_type": {
+          "title": "Management type",
+          "professional": "Professional",
+          "volunteer": "Volunteer",
+          "unknown": "Unknown"
+        },
+        "mandate": {
+          "title": "Mandate type"
+        }
+      },
+      "mandate": {
+        "status": {
+          "expired_no_successor": "Mandate expired without a declared successor",
+          "in_progress": "Mandate active",
+          "none": "No active mandate",
+          "expired_with_successor": "Mandate expired with a declared successor"
+        }
+      },
+      "stats": {
+        "title": "View status",
+        "visible_points": "Visible points:"
+      },
+      "selection": {
+        "title": "Selection",
+        "empty": "Click a point on the map to see the details here."
+      },
+      "data_source": "Data is from https://explore.data.gouv.fr/fr/datasets/62da71c068871f4c54258c7c/#/resources/cc062fa7-4a80-449c-ab73-d2856b455ec9"
+    },
+    "contact_form": {
+      "close": "Close",
+      "close_alt": "Close icon",
+      "header": "Contact Us",
+      "about_text": "Please provide your details and feedback below.",
+      "feedback_invite": "We would love to get your feedback so please leave us a message.",
+      "beta_note": "If you want to participate in the beta program please note BETA.",
+      "name_label": "Your Name*",
+      "name_placeholder": "Enter your name",
+      "email_label": "Your Email*",
+      "email_placeholder": "Enter your email",
+      "feedback_type_label": "Feedback Type",
+      "feedback_option_general": "General Contact",
+      "feedback_option_platform": "Platform Feedback",
+      "feedback_option_career": "Career",
+      "feedback_option_bug": "Bug",
+      "feedback_option_partnering": "Partnering",
+      "feedback_label": "Your Feedback*",
+      "feedback_placeholder": "Write your feedback here",
+      "mandatory_note": "*Required fields",
+      "submit_button": "Submit",
+      "modal_checkmark_alt": "Checkmark Icon",
+      "modal_thanks_header": "Feedback Submitted.",
+      "modal_thanks_body": "Your feedback has been submitted.",
+      "modal_thanks_footer": "Thank you for your feedback. We will get in touch as soon as possible.",
+      "modal_close_button": "Close",
+      "validation_error": "Please check all fields are valid with a valid email address"
+    }
+  }

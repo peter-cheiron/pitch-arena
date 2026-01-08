@@ -1,0 +1,121 @@
+<div class="flex flex-col w-full h-full p-5 text-(--color-text)">
+  @if (selectedConversation) {
+    <div class="pb-2 mb-2 border-b border-[var(--color-border,#e5e7eb)]">
+      <p class="m-0 text-lg font-bold tracking-tight text-(--color-text)">
+        {{ selectedConversation.name }}
+      </p>
+    </div>
+  }
+
+  <div class="flex-1 flex flex-col gap-3 overflow-y-auto py-1 px-2">
+    @for (message of messages; track message) {
+      <div
+        class="max-w-[68%] px-2 py-1 rounded-[14px] text-[0.80rem] leading-relaxed border shadow-sm bg-[color-mix(in_oklab,var(--color-surface,#ffffff)_96%,transparent)] text-(--color-text) break-words transition-colors"
+        [ngClass]="{
+          'ml-auto bg-[var(--color-primary,#2563eb)] text-white border-[color-mix(in_srgb,var(--color-primary,#2563eb)_80%,#000_12%)] text-right shadow-[0_12px_24px_color-mix(in_oklab,var(--color-primary,#2563eb)_35%,transparent)]':
+            message.from === userId,
+          'mr-auto bg-[var(--color-surface,#ffffff)] border-[var(--color-border,#e5e7eb)]':
+            message.from !== userId
+        }"
+      >
+        <div class="whitespace-pre-line">
+          {{ message.message }}
+        </div>
+
+        @if (message.from !== userId && message.message) {
+          <button
+            type="button"
+            class="mt-2 inline-flex items-center gap-2 rounded-full border border-[var(--color-border,#e5e7eb)] bg-[color-mix(in_oklab,var(--color-surface,#ffffff)_92%,transparent)] px-2.5 py-1 text-[0.78rem] font-semibold text-[color:var(--color-text,#111827)] shadow-sm"
+            (click)="speak(message.message, '')"
+            [disabled]="speaking"
+            [aria-label]="'messaging.speak_message_aria' | translate"
+          >
+            🔊
+            <span class="leading-none">{{ 'messaging.speak_button' | translate }}</span>
+          </button>
+        }
+
+        @if (message.preview) {
+          <div class="mt-3">
+            <ui-feed-tile
+              type="sale"
+              [item]="message.watch"
+              [title]="message.preview.title"
+              [description]="message.preview.description"
+              [image]="message.preview.image"
+              [url]="message.preview.url"
+            >
+              <div class="flex gap-2" item-actions></div>
+            </ui-feed-tile>
+          </div>
+        }
+
+        <span
+          class="block mt-2 text-[0.78rem]"
+          [ngClass]="
+            message.from === userId
+              ? 'text-white/80'
+              : 'text-(--color-muted,#6b7280)'
+          "
+        >
+          {{ message.from === userId ? ('messaging.you_label' | translate) : (selectedConversation?.fromUser?.displayName || ('messaging.user_label' | translate)) }}
+          · {{ message.date | timetodate | date : "short" }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <div class="flex w-full gap-3 pt-3 border-t border-[var(--color-border,#e5e7eb)]">
+    @if (recording || uploading || transcribing) {
+      <div
+        class="flex items-center gap-2 w-full rounded-full border border-[var(--color-border,#e5e7eb)] px-3 py-2 bg-[color-mix(in_oklab,var(--color-surface,#ffffff)_94%,transparent)] shadow-sm"
+      >
+        <div class="flex-1 flex items-center gap-2 text-[0.85rem] text-(--color-muted,#6b7280)">
+          @if (recording) {
+            <span class="text-[color:var(--color-primary,#2563eb)] font-semibold">{{ 'messaging.recording' | translate }}</span>
+            <div class="flex-1 h-[2px] bg-[var(--color-border,#e5e7eb)] overflow-hidden rounded-full">
+              <div class="w-12 h-full bg-[var(--color-primary,#2563eb)] animate-pulse"></div>
+            </div>
+          } @else if (uploading) {
+            <span>{{ 'messaging.uploading_recording' | translate }}</span>
+          } @else if (transcribing) {
+            <span>{{ 'messaging.transcribing' | translate }}</span>
+          }
+        </div>
+        <button
+          type="button"
+          class="h-8 w-8 rounded-full border border-[var(--color-border,#e5e7eb)] bg-[color:var(--color-surface,#ffffff)] text-sm"
+          (click)="cancelRecording()"
+          [aria-label]="'messaging.aria_cancel_recording' | translate"
+        >
+          ✕
+        </button>
+        <button
+          type="button"
+          class="h-8 w-8 rounded-full bg-[var(--color-primary,#2563eb)] text-white text-sm disabled:opacity-60"
+          [disabled]="uploading || transcribing"
+          (click)="confirmRecording()"
+          [aria-label]="'messaging.aria_send_voice' | translate"
+        >
+          ✓
+        </button>
+      </div>
+    } @else {
+      <ui-input class="w-full" [(value)]="newMessage" (keydown.enter)="sendMessage()"></ui-input>
+      <button
+        type="button"
+        class="h-10 w-10 rounded-full border border-[var(--color-border,#e5e7eb)] bg-[color-mix(in_oklab,var(--color-surface,#ffffff)_96%,#ffffff)] text-lg"
+        (click)="startRecording()"
+        [aria-label]="'messaging.aria_start_voice' | translate"
+      >
+        🎙️
+      </button>
+      <ui-button-pill (onClick)="sendMessage()">{{ 'messaging.send' | translate }}</ui-button-pill>
+    }
+  </div>
+  @if (error) {
+    <div class="pt-2 text-sm text-red-500">
+      {{ error }}
+    </div>
+  }
+</div>

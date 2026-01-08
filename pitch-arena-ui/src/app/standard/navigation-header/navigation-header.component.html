@@ -1,0 +1,239 @@
+<header
+  class="flex items-center px-4 lg:px-8 py-1 sticky top-0 z-10
+         bg-(--color-surface) border-b 
+         border-(--color-border)
+         text-(--color-text)
+         transition-all duration-200"
+  [class.-translate-y-full]="headerHidden()"
+  [class.opacity-0]="headerHidden()"
+  [class.pointer-events-none]="headerHidden()"
+>
+  <a routerLink="/" class="shrink-0">
+    <img class="w-[48px]" src="/assets/images/syndicai.png" alt="{{ 'header.logo_alt' | translate }}" />
+  </a>
+
+  <!-- desktop nav -->
+  <!-- desktop nav: centered -->
+  <nav class="hidden lg:flex flex-1 justify-center items-center gap-2">
+    <!-- we’ll update the contents in the next step -->
+    <nav class="hidden lg:flex flex-1 justify-center items-center gap-2">
+  @for (item of tabMenu; track item.id) {
+    @if (item.id === '1') {
+      <button
+        type="button"
+        (click)="switchLocale()"
+        class="px-4 py-2 rounded-sm font-semibold transition
+               text-(--color-text)
+               hover:bg-[color:var(--color-border)]/40"
+      >
+        {{ localeLabel() }}
+      </button>
+    } @else if (item.children?.length) {
+      <!-- Projects dropdown -->
+      <div class="relative">
+        <button
+          type="button"
+          class="px-4 py-2 rounded-sm font-semibold flex items-center gap-1 transition
+                 text-(--color-text)
+                 hover:bg-[color:var(--color-border)]/40"
+          (click)="toggleProjectMenu($event)"
+          aria-haspopup="true"
+          [attr.aria-expanded]="projectMenuOpen()"
+        >
+          {{ item.textSymbol | translate }}
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20"
+               fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+              clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        @if (projectMenuOpen()) {
+          <div
+            class="absolute left-1/2 -translate-x-1/2 mt-2 w-52 rounded-md border
+                    border-(--color-border)
+                   bg-(--color-surface)
+                   shadow-[var(--shadow-elev,0_8px_30px_rgba(16,185,129,0.08))]
+                   py-2 text-sm z-20"
+            (click)="$event.stopPropagation()"
+          >
+            @for (child of item.children; track child.id) {
+              <a
+                [routerLink]="child.path"
+                (click)="closeProjectMenu()"
+                class="block px-4 py-2 transition
+                       text-(--color-text)
+                       hover:bg-[color:var(--color-border)]/40"
+              >
+                {{ child.textSymbol | translate }}
+              </a>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- simple link -->
+      <a
+        [routerLink]="item.path"
+        class="px-4 py-2 rounded-sm font-semibold transition
+               text-(--color-text)
+               hover:bg-[color:var(--color-border)]/40"
+        routerLinkActive="text-[color:var(--color-primary)] bg-(--color-surface)"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+      >
+        {{ item.textSymbol | translate }}
+      </a>
+    }
+  }
+</nav>
+
+  </nav>
+
+  @if (user()) {
+    <div class="lg:hidden ml-auto relative">
+      <button
+        type="button"
+        class="flex items-center relative text-(--color-text)"
+        (click)="toggleUserMenu($event)"
+        [attr.aria-label]="'header.user_menu' | translate"
+        [attr.aria-expanded]="userMenuOpen()"
+      >
+        @if (user().photoURL) {
+          <img
+            [src]="user().photoURL"
+            [alt]="user().displayName"
+            class="shrink-0 rounded-full w-8 h-8 object-cover"
+            referrerpolicy="no-referrer"
+          />
+        }
+        @if (!user().photoURL) {
+          <ui-icon-user class="shrink-0 rounded-full w-8 h-8" />
+        }
+
+        @if (unReadMessages()) {
+          <div
+            class="absolute -top-2 -right-2
+                   rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold
+                   text-white bg-[color:var(--color-danger,#ef4444)]"
+            [title]="'header.unread_messages' | translate"
+          >
+            {{ unreadCount() }}
+          </div>
+        }
+      </button>
+
+      @if (userMenuOpen()) {
+        <div
+          class="absolute right-0 mt-2 w-52 rounded-md border
+                  border-(--color-border)
+                 bg-(--color-surface)
+                 shadow-[var(--shadow-elev,0_8px_30px_rgba(16,185,129,0.08))]
+                 py-2 text-sm z-20"
+          (click)="$event.stopPropagation()"
+        >
+          <button
+            type="button"
+            class="w-full text-left px-4 py-2 transition
+                   hover:bg-[color:var(--color-border)]/40"
+            (click)="switchLocale(); closeUserMenu()"
+          >
+            {{ 'header.locale' | translate }}
+          </button>
+
+          <div class="my-1 border-t  border-(--color-border)"></div>
+
+          @for (item of dropdownMenu; track item.id) {
+            <a
+              [routerLink]="item.path"
+              (click)="closeUserMenu()"
+              class="block px-4 py-2 transition
+                     text-(--color-text)
+                     hover:bg-[color:var(--color-border)]/40"
+            >
+              {{ item.textSymbol | translate }}
+            </a>
+          }
+        </div>
+      }
+    </div>
+  }
+
+    <!-- desktop user popup -->
+  @if (user()) {
+    <div class="hidden lg:block ml-3 relative">
+      <button
+        type="button"
+        class="flex items-center relative text-(--color-text)"
+        (click)="toggleUserMenu($event)"
+        [attr.aria-label]="'header.user_menu' | translate"
+        [attr.aria-expanded]="userMenuOpen()"
+      >
+        @if (user().photoURL) {
+          <img
+            [src]="user().photoURL"
+            [alt]="user().displayName"
+            class="shrink-0 rounded-full w-8 h-8 ml-4 -mr-2 object-cover"
+            referrerpolicy="no-referrer"
+          />
+        }
+        @if (!user().photoURL) {
+          <ui-icon-user
+            class="shrink-0 rounded-full w-8 h-8 ml-4 -mr-2"
+          />
+        }
+
+        @if (unReadMessages()) {
+          <div
+            class="absolute -top-2 -right-4 -mt-1 -mr-1
+                   rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold
+                   text-white bg-[color:var(--color-danger,#ef4444)]"
+            [title]="'header.unread_messages' | translate"
+          >
+            {{ unreadCount() }}
+          </div>
+        }
+      </button>
+
+      @if (userMenuOpen()) {
+        <div
+          class="absolute right-0 mt-2 w-52 rounded-md border
+                  border-(--color-border)
+                 bg-(--color-surface)
+                 shadow-[var(--shadow-elev,0_8px_30px_rgba(16,185,129,0.08))]
+                 py-2 text-sm z-20"
+          (click)="$event.stopPropagation()"
+        >
+          <!-- locale switch -->
+          <button
+            type="button"
+            class="w-full text-left px-4 py-2 transition
+                   hover:bg-[color:var(--color-border)]/40"
+            (click)="switchLocale(); closeUserMenu()"
+          >
+            {{ 'header.locale' | translate }}
+          </button>
+
+          <div class="my-1 border-t  border-(--color-border)"></div>
+
+          <!-- menu items -->
+          @for (item of dropdownMenu; track item.id) {
+            <a
+              [routerLink]="item.path"
+              (click)="closeUserMenu()"
+              class="block px-4 py-2 transition
+                     text-(--color-text)
+                     hover:bg-[color:var(--color-border)]/40"
+              
+            >
+              {{ item.textSymbol | translate }}
+            </a>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  
+</header>

@@ -1,0 +1,293 @@
+{
+  "contact_form": {
+    "close": "Fermer",
+    "close_alt": "Icône de fermeture",
+    "header": "Contactez-nous",
+    "about_text": "Merci de renseigner vos coordonnées et vos retours ci-dessous.",
+    "feedback_invite": "Nous serions ravis d'avoir votre avis, laissez-nous un message.",
+    "beta_note": "Si vous souhaitez participer au programme bêta, veuillez préciser BETA.",
+    "name_label": "Votre nom*",
+    "name_placeholder": "Entrez votre nom",
+    "email_label": "Votre e-mail*",
+    "email_placeholder": "Entrez votre e-mail",
+    "feedback_type_label": "Type de message",
+    "feedback_option_general": "Contact général",
+    "feedback_option_platform": "Retour sur la plateforme",
+    "feedback_option_career": "Carrière",
+    "feedback_option_bug": "Bug",
+    "feedback_option_partnering": "Partenariat",
+    "feedback_label": "Votre message*",
+    "feedback_placeholder": "Rédigez votre message ici",
+    "mandatory_note": "*Champs obligatoires",
+    "submit_button": "Envoyer",
+    "modal_checkmark_alt": "Icône de validation",
+    "modal_thanks_header": "Message envoyé.",
+    "modal_thanks_body": "Votre message a été envoyé.",
+    "modal_thanks_footer": "Merci pour votre retour. Nous vous répondrons dès que possible.",
+    "modal_close_button": "Fermer",
+    "validation_error": "Merci de vérifier que tous les champs sont valides avec une adresse e-mail correcte"
+  },
+  "messaging": {
+    "enter_recipient_placeholder": "Saisir l'email du destinataire",
+    "start_new_conversation": "Démarrer une nouvelle conversation",
+    "avatar_alt": "Avatar",
+    "conversation_fallback": "Conversation",
+    "no_messages_yet": "Aucun message pour le moment",
+    "speak_message_aria": "Lire le message à voix haute",
+    "speak_button": "Lire",
+    "you_label": "Vous",
+    "user_label": "Utilisateur",
+    "recording": "Enregistrement…",
+    "uploading_recording": "Téléversement de l'enregistrement…",
+    "transcribing": "Transcription…",
+    "aria_cancel_recording": "Annuler l'enregistrement vocal",
+    "aria_send_voice": "Envoyer l'enregistrement vocal",
+    "aria_start_voice": "Commencer un message vocal",
+    "send": "Envoyer",
+    "errors": {
+      "microphone": "Impossible d'accéder au micro.",
+      "transcription": "Impossible de transcrire l'audio.",
+      "upload": "Impossible d'envoyer ou de transcrire l'enregistrement."
+    }
+  },
+  "login": {
+    "title": "Connexion à pitch-arena",
+    "sub": "Veuillez vous connecter.",
+    "signin_email": "Se connecter avec e-mail",
+    "signin_google": "Se connecter avec Google",
+    "email_label": "E-mail",
+    "email_placeholder": "Entrez votre e-mail",
+    "password_label": "Mot de passe",
+    "password_placeholder": "Entrez votre mot de passe",
+    "google_only": "Seule l'authentification Google est actuellement supportée.",
+    "error_message": "E-mail ou mot de passe invalide",
+    "forgot_password": "Mot de passe oublié ?",
+    "reset_password": "Réinitialiser le mot de passe",
+    "back_to_login": "Retour à la connexion",
+    "password_reset_sent": "E-mail de réinitialisation envoyé !",
+    "no_account": "Vous n'avez pas encore de compte ?",
+    "signup": "Créer un compte",
+    "signup_email": "Créer un compte avec e-mail",
+    "signup_google": "Créer un compte avec Google",
+    "already_have_account": "Vous avez déjà un compte ?",
+    "signin": "Se connecter",
+    "image_alt": "Illustration de la page de connexion"
+  },
+  "landing": {
+    "hero": {
+      "title": "Assistant IA pour les résidences partagées.",
+      "subtitle": "SyndicAI aide les petits immeubles et les gestionnaires bénévoles à centraliser les comptes rendus, les travaux de maintenance, les questions des résidents et plus encore, dans n'importe quelle langue.",
+      "request_demo": "Demander une démo",
+      "see_how": "Voir comment cela fonctionne",
+      "video_title": "Démo IA pour les résidents"
+    },
+    "problem": {
+      "title": "Le problème du syndic",
+      "description": "Depuis les trois cartes ci-dessous, vous pouvez voir toutes les résidences privées de Paris. La première montre tous les immeubles : bleu pour ceux gérés par un syndic pro, vert pour les bénévoles et rouge pour ceux sans gestion en place. Les données proviennent d'un jeu public et peuvent être manipulées dans la page Paris.",
+      "map_all": "Les bleus sont gérés par des professionnels (34K).",
+      "map_benevol": "Les verts sont autogérés (1K).",
+      "map_unknown": "Les rouges ne sont pas gérés (14K)."
+    },
+    "helps": {
+      "title": "Comment SyndicAI aide",
+      "description_one": "Dans les petites résidences, la gestion repose souvent sur un ou deux bénévoles avec peu de temps libre. Entre les assemblées générales, les incidents, les réparations et les courriels des voisins, tout finit par se mélanger.",
+      "description_two": "SyndicAI part d'une idée simple : la technologie peut clarifier la gestion sans remplacer le jugement humain ni ajouter de charges supplémentaires.",
+      "card_title": "Ce que l'outil vise à apporter",
+      "point_overview": "Une vue simple de l'immeuble.",
+      "point_documents": "Des documents organisés et trouvables en quelques secondes.",
+      "point_answers": "Des réponses cohérentes aux questions récurrentes des résidents."
+    },
+    "how_it_works": {
+      "title": "Comment cela fonctionne ?",
+      "description": "Pour la démo, tout tourne autour d'un seul immeuble : ses occupants, documents, événements et réparations. L'IA reçoit ce contexte et aide à répondre aux questions.",
+      "step1_label": "1. Modèle d'immeuble",
+      "step1_title": "Immeuble, lots, résidents",
+      "step1_description": "Une structure simple qui décrit l'immeuble, les personnes, les documents et les travaux.",
+      "step2_label": "2. Contexte pour l'IA",
+      "step2_title": "Contexte structuré",
+      "step2_description": "Ce modèle est envoyé à Gemini, qui reste concentré sur ces données sans inventer de réunions ou de réparations.",
+      "step3_label": "3. Réponses pratiques",
+      "step3_title": "Texte et voix",
+      "step3_description": "L'interface propose des réponses concises, un résumé vocal et, si besoin, la création d'une tâche."
+    },
+    "next": {
+      "title": "Et ensuite ?",
+      "description": "L'objectif est de tester le concept avec quelques résidences bénévoles, d'ajuster ce qui est utile au quotidien, puis de décider s'il faut en faire un produit complet.",
+      "refine_model": "Affiner le modèle de données de l'immeuble.",
+      "test_voice": "Tester les fonctionnalités vocales avec de vrais échanges.",
+      "validate_needs": "Valider les besoins des gestionnaires bénévoles et des résidents."
+    }
+  },
+    "header": {
+      "explore": "Explorer",
+      "arena": "Arena",
+      "contact": "Contactez-nous",
+      "home": "Accueil",
+      "paris": "Paris",
+      "faq": "FAQ",
+      "login": "Connexion",
+      "locale": "Langue",
+      "myProfile": "Mon profil",
+      "messages": "Messages",
+      "logout": "Déconnexion",
+      "menu": "Menu",
+      "profile": "Profil",
+      "logo_alt": "Logo SyndicAI",
+      "unread_messages": "Vous avez des messages non lus",
+      "user_menu": "Menu utilisateur",
+      "dashboard": "Tableau de bord",
+      "ai": "IA",
+      "bulletin": "Bulletin",
+      "issues": "Incidents",
+      "tasks": "Tâches",
+      "documents": "Documents"
+    },
+    "ai_chat": {
+      "new_chat": "Nouvelle conversation",
+      "empty_conversation_title": "Aucune conversation pour l'instant",
+    "empty_conversation_hint": "Tapez ou appuyez sur le micro pour demander \"Quels sont les derniers incidents ?\"",
+    "image_alt": "Image envoyée",
+    "reference": "Référence",
+    "sender_you": "Vous",
+    "sender_assistant": "Assistant",
+    "uploading_recording": "Téléversement de l'enregistrement...",
+    "transcribing": "Transcription en cours...",
+    "cancel": "Annuler",
+    "stop_and_send": "Arrêter et envoyer",
+    "open_attachment_options": "Ouvrir les options de pièce jointe",
+    "take_picture": "Prendre une photo",
+    "upload_photo": "Importer une photo",
+    "message_placeholder": "Demandez ce que vous voulez...",
+    "remove": "Retirer",
+    "start_voice_message": "Commencer un message vocal",
+    "send": "Envoyer",
+    "message_suggested": "Message suggéré",
+    "recipient": "Destinataire",
+    "task_suggested": "Tâche suggérée",
+    "reference_label": "Référence",
+    "create": "Créer",
+    "topic": "Sujet",
+    "no_topics": "Aucun sujet disponible.",
+    "display": {
+      "topic": "Sujet",
+      "resident": "Résident",
+      "issue": "Incident",
+      "announcement": "Annonce",
+      "work": "Travaux",
+      "document": "Document"
+    },
+    "resident": {
+      "owner": "Propriétaire",
+      "tenant": "Locataire",
+      "lot": "Lot {{value}}",
+      "thousandths": "{{value}}‰"
+    },
+    "work": {
+      "contractor": "Prestataire : {{contractor}}",
+      "budget": "Budget : {{budget}}€",
+      "status": "Statut : {{status}}"
+    },
+    "wait": {
+      "generatingReply": "Génération de la réponse..."
+    },
+    "errors": {
+      "microphoneAccess": "Impossible d'accéder au micro.",
+      "transcriptionFailed": "Impossible de transcrire l'audio.",
+      "recordingFailed": "Impossible d'envoyer ou de transcrire l'enregistrement.",
+      "assistantUnavailable": "Impossible de joindre le service d'assistance pour le moment. Veuillez réessayer dans un instant.",
+      "authRequiredTask": "Vous devez être connecté pour créer une tâche.",
+      "taskCreationFailed": "Impossible de créer la tâche.",
+      "authRequiredMessage": "Vous devez être connecté pour envoyer un message.",
+      "recipientNotFound": "Destinataire introuvable pour ce message.",
+      "messageSendFailed": "Impossible d'envoyer le message pour l'instant."
+    }
+  },
+  "dashboard": {
+    "title": "Vue d’ensemble de la copro",
+    "subtitle": "Bulletins, incidents ouverts et tâches liées à l’immeuble.",
+    "count": "{{count}} élément(s)",
+    "aiSummary": "Résumé AI",
+    "residence": "Résidence",
+    "management": {
+      "volunteer": "Syndic bénévole",
+      "pro": "Syndic pro"
+    },
+    "manager": "Gestionnaire : {{name}}",
+    "capacity": "Capacité",
+    "lots": "Lots",
+    "residents": "Résidents",
+    "building": "Immeuble",
+    "floors": "Étages",
+    "built": "Construit",
+    "sections": {
+      "bulletins": "Bulletins",
+      "issues": "Incidents ouverts",
+      "tasks": "Tâches"
+    },
+    "status": {
+      "bulletins": {
+        "label": "Actifs",
+        "title": "Bulletins"
+      },
+      "issues": {
+        "label": "Critiques",
+        "title": "Incidents"
+      },
+      "tasks": {
+        "label": "En cours",
+        "title": "Tâches"
+      }
+    },
+    "empty": {
+      "bulletins": "Aucun bulletin récent.",
+      "issues": "Aucun incident ouvert. 🎉",
+      "tasks": "Aucune tâche pour le moment."
+    },
+    "labels": {
+      "bulletin": "Bulletin",
+      "issue": "Incident",
+      "task": "Tâche"
+    }
+  },
+  "syndic_map": {
+    "title": "Carte des syndics à Paris (data.gouv.fr)",
+    "subtitle": "Chaque point représente un bâtiment avec ou sans syndic. Utilisez le panneau à gauche pour filtrer et inspecter.",
+    "filters": {
+      "title": "Filtres",
+      "search_syndic": {
+        "label": "Rechercher un syndic",
+        "placeholder": "Nom du syndic..."
+      },
+      "search_address": {
+        "label": "Rechercher une adresse",
+        "placeholder": "Adresse..."
+      },
+      "manager_type": {
+        "title": "Type de gestion",
+        "professional": "Professionnel",
+        "volunteer": "Bénévole",
+        "unknown": "Inconnu"
+      },
+      "mandate": {
+        "title": "Type de mandat"
+      }
+    },
+    "mandate": {
+      "status": {
+        "expired_no_successor": "Mandat expiré sans successeur déclaré",
+        "in_progress": "Mandat en cours",
+        "none": "Pas de mandat en cours",
+        "expired_with_successor": "Mandat expiré avec successeur déclaré"
+      }
+    },
+    "stats": {
+      "title": "Statut de la vue",
+      "visible_points": "Points visibles :"
+    },
+    "selection": {
+      "title": "Sélection",
+      "empty": "Cliquez sur un point sur la carte pour voir le détail ici."
+    },
+    "data_source": "Les données proviennent de https://explore.data.gouv.fr/fr/datasets/62da71c068871f4c54258c7c/#/resources/cc062fa7-4a80-449c-ab73-d2856b455ec9"
+  }
+}

@@ -1,0 +1,21 @@
+<div class="relative bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-8">
+      
+      <!-- Text content -->
+      <div class="md:w-1/2 text-center md:text-left">
+        <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+          {{ title }}
+        </h1>
+        <p class="mt-4 text-lg text-gray-600">
+          {{ description }}
+        </p>
+      </div>
+  
+      <!-- Image -->
+      <div class="md:w-1/2">
+        <img [src]="image" alt="Hero Image" 
+        class="w-128 rounded-xl shadow-md object-cover">
+      </div>
+    </div>
+  </div>
+  
