@@ -9,7 +9,7 @@
   [class.pointer-events-none]="headerHidden()"
 >
   <a routerLink="/" class="shrink-0">
-    <img class="w-[48px]" src="/assets/images/syndicai.png" alt="{{ 'header.logo_alt' | translate }}" />
+    <img class="w-[48px]" src="/assets/images/pitch-arena.jpeg" alt="{{ 'header.logo_alt' | translate }}" />
   </a>
 
   <!-- desktop nav -->
@@ -18,61 +18,7 @@
     <!-- we’ll update the contents in the next step -->
     <nav class="hidden lg:flex flex-1 justify-center items-center gap-2">
   @for (item of tabMenu; track item.id) {
-    @if (item.id === '1') {
-      <button
-        type="button"
-        (click)="switchLocale()"
-        class="px-4 py-2 rounded-sm font-semibold transition
-               text-(--color-text)
-               hover:bg-[color:var(--color-border)]/40"
-      >
-        {{ localeLabel() }}
-      </button>
-    } @else if (item.children?.length) {
-      <!-- Projects dropdown -->
-      <div class="relative">
-        <button
-          type="button"
-          class="px-4 py-2 rounded-sm font-semibold flex items-center gap-1 transition
-                 text-(--color-text)
-                 hover:bg-[color:var(--color-border)]/40"
-          (click)="toggleProjectMenu($event)"
-          aria-haspopup="true"
-          [attr.aria-expanded]="projectMenuOpen()"
-        >
-          {{ item.textSymbol | translate }}
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20"
-               fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd"
-              d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
-              clip-rule="evenodd" />
-          </svg>
-        </button>
 
-        @if (projectMenuOpen()) {
-          <div
-            class="absolute left-1/2 -translate-x-1/2 mt-2 w-52 rounded-md border
-                    border-(--color-border)
-                   bg-(--color-surface)
-                   shadow-[var(--shadow-elev,0_8px_30px_rgba(16,185,129,0.08))]
-                   py-2 text-sm z-20"
-            (click)="$event.stopPropagation()"
-          >
-            @for (child of item.children; track child.id) {
-              <a
-                [routerLink]="child.path"
-                (click)="closeProjectMenu()"
-                class="block px-4 py-2 transition
-                       text-(--color-text)
-                       hover:bg-[color:var(--color-border)]/40"
-              >
-                {{ child.textSymbol | translate }}
-              </a>
-            }
-          </div>
-        }
-      </div>
-    } @else {
       <!-- simple link -->
       <a
         [routerLink]="item.path"
@@ -86,7 +32,7 @@
         {{ item.textSymbol | translate }}
       </a>
     }
-  }
+  
 </nav>
 
   </nav>
@@ -157,6 +103,19 @@
           }
         </div>
       }
+    </div>
+  }
+
+    <!-- desktop user popup -->
+  @if (!user()) {
+    <div class="hidden lg:block ml-3 relative">
+      <button
+        type="button"
+        class="flex items-center relative text-(--color-text)"
+        [routerLink]="'/login'"
+      >
+      Login
+      </button>
     </div>
   }
 
@@ -236,4 +195,5 @@
   }
 
   
+
 </header>

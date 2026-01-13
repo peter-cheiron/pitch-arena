@@ -45,7 +45,8 @@ export class ProfileComponent {
       email: '',
       about: '',
       roles: [],
-      userId: ''
+      userId: '',
+      termsRead: false
     };
     
 

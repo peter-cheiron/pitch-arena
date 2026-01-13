@@ -4,7 +4,7 @@
       <!-- TODO use theme variables Image Column (Hidden on Small Screens) -->
       <div class="hidden md:block w-full md:w-[63%] mt-10 md:mt-0">
         <img
-          src="/assets/images/syndicai.png"
+          src="/assets/images/pitch-arena.jpeg"
           class="rounded-[16px] aspect-[0.93] object-contain object-center w-[584px] h-[636px] flex-shrink-0"
           alt="{{ 'login.image_alt' | translate }}"
         />
@@ -45,7 +45,7 @@
             type="button"
             color="primary"
             [block]="true"
-            (onClick)="auth.signInWithGoogle()"
+            (onClick)="loginWithGoogle()"
           >
             <span>{{ "login.signin_google" | translate}}</span>
             <ui-icon-google class="ml-auto -mr-2" />

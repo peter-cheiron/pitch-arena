@@ -1,6 +1,9 @@
 <!-- pitch-arena-landing.component.html -->
+
+<!-- todo theme this page according to the theme variables in styles.css-->
+
 <div class="min-h-screen bg-slate-950 text-slate-50">
-  <!-- Top bar -->
+  <!-- Top bar 
   <header class="sticky top-0 z-40 border-b border-white/10 bg-slate-950/75 backdrop-blur">
     <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
       <div class="flex items-center gap-2">
@@ -12,7 +15,7 @@
         </div>
         <div class="leading-tight">
           <div class="text-sm font-semibold tracking-tight">Pitch Arena</div>
-          <div class="text-[11px] text-slate-400">Multi-judge AI feedback for founders</div>
+          <div class="text-[11px] text-slate-400">Multi-judge AI feedback for founders, hackers</div>
         </div>
       </div>
 
@@ -39,26 +42,26 @@
       </div>
     </div>
   </header>
+  -->
 
   <main class="mx-auto max-w-6xl px-4 pb-16 pt-10 md:pt-16">
     <!-- Hero -->
     <section class="grid gap-10 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-center">
       <div class="space-y-6">
-        <div class="inline-flex items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3 py-1 text-[11px] text-emerald-200">
-          <span class="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-          Ship faster. Get challenged harder. Iterate smarter.
-        </div>
 
         <div class="space-y-3">
           <h1 class="text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
-            Put your idea in the
+            Test your idea in the
             <span class="text-emerald-400">Pitch Arena</span>
             — and survive the judges.
           </h1>
           <p class="max-w-xl text-sm text-slate-300 sm:text-base">
             Pitch Arena gives you a panel of domain-expert AI judges (VC, CTO, CPO, CMO, CFO) that
-            challenge your pitch, score it, and guide you through iterative rounds until it’s
-            investor-grade.
+            challenge your pitch, score it and guide you through iterative rounds before rating your pitch.
+          </p>
+
+          <p class="max-w-xl text-sm text-slate-300 sm:text-base">
+           Arenas have objectives: hackathons, incubators and tech accelerators so you can test against a real audience.
           </p>
         </div>
 
@@ -77,6 +80,7 @@
           </button>
         </div>
 
+        <!--
         <div class="flex flex-wrap items-center gap-4 text-[11px] text-slate-400">
           <div class="flex items-center gap-1.5">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
@@ -91,6 +95,7 @@
             Iterative rounds: improve, rescore, repeat.
           </div>
         </div>
+        -->
       </div>
 
       <!-- Mock “Arena Round” preview -->
@@ -141,7 +146,9 @@
         <div>
           <h2 class="text-xl font-semibold tracking-tight text-slate-50">How it works</h2>
           <p class="max-w-xl text-sm text-slate-300">
-            A simple loop: pitch → judges → improvements → rescore. No fluff.
+            The arean is very simple: you can pitch by either typing, pasting or even talking directly to the panel. 
+            A host will check you are on track before the real judges start. 
+            You will then have a simple loop: judges question → you answer → refinement → Judges scores + progression. 
           </p>
         </div>
       </div>
@@ -167,13 +174,13 @@
     <!-- Modes -->
     <section id="modes" class="mt-16 space-y-6">
       <div>
-        <h2 class="text-xl font-semibold tracking-tight text-slate-50">Two modes</h2>
+        <h2 class="text-xl font-semibold tracking-tight text-slate-50">Presentors and Judges</h2>
         <p class="max-w-2xl text-sm text-slate-300">
-          Fun mode for fast pressure-testing. Pro mode for deep analysis, long context, and serious iteration.
+          There are two modes that can be played and we are planning to expose the 'arena as a service' so that you can create your own experience.
         </p>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 md:grid-cols-3">
         @for (mode of modes; track mode.title) {
           <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
             <div class="flex items-center justify-between">
@@ -312,16 +319,5 @@
     </section>
   </main>
 
-  <footer class="border-t border-white/10 py-10">
-    <div class="mx-auto max-w-6xl px-4 text-xs text-slate-500">
-      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <span>© {{ currentYear }} Pitch Arena</span>
-        <div class="flex gap-4">
-          <a href="#" class="hover:text-slate-300">Docs</a>
-          <a href="#" class="hover:text-slate-300">Privacy</a>
-          <a href="#" class="hover:text-slate-300">Contact</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+
 </div>

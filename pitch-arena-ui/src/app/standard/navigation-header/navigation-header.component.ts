@@ -23,15 +23,15 @@ export class NavigationHeaderComponent {
   { textSymbol: 'header.home', path: '/', id: 10, children: []},
  // { textSymbol: 'header.arena', path: '/arena', id: 11, children: []} ,
   { textSymbol: 'header.faq', path: '/faq', id: 12, children: []} ,
-  { textSymbol: 'header.contact', path: '/contact', id: 14 },
-  { textSymbol: 'header.login', path: '/login', id: 15 },
-  { textSymbol: 'header.locale', id: '1'}
+  { textSymbol: 'header.contact', path: '/contact', id: 14 }
 ];
 
   loggedInMenu = [
   //{ textSymbol: 'header.dashboard', path: '/dashboard', id: 10, children: []},
+     { textSymbol: 'header.arenas', path: '/arenas', id: 13, children: []} ,
    { textSymbol: 'header.arena', path: '/arena', id: 11, children: []} ,
-  { textSymbol: 'header.locale', id: '1'}//TODO its wrong when logged in reverse
+   { textSymbol: 'header.lab', path: '/lab', id: 12, children: []} ,
+  //{ textSymbol: 'header.locale', id: 1}
 ];
 
   dropdownMenu = [

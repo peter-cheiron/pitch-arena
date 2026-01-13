@@ -24,7 +24,7 @@ export class GeminiService {
     //TODO put this in a config file? don't use this with images until I know the prices.
     this.model = getGenerativeModel(vertexAI, 
       {   
-        model: "gemini-3-pro-preview"//"gemini-2.5-flash"
+        model: "gemini-2.5-flash" //"gemini-3-pro-preview"//"gemini-2.5-flash"
 
       }
     );
@@ -139,6 +139,9 @@ export class GeminiService {
   } //eof
 
 textPrompt(userText: string, prompt: string): Promise<any> {
+
+  console.log("calling the ai", userText, prompt)
+
   return this.model
     .generateContent([prompt, { text: userText || "" }])
     .then((result) => {

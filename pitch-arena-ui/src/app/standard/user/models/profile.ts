@@ -18,4 +18,5 @@ export interface Profile {
     location?: Location;
     locale?: string;
     options?:  ProfileOption[];
+    termsRead: boolean;
 }

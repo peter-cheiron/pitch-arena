@@ -61,10 +61,10 @@ export class App {
   }
 
   showHeader(){
-    return this.user() ? true :false; 
+    return true; //this.user() ? true :false; 
   }
 
   showFooter(){
-    return false;  
+    return true;  
   }
 }

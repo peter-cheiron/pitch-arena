@@ -60,7 +60,8 @@ export class AuthService {
     return this.auth.authStateReady();
   }
 
-  async signInWithGoogle() {
+  async signInWithGoogle(returnUrl: string = "landing") {
+    this.returnUrl.set(returnUrl)
     await signInWithPopup(this.auth, new GoogleAuthProvider());
     const exists = await this.userService.exists(this.user().email);
     if (!exists) {
@@ -69,7 +70,8 @@ export class AuthService {
         profileImage: this.user().photoURL,
         email: this.user().email,
         displayName: this.user().displayName,
-        firstName: this.user().displayName
+        firstName: this.user().displayName, 
+        termsRead: false
       });
     }
     await this.handleRedirect();

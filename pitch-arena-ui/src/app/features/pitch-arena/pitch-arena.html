@@ -471,9 +471,10 @@
                   class="shrink-0 rounded-xl px-4 py-2 text-sm font-semibold transition active:scale-[0.99]
                          disabled:opacity-40 disabled:pointer-events-none"
                   (click)="submitAnswersAndRescore()"
-                  [disabled]="!canRescore()"
+                  [disabled]="!canRescore() || rescoring()"
                 >
-                  Rescore →
+                  @if (rescoring()) { Rescoring… }
+                  @else { Rescore → }
                 </button>
               }
             </div>
@@ -484,7 +485,7 @@
                 @if (phase() === 'intro') { Host is warming you up. }
                 @if (phase() === 'judging') { Panel judging… }
                 @if (phase() === 'answering') { Answer to move to the next judge. }
-                @if (phase() === 'results') { Rescore to advance. }
+                @if (phase() === 'results') { {{ rescoreFeedback() ?? 'Rescore to advance.' }} }
               </span>
             </div>
           }

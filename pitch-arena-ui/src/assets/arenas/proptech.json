@@ -1,0 +1,85 @@
+{
+  "id": "incubator-proptech-2026",
+  "label": "PropTech Incubator Arena",
+  "description": "Screening + coaching for housing / buildings startups.",
+  "tone": {
+    "base": "neutral",
+    "questionStyle": "conversational",
+    "bannedPhrases": [
+      "who specifically writes the check",
+      "if you had only 14 days",
+      "you will fail completely"
+    ]
+  },
+  "flow": {
+    "maxRounds": 3,
+    "warmup": {
+      "requiredFields": ["founderName", "ideaName", "pitch", "targetUser", "targetContext"],
+      "maxQuestions": 6,
+      "hostSystemPromptLines": [
+        "You are the Host in Pitch Arena.",
+        "This arena is for a PropTech incubator: housing, buildings, operations, energy, access.",
+        "Be friendly and efficient. Avoid hype.",
+        "",
+        "Ask ONE question at a time until requiredFields are captured.",
+        "Keep it conversational; don’t interrogate.",
+        "",
+        "Return ONLY JSON:",
+        "{\"phase\":\"intro\",\"ready\":false,\"nextQuestion\":\"...\",\"profile\":{\"founderName\":\"...\",\"ideaName\":\"...\",\"pitch\":\"...\",\"targetUser\":\"...\",\"targetContext\":\"...\",\"firstValue\":\"...\",\"acquisitionPath\":\"...\",\"inputSource\":\"...\"},\"comment\":\"...\"}"
+      ]
+    },
+    "scoring": { "scaleMin": 0, "scaleMax": 10, "labelLow": "Not ready", "labelHigh": "Strong" }
+  },
+  "judges": [
+    {
+      "id": "host",
+      "role": "host",
+      "label": "Host",
+      "dimension": "Warm-up",
+      "persona": {},
+      "prompt": { "systemLines": ["See flow.warmup.hostSystemPromptLines"] },
+      "scoringWeight": 0
+    },
+    {
+      "id": "vc",
+      "role": "panel",
+      "label": "PropTech Partner",
+      "dimension": "Fundability",
+      "persona": { "values": ["clear wedge", "distribution", "pricing"], "toneOverride": "neutral" },
+      "prompt": { "systemLines": ["You are an experienced PropTech investor.", "Be practical, not dramatic."] },
+      "scoringWeight": 1
+    },
+    {
+      "id": "cto",
+      "role": "panel",
+      "label": "CTO",
+      "dimension": "Feasibility",
+      "persona": { "values": ["integration reality", "MVP focus"], "toneOverride": "supportive" },
+      "prompt": { "systemLines": ["You are a pragmatic CTO.", "Ask about sequencing and constraints without doom language."] },
+      "scoringWeight": 1
+    },
+    {
+      "id": "impact",
+      "role": "panel",
+      "label": "Impact Lead",
+      "dimension": "Impact",
+      "persona": { "values": ["measurable impact", "regulation awareness"], "toneOverride": "supportive" },
+      "prompt": { "systemLines": ["You evaluate social/environmental impact for an incubator.", "Ask for one measurable outcome."] },
+      "scoringWeight": 0.8
+    }
+  ],
+  "attackLibraries": {
+    "vc": { "discovery": [], "interrogation": [] },
+    "cto": { "discovery": [], "interrogation": [] },
+    "impact": { "discovery": [], "impact": [] }
+  },
+  "rubric": {
+    "overallFormula": "weightedAverage",
+    "scale": { "min": 0, "max": 10, "decimals": 1 },
+    "criteriaWeights": [
+      { "id": "fundability", "label": "Fundability", "weightPct": 0.4 },
+      { "id": "feasibility", "label": "Feasibility", "weightPct": 0.35 },
+      { "id": "impact", "label": "Impact", "weightPct": 0.35 }
+    ]
+  }
+}

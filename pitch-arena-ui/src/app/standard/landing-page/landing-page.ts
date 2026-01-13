@@ -97,7 +97,7 @@ export class LandingPageComponent {
 
   modes: ModeBlock[] = [
     {
-      title: 'Fun Mode (Arcade)',
+      title: 'Quick Mode',
       badge: 'Fast feedback',
       description:
         'Quick pressure-testing with sharp, high-energy critique. Perfect for early-stage ideas.',
@@ -109,7 +109,7 @@ export class LandingPageComponent {
       ],
     },
     {
-      title: 'Pro Mode (Deep Arena)',
+      title: 'Pro Mode',
       badge: 'Serious analysis',
       description:
         'Long-context evaluation with deeper structure. Designed for founders preparing real decks and decisions.',
@@ -118,6 +118,18 @@ export class LandingPageComponent {
         'Stricter rubrics and investor-grade tone',
         'Focus on risks, assumptions, next experiments',
         'Outputs a clear action plan and roadmap',
+      ],
+    },
+        {
+      title: 'Host your Arena',
+      badge: 'Custom Arena',
+      description:
+        'Provide your own complete configuration for your hackathon, incubator, VC commitee ...',
+      bullets: [
+        'Custom context: provide your own agenda such as proptech, sustainability',
+        'Custom Judges that answer based on your experience and criteria',
+        'Pre-screen candidates to avoid over interviewing',
+        'Let candidates feel the process withour being overwhelmed.',
       ],
     },
   ];

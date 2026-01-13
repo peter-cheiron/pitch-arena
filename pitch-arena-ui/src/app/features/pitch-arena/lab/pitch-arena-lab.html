@@ -1,0 +1,179 @@
+<div class="p-4 space-y-4">
+  <h2 class="text-lg font-semibold">Pitch Arena Lab (Fast Mode): {{arenaConfig()?.name}}</h2>
+
+  <!-- Inputs -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <div class="space-y-2">
+      <label class="text-sm font-medium">Judge</label>
+      <select class="w-full border rounded px-2 py-1"
+              [ngModel]="labJudge()"
+              (ngModelChange)="labJudge.set($event); onJudgeOrModeChanged()">
+        @for(j of judges(); track j){
+          <option [value]="j.id">
+          {{ j.label }}
+          </option>
+        }    
+      </select>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-sm font-medium">Mode</label>
+      <select class="w-full border rounded px-2 py-1"
+              [ngModel]="labMode()"
+              (ngModelChange)="labMode.set($event); onJudgeOrModeChanged()">
+        <option value="discovery">Discovery</option>
+        <option value="interrogation">Interrogation</option>
+      </select>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-sm font-medium">Tone</label>
+      <select class="w-full border rounded px-2 py-1"
+              [ngModel]="judgeTone()"
+              (ngModelChange)="judgeTone.set($event)">
+        <option value="supportive">Supportive</option>
+        <option value="direct">Direct</option>
+        <option value="tough">Tough (but fair)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="space-y-2">
+      <label class="text-sm font-medium">Idea name</label>
+      <input class="w-full border rounded px-2 py-1"
+             [ngModel]="labIdeaName()"
+             (ngModelChange)="labIdeaName.set($event)" />
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-sm font-medium">Attack vector</label>
+      <select class="w-full border rounded px-2 py-1"
+              [ngModel]="labAttackId()"
+              (ngModelChange)="labAttackId.set($event)">
+        <option *ngFor="let v of vectors()" [value]="v.id">
+          {{ vectorLabel(v) }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="space-y-2">
+    <label class="text-sm font-medium">Pitch</label>
+    <textarea class="w-full border rounded px-2 py-2 min-h-[140px]"
+              [ngModel]="labPitch()"
+              (ngModelChange)="labPitch.set($event)"></textarea>
+  </div>
+
+  <!-- Fast controls -->
+  <div class="flex flex-wrap items-center gap-3 border rounded p-3">
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-medium">Parse mode</label>
+      <select class="border rounded px-2 py-1"
+              [ngModel]="parseMode()"
+              (ngModelChange)="parseMode.set($event)">
+        <option value="none">None (fastest, 0 parse calls)</option>
+        <option value="merged">Merged (1 parse call, cached)</option>
+      </select>
+    </div>
+
+    <label class="flex items-center gap-2 text-sm">
+      <input type="checkbox" [ngModel]="showContext()" (ngModelChange)="showContext.set($event)" />
+      Include structured context in judge prompt
+    </label>
+
+    <button class="border rounded px-3 py-1 text-sm"
+            (click)="clearCache()">
+      Clear cache
+    </button>
+
+    <button class="border rounded px-3 py-1 text-sm"
+            (click)="warmParse()"
+            [disabled]="(labPitch() ?? '').trim().length < 10 || running() || batchRunning()">
+      Warm parse (merged)
+    </button>
+
+    <div class="text-xs opacity-70">
+      Tip: set Parse=none + Context off for fastest judge prompt iteration.
+    </div>
+  </div>
+
+  <!-- (Optional) limits shown only for merged parse -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3"
+       *ngIf="parseMode() === 'merged'">
+    <div class="space-y-1">
+      <label class="text-xs font-medium">Max claims</label>
+      <input type="number" class="w-full border rounded px-2 py-1"
+             [ngModel]="maxClaims()"
+             (ngModelChange)="maxClaims.set(+$event)" />
+    </div>
+    <div class="space-y-1">
+      <label class="text-xs font-medium">Max assumptions</label>
+      <input type="number" class="w-full border rounded px-2 py-1"
+             [ngModel]="maxAssumptions()"
+             (ngModelChange)="maxAssumptions.set(+$event)" />
+    </div>
+    <div class="space-y-1">
+      <label class="text-xs font-medium">Max open questions</label>
+      <input type="number" class="w-full border rounded px-2 py-1"
+             [ngModel]="maxOpenQuestions()"
+             (ngModelChange)="maxOpenQuestions.set(+$event)" />
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex flex-wrap gap-2">
+    <button class="bg-black text-white rounded px-4 py-2 text-sm disabled:opacity-50"
+            (click)="runOnce()"
+            [disabled]="!canRun()">
+      {{ running() ? 'Running…' : 'Run once' }}
+    </button>
+
+    <button class="border rounded px-4 py-2 text-sm disabled:opacity-50"
+            (click)="runBatch()"
+            [disabled]="batchRunning() || running() || (labPitch() ?? '').trim().length < 10">
+      {{ batchRunning() ? 'Batch…' : 'Batch (all judges x 2 modes x 2 vectors)' }}
+    </button>
+
+    <div class="text-sm opacity-70" *ngIf="lastMs() !== null">
+      Last run: {{ lastMs() }} ms
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="border rounded p-3 space-y-2">
+      <div class="text-sm font-semibold">Result (JSON)</div>
+      <pre class="text-xs whitespace-pre-wrap">{{ lastJson() | json }}</pre>
+    </div>
+
+    <div class="border rounded p-3 space-y-2">
+      <div class="text-sm font-semibold">Raw (debug)</div>
+      <pre class="text-xs whitespace-pre-wrap">{{ lastRaw() }}</pre>
+    </div>
+  </div>
+
+  <!-- Batch results -->
+  <div class="border rounded p-3 space-y-2" *ngIf="batchResults().length">
+    <div class="flex items-center justify-between">
+      <div class="text-sm font-semibold">Batch results</div>
+      <button
+        class="border rounded px-3 py-1 text-xs disabled:opacity-50"
+        (click)="exportBatchResults()"
+        [disabled]="batchRunning()"
+      >
+        Export JSON
+      </button>
+    </div>
+
+    <div class="space-y-2">
+      <div *ngFor="let r of batchResults()" class="border rounded p-2">
+        <div class="text-xs opacity-70">
+          {{ r.mode }} • {{ r.judge }} • {{ r.attackId }} • {{ r.ms }} ms • score {{ r.score }}
+        </div>
+        <div class="text-sm whitespace-pre-wrap">{{ r.comment }}</div>
+        <div class="text-sm font-medium whitespace-pre-wrap">{{ r.question }}</div>
+      </div>
+    </div>
+  </div>
+</div>

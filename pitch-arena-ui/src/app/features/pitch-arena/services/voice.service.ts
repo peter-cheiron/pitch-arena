@@ -1,6 +1,7 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 import { SpeechService } from '#services/ai/speech.eleven.service';
+import { ChatMsg } from '../pitch-arena';
 
 @Injectable({ providedIn: 'root' })
 export class VoiceService {

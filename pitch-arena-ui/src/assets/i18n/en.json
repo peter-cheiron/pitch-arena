@@ -1,23 +1,45 @@
 {
     "faq": {
-      "title": "syndicai",
+      "title": "Pitch Arena",
       "seo": {
-        "title": "syndicai the first ai powered digital syndic for ",
+        "title": "",
         "description": "."
       },
       "items":[
         {
-        "question": "What is this?",
-        "answer": "Well if you read the home page you should have an idea ..."
+        "question": "What is pitch arena?",
+        "answer": "Its a sort of AI powered game where you go a bit beyond getting 'overly' positive advice but you actually get questioned over several rounds by judges."
         },
         {
-        "question": "Can I try it?",
-        "answer": "Currently its only in alpha and being entered into a hackathon. If you are part of the jury then contact me, anyone else please leave a message and I will get back to you."
+        "question": "How can I try?",
+        "answer": "Currently its only in beta and being entered into a hackathon. If you are part of the jury then contact me, anyone else please leave a message and I will get back to you."
+        }
+        ,
+        {
+        "question": "Is this backed by any incubator, program or VC?",
+        "answer": "Absolutely not: getting through an arena with a high score is only for your education and experience. I have no money or association with anyone."
+        }
+        ,
+        {
+        "question": "Is my conversation private?",
+        "answer": "You have to take the higher priced pro mode as this uses AIs that will not record the contents for training and so it remains private to you."
+        },
+        {
+        "question": "Do I get feedback?",
+        "answer": "Again we reccommend the pro-mode as this will generate a full report. The lighter version will only give you a score but no axes for improvement."
+        },
+        {
+        "question": "I want to host my own arena ...",
+        "answer": "Yes you can: please contact me in order to determine your needs and how we can best work toegether"
+        },
+        {
+        "question": "Can I join you?",
+        "answer": "Drop me a line if you want to work or contribute on this project."
         }
       ]
       },
     "login": {
-      "title": "Login to pitch-arean",
+      "title": "Login to pitch arena",
       "sub": "Please login in.",
       "signin_email": "Sign in with email",
       "signin_google": "Sign in with Google",
@@ -67,51 +89,6 @@
       "cookies": "Cookie Policy",
       "image_alt": "Signup Page Image"
     },
-    "landing": {
-      "hero": {
-        "title": "AI Assistant for Shared Residencies.",
-        "subtitle": "SyndicAI helps small buildings and volunteer property managers centralize meeting minutes, maintenance work, resident questions and more in any language.",
-        "request_demo": "Request a demo",
-        "see_how": "See how it works",
-        "video_title": "Residents AI Demo"
-      },
-      "problem": {
-        "title": "The Syndic Problem",
-        "description": "From the three maps below you can see all of the private residencies in Paris. The first one shows all buildings: blue are buildings managed by syndic pro, green are benevol and red means they do not have any management in place. The data is taken from a public data set and can be manipulated in the Paris page.",
-        "map_all": "Blue are professionally managed (34K).",
-        "map_benevol": "Green are self managed (1K).",
-        "map_unknown": "Red are not managed (14K)."
-      },
-      "helps": {
-        "title": "How SyndicAI helps",
-        "description_one": "In small residencies management often rests on one or two volunteers with little free time. Between general meetings, incidents, repairs and emails from neighbors, everything ends up blending together.",
-        "description_two": "SyndicAI starts from a simple idea: technology can help make management clearer without replacing human judgment or adding extra burden.",
-        "card_title": "What the tool aims to provide",
-        "point_overview": "A simple overview of the building.",
-        "point_documents": "Documents organized and findable in seconds.",
-        "point_answers": "Consistent answers to residents' recurring questions."
-      },
-      "how_it_works": {
-        "title": "How does it work?",
-        "description": "For the demo, everything revolves around a single building: its occupants, documents, events, and repairs. The AI receives this context and helps answer questions.",
-        "step1_label": "1. Building model",
-        "step1_title": "Building, units, residents",
-        "step1_description": "A simple structure that describes the building, the people, the documents, and the work.",
-        "step2_label": "2. Context for the AI",
-        "step2_title": "Structured context",
-        "step2_description": "This model is sent to Gemini, which stays focused on these data points without inventing meetings or repairs.",
-        "step3_label": "3. Practical answers",
-        "step3_title": "Text and voice",
-        "step3_description": "The interface offers concise answers, a voice summary, and, if needed, creation of a task."
-      },
-      "next": {
-        "title": "What's next?",
-        "description": "The goal is to test the concept with a few volunteer residencies, adjust what is useful day to day, then decide whether to turn it into a full product.",
-        "refine_model": "Refine the building data model.",
-        "test_voice": "Test the voice features with real exchanges.",
-        "validate_needs": "Validate needs for both volunteer managers and residents."
-      }
-    },
     "FOOTER": {
       "PRESS": "Press",
       "LOGO_ALT": "Company Logo",
@@ -136,7 +113,7 @@
         "WHATSAPP": "WhatsApp",
         "TWITTER": "Twitter"
       },
-      "COPYRIGHT": "© 2024 All rights reserved",
+      "COPYRIGHT": "© 2026 All rights reserved",
       "LEGAL": {
         "PRIVACY_POLICY": "Privacy Policy",
         "TERMS_OF_USE": "Terms of Use",
@@ -148,6 +125,8 @@
     "header": {
       "explore": "Explore",
       "arena": "Arena",
+      "arenas": "Arenas",
+      "lab": "Lab",
       "contact": "Contact Us",
       "home": "Home",
       "paris": "Paris",
@@ -159,7 +138,7 @@
       "logout": "Logout",
       "menu": "Menu",
       "profile": "Profile",
-      "logo_alt": "SyndicAI logo",
+      "logo_alt": "pitch arena logo",
       "unread_messages": "You have unread messages",
       "user_menu": "User menu",
       "dashboard": "Dashboard",

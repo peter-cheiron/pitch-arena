@@ -29,7 +29,7 @@ export class LoginPageComponent implements OnInit {
   password = "";
   loading = signal(false);
   error = signal(false);
-  returnUrl = '/arena';
+  returnUrl = '/arenas';
 
   constructor(private route: ActivatedRoute, private router: Router) {
     effect(() => {
@@ -47,6 +47,10 @@ export class LoginPageComponent implements OnInit {
         this.returnUrl = decodeURIComponent(params['returnUrl']);
       }
     });
+  }
+
+  loginWithGoogle(){
+    this.auth.signInWithGoogle()
   }
 
   async signInWithEmailAndPassword(e: Event) {
