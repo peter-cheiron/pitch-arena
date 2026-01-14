@@ -1,0 +1,172 @@
+{
+  "id": "arena_gemini3_fast",
+  "name": "Gemini 3 Fast Test Panel",
+  "description": "Small panel for fast iteration: Host + 2 judges, up to 2 rounds.",
+  "objective": {
+    "thesis": "Quickly test the arena loop (warm-up → judge questions → answers → rescore → next round).",
+    "successDefinition": [
+      "Warm-up completes quickly",
+      "Judges ask 1 clear question each",
+      "Rescore advances to next round reliably",
+      "End state reached within 1–2 rounds"
+    ],
+    "deliverables": {
+      "endOfRound": ["quick_verdict", "top_strength", "top_risk", "next_step_24h"]
+    },
+    "constraints": {
+      "maxRounds": 2,
+      "noInvestorTalk": true,
+      "toneFloor": "respectful",
+      "timeboxPerJudgeSeconds": 20
+    }
+  },
+  "rubric": {
+    "scale": { "min": 0, "max": 10, "decimals": 1 },
+    "criteriaWeights": [
+      { "id": "technical_execution", "label": "Technical Execution", "weightPct": 70 },
+      { "id": "presentation_demo", "label": "Presentation / Demo", "weightPct": 30 }
+    ],
+    "source": {
+      "name": "Derived from Gemini 3 Hackathon criteria (fast test subset)",
+      "url": "https://gemini3.devpost.com/rules"
+    }
+  },
+  "voices": {
+    "host": "6F5Zhi321D3Oq7v1oNT4",
+    "tech": "PB6BdkFkZLbI39GHdnbQ",
+    "demo": "NYC9WEgkq1u4jiqBseQ9"
+  },
+  "globalStyle": {
+    "toneDefault": "direct",
+    "modes": {
+      "discovery": {
+        "label": "Discovery",
+        "goal": "Clarify what you built and why Gemini 3 is essential. Friendly, quick."
+      },
+      "interrogation": {
+        "label": "Pressure-test",
+        "goal": "Go deeper on one weak spot without theatrics."
+      }
+    },
+    "bannedPhrases": [
+      "who pays",
+      "pull out their credit card",
+      "what budget does it come from",
+      "if you had 14 days",
+      "what do you cut",
+      "vaporware",
+      "marketing fluff",
+      "glorified forum",
+      "you will fail",
+      "worst customer segment",
+      "starve",
+      "catastrophic",
+      "pass",
+      "no-go"
+    ],
+    "bannedCliches": ["validate", "do customer discovery", "it depends", "just iterate", "go viral", "leverage ai"],
+    "conversationRules": {
+      "maxCommentWords": 70,
+      "oneQuestionOnly": true,
+      "questionMaxSentences": 1,
+      "deEscalateIfDefensive": true,
+      "avoidRepetitiveTemplates": true,
+      "avoidCategoricalLanguage": true
+    }
+  },
+  "judges": [
+    {
+      "id": "host",
+      "label": "Host",
+      "dimension": "Warm-up",
+      "tone": "supportive",
+      "rolePrompt": "Friendly, concise host. Collect founderName, ideaName, pitch, targetUser, targetContext. No hype."
+    },
+    {
+      "id": "tech",
+      "label": "Build Judge",
+      "dimension": "Technical Execution (70%)",
+      "tone": "direct",
+      "focus": ["clear architecture", "explicit Gemini 3 usage", "reliability / safety boundary"],
+      "vectors": {
+        "discovery": [
+          {
+            "id": "tech_fast_arch",
+            "category": "technical_execution", 
+            "concern": "I need a concrete picture of the architecture and exactly where Gemini 3 is used.",
+            "askIntent": "Get a 5-step system diagram in words, with Gemini 3 inputs/outputs.",
+            "questionExamples": [
+              "In 5 steps, what happens from user input to output, and where is Gemini 3 used?",
+              "What would break if you removed Gemini 3 from the loop?"
+            ],
+            "requiredSignals": ["mechanism", "example"],
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "tech_fast_guardrail",
+            "category": "technical_execution",
+            "concern": "I don’t see the reliability boundary yet.",
+            "askIntent": "Name one simple guardrail and the failure fallback.",
+            "questionExamples": [
+              "What’s one guardrail you run before showing output, and what happens on failure?",
+              "What’s your simplest fallback when Gemini 3 output is wrong or missing?"
+            ],
+            "requiredSignals": ["mechanism"],
+            "forbiddenPhrases": []
+          }
+        ],
+        "interrogation": [
+          {
+            "id": "tech_fast_eval",
+            "category": "technical_execution",
+            "concern": "It’s unclear how you prove the system works beyond a demo.",
+            "askIntent": "Force one concrete evaluation or end-to-end test.",
+            "questionExamples": [
+              "What’s one automated check or evaluation you run after each change?",
+              "What’s the one number you watch to catch regressions (latency, errors, tool failures)?"
+            ],
+            "requiredSignals": ["numbers", "next_step"],
+            "forbiddenPhrases": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "demo",
+      "label": "Demo Judge",
+      "dimension": "Presentation / Demo (30%)",
+      "tone": "supportive",
+      "focus": ["clear story", "demo narrative", "Gemini 3 role explained"],
+      "vectors": {
+        "discovery": [
+          {
+            "id": "demo_fast_story",
+            "category": "presentation_demo",
+            "concern": "The story might be unclear to someone seeing it for the first time.",
+            "askIntent": "Get a crisp 20-second setup and the single best demo moment.",
+            "questionExamples": [
+              "In one sentence, what’s the problem and what’s the ‘aha’ moment in your demo?",
+              "What’s the one screenshot or step that best proves value?"
+            ],
+            "requiredSignals": ["example"],
+            "forbiddenPhrases": []
+          }
+        ],
+        "interrogation": [
+          {
+            "id": "demo_fast_gemini_role",
+            "category": "presentation_demo",
+            "concern": "I need a sharper explanation of Gemini 3’s job in the system.",
+            "askIntent": "Force a concrete input/output description and why it matters.",
+            "questionExamples": [
+              "What exact input do you send to Gemini 3 and what exact output do you rely on?",
+              "If Gemini 3 is replaced with rules, what becomes worse or impossible?"
+            ],
+            "requiredSignals": ["mechanism"],
+            "forbiddenPhrases": []
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -43,7 +43,15 @@ export class Arenas {
     {name: "gemini 2026", 
       image:"",
       description: "Panel aligned with Gemini 3 Hackathon judging criteria and weights.", 
-      path: "arena_gemini3_hackathon"}
+      path: "arena_gemini3_hackathon"},
+    {name: "gemini fast", 
+      image:"",
+      description: "A faster test arena for demo and testing purposes.", 
+      path: "arena_gemini3_fast"},
+      {name: "Solo VC", 
+      image:"",
+      description: "A one on one with an annoying VC that hates investing.", 
+      path: "solo_vc"}
   ]
 
   path = null;

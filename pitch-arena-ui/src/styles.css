@@ -277,3 +277,15 @@ html {
   50% { transform: translateX(50%); }
   100% { transform: translateX(200%); }
 }
+
+.pa-card {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elev);
+  border-radius: 1rem; /* 16px */
+}
+.pa-chip {
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-text) 8%);
+  border-radius: 999px;
+}

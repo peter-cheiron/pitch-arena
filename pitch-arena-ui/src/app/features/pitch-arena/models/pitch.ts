@@ -9,78 +9,8 @@ type VerifierResult = {
   }>;
 };*/
 
-export type PanelMode = 'discovery' | 'interrogation';
 
-export type AttackCategory =
-  | 'buyer'
-  | 'substitute'
-  | 'mechanism'
-  | 'scope'
-  | 'quality'
-  | 'repeat';
-
-export type AttackVector = {
-  id: string;
-  category: AttackCategory;
-
-  // “Concern” is what the judge is worried about (kept short and human)
-  concern: string;
-
-  // “Ask intent” describes the information needed (not a literal question)
-  askIntent: string;
-
-  // Examples show the model what “conversational” looks like.
-  // The model must rephrase (not copy verbatim).
-  questionExamples: string[];
-
-  forbiddenPhrases: string[];
-  requiredSignals: RequiredSignal[];
-  triggers?: { minAvgSpecificity?: number; assumptionIncludes?: string[] };
-};
-
-export type PitchParse = {
-  version: '1.0';
-  ideaName: string;
-  pitchText: string;
-  claims: Array<{
-    id: string;
-    type:
-      | 'value'
-      | 'user'
-      | 'market'
-      | 'technical'
-      | 'goToMarket'
-      | 'pricing'
-      | 'competition'
-      | 'ops';
-    text: string;
-    quote?: string;
-    specificityScore: number;
-    confidence: number;
-    tags?: string[];
-  }>;
-  assumptions: Array<{
-    id: string;
-    claimId: string;
-    category: 'technical' | 'market' | 'product' | 'execution' | 'legal';
-    statement: string;
-    criticality: 'existential' | 'high' | 'medium' | 'low';
-    testability: 'high' | 'medium' | 'low';
-    confidence: number;
-  }>;
-  openQuestions?: Array<{
-    id: string;
-    priority: 'p0' | 'p1' | 'p2';
-    question: string;
-    linkedTo: string[];
-  }>;
-};
-
-//export type string = 'host' | 'vc' | 'tech' | 'product' | 'impact'  | 'operations' | 'finance' | 'innovation';
-
-//type Phase = 'idle' | 'intro' | 'judging' | 'answering' | 'results' | 'ended'
-//type JudgeConfig = { id: string; label: string; dimension: string };
-
+/*
 type ArenaProfile = {
   founderName: string;
   ideaName: string;
@@ -99,8 +29,9 @@ type ArenaProfile = {
 
   budgetOwner?: string;
   pricingGuess?: string;
-};
+};*/
 
+/*
 type ChatMsg = {
   id: string;
   role: 'judge' | 'user' | 'system';
@@ -141,8 +72,9 @@ type EndSummary = {
     pricingIdea: string;
     firstChannel: string;
   };
-};
+};*/
 
+/*
 export type ArenaDefinition = {
   id: string;                 // "incubator-proptech-2026"
   label: string;              // "PropTech Incubator Arena"
@@ -174,19 +106,20 @@ export type ArenaDefinition = {
   judges: JudgeDefinition[];   // host + panel judges
   attackLibraries: AttackLibrary[]; // optional, per judge and mode
   rubric: ArenaRubric;         // how to score overall + what matters
-};
+};*/
 
-export type ArenaTone = 'supportive' | 'neutral' | 'tough';
+//export type ArenaTone = 'supportive' | 'neutral' | 'tough';
 
+/*
 export type WarmupConfig = {
   requiredFields: Array<keyof ArenaProfile>;
   maxQuestions: number;          // prevents endless warmup
   hostPromptId: string;          // points to prompt template (or inline prompt)
-};
+};*/
 
-export type JudgeConfig = { id: string; label: string; dimension: string };
+//export type JudgeConfig = { id: string; label: string; dimension: string };
 
-
+/*
 export type JudgeDefinition = {
   id: string;                // "vc-proptech", "cto", "impact-judge"
   label: string;              // "PropTech Partner"
@@ -210,32 +143,6 @@ export type JudgeDefinition = {
   };
 
   scoringWeight?: number;     // default 1
-};
-
-export type AttackLibrary = {
-  string: string;
-  mode: PanelMode;            // discovery or interrogation
-  vectors: AttackVector[];
-};
-
-export type ArenaRubric = {
-  overallFormula: 'weightedAverage';
-  dimensions: Array<{
-    key: string;                 // "fundability"
-    label: string;               // "Fundability"
-    weight: number;              // 0..1
-    guidance: string;            // used inside prompts to avoid repetition
-  }>;
-};
-
-export type JudgeTone = 'supportive' | 'direct' | 'tough';
-
-
-export type RequiredSignal =
-  | 'named_entity'
-  | 'numbers'
-  | 'mechanism'
-  | 'example'
-  | 'next_step';
+};*/
 
 

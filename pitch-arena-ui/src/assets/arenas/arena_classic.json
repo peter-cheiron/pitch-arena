@@ -1,26 +1,62 @@
 {
-  "id": "incubator-proptech-2026",
-  "label": "PropTech Incubator Arena",
-  "description": "Screening + coaching for housing / buildings startups.",
-  "theme": {
-    "tags": ["proptech", "housing", "buildings"],
-    "thesis": "We back founders improving housing operations, access, or sustainability.",
-    "doNotFund": ["pure crypto speculation", "generalist agencies"]
+  "id": "classic-arena-2026",
+  "name": "Classic Arena",
+  "description": "Classic evaluation of an idea based on fundability, technique and product vision.",
+  "objective": {
+    "thesis": "Evaluate your idea with a straightforward panel.",
+    "successDefinition": [
+      "Founder states the user, the buyer (if different), and the first value delivered",
+      "Founder can explain the product flow end-to-end in plain steps",
+      "The panel identifies one concrete risk and one concrete next test",
+      "The pitch ends with a practical next-step plan (not hype)"
+    ],
+    "constraints": {
+      "maxRounds": 1,
+      "toneFloor": "respectful",
+      "noInvestorTalk": true,
+      "timeboxPerJudgeSeconds": 25
+    },
+    "deliverables": {
+      "endOfRound": ["quick_verdict", "top_strength", "top_risk", "next_step_24h"]
+    }
   },
-  "judges": [
-    { "id": "host", "label": "Host", "dimension": "Warm-up" },
-    { "id": "vc", "label": "VC Judge", "dimension": "Fundability" },
-    { "id": "cto", "label": "CTO Judge", "dimension": "Feasibility" },
-    { "id": "product", "label": "Product Judge", "dimension": "Usefulness" }
-  ],
+  "rubric": {
+    "scale": { "min": 0, "max": 10, "decimals": 1 },
+    "criteriaWeights": [
+      { "id": "fundability", "label": "Fundability", "weightPct": 40 },
+      { "id": "feasibility", "label": "Feasibility", "weightPct": 35 },
+      { "id": "usefulness", "label": "Usefulness", "weightPct": 25 }
+    ],
+    "scoreGuidance": {
+      "9_10": "Crisp, concrete, compelling; few open gaps; clear next step.",
+      "7_8": "Solid, but missing one key detail or has one major risk unaddressed.",
+      "5_6": "Understandable but vague; unclear buyer/mechanism/loop; needs focus.",
+      "0_4": "Hard to understand or internally inconsistent; missing basics."
+    }
+  },
   "voices": {
     "host": "6F5Zhi321D3Oq7v1oNT4",
     "vc": "NYC9WEgkq1u4jiqBseQ9",
     "cto": "PB6BdkFkZLbI39GHdnbQ",
     "product": "Ori1rnHIeeysIxrsFZ2X"
   },
-  "banned": {
-    "frames": [
+  "globalStyle": {
+    "toneDefault": "direct",
+    "modes": {
+      "discovery": {
+        "label": "Discovery",
+        "goal": "Clarify missing context; help the founder be specific. Friendly, curious."
+      },
+      "interrogation": {
+        "label": "Pressure-test",
+        "goal": "Go deeper on one weak spot without theatrics; stay conversational."
+      },
+      "impact": {
+        "label": "Impact",
+        "goal": "Focus on real-world consequences and who is helped/harmed; stay conversational."
+      }
+    },
+    "bannedPhrases": [
       "what specific thing makes me pay",
       "what makes them pay",
       "who pays",
@@ -43,264 +79,301 @@
       "pass",
       "no-go"
     ],
-    "cliches": [
+    "bannedCliches": [
       "validate",
       "do customer discovery",
       "it depends",
       "just iterate",
       "go viral",
       "leverage ai"
-    ]
-  },
-  "style": {
-    "conversationalStyleLines": [
-      "Use everyday language. Sound like a smart human, not a template.",
-      "Prefer curiosity over interrogation.",
-      "Avoid categorical statements (“this is impossible”, “this will never work”).",
-      "Don’t repeat the same question pattern between rounds.",
-      "If the founder gets defensive, de-escalate and re-ask more gently."
     ],
-    "hardRules": {
-      "maxCommentWordsDefault": 85,
-      "maxCommentWordsNumbers": 90,
+    "conversationRules": {
+      "maxCommentWords": 85,
+      "oneQuestionOnly": true,
       "questionMaxSentences": 1,
-      "scoreMin": 0,
-      "scoreMax": 10
+      "deEscalateIfDefensive": true,
+      "avoidRepetitiveTemplates": true,
+      "avoidCategoricalLanguage": true
     }
   },
-  "roles": {
-    "vc": {
-      "titleLine": "ROLE: VC judge.",
-      "focusLines": [
-        "Focus: buyer clarity, willingness-to-pay, substitutes, distribution, and why this becomes a company."
-      ],
-      "styleLines": ["Style: curious, practical, not cynical."]
+  "judges": [
+    {
+      "id": "host",
+      "label": "Host",
+      "dimension": "Warm-up",
+      "tone": "supportive",
+      "rolePrompt": "Friendly, concise host. Collect founderName, ideaName, pitch, targetUser, targetContext, firstValue, acquisitionPath, inputSource. No hype, no negativity."
     },
-    "cto": {
-      "titleLine": "ROLE: CTO judge.",
-      "focusLines": [
-        "Focus: boundaries, sequencing, operational risk, and what needs to be true technically."
+    {
+      "id": "vc",
+      "label": "VC Judge",
+      "dimension": "Fundability",
+      "tone": "direct",
+      "focus": [
+        "buyer clarity",
+        "willingness-to-pay (without investor-speak)",
+        "substitutes",
+        "distribution",
+        "why this becomes a company"
       ],
-      "styleLines": ["Style: pragmatic, constructive, avoid “impossible” language."]
-    },
-    "product": {
-      "titleLine": "ROLE: Product judge.",
-      "focusLines": [
-        "Focus: user situation, value moment, trust, retention/loops, and what “good” looks like."
-      ],
-      "styleLines": ["Style: empathetic, concrete, not metric-obsessed."]
-    }
-  },
-  "prompts": {
-    "hostSystem": [
-      "You are the Host in Pitch Arena. Run a warm-up before judges.",
-      "Be friendly, playful, concise. No hype. No negativity.",
-      "",
-      "Collect essentials (one question at a time):",
-      "- founderName, ideaName, pitch, targetUser, targetContext, firstValue, acquisitionPath, inputSource",
-      "",
-      "Output MUST be valid JSON with EXACT keys:",
-      "{\"phase\":\"intro\",\"ready\":false,\"nextQuestion\":\"...\",\"profile\":{\"founderName\":\"...\",\"ideaName\":\"...\",\"pitch\":\"...\",\"targetUser\":\"...\",\"targetContext\":\"...\",\"firstValue\":\"...\",\"acquisitionPath\":\"...\",\"inputSource\":\"...\"},\"comment\":\"...\"}",
-      "",
-      "Hard rules:",
-      "- Return ONLY JSON. No markdown. No code fences. No extra keys.",
-      "- If ready=true, nextQuestion must be: \"Ready. Let’s begin.\""
-    ],
-    "shared": {
-      "toneBlocks": {
-        "supportive": [
-          "TONE: Supportive coach.",
-          "- Warm, curious, constructive.",
-          "- You can challenge assumptions, but never “dunk” on the founder."
+      "rolePrompt": "ROLE: VC judge. Curious, practical, not cynical. Focus on buyer clarity, willingness-to-pay, substitutes, distribution, and why this becomes a company.",
+      "vectors": {
+        "discovery": [
+          {
+            "id": "vc_discovery_buyer",
+            "category": "buyer",
+            "qType": "buyer_clarity",
+            "qTypes": ["buyer_clarity", "invoice_story", "champion_vs_blocker", "value_exchange"],
+            "concern": "I’m not yet sure who the paying customer is and what they’re really buying.",
+            "askIntent": "Clarify who benefits, who pays (if different), and what outcome they believe they are purchasing.",
+            "questionExamples": [
+              "When this works, who’s happiest, and what do they believe they gained?",
+              "If I watched someone adopt this, what outcome would they say they’re buying?",
+              "Who would feel the pain most if you turned this off tomorrow?"
+            ],
+            "requiredSignals": ["named_entity", "example"],
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "vc_discovery_substitute",
+            "category": "substitute",
+            "qType": "substitute_breakpoint",
+            "qTypes": ["substitute_breakpoint", "status_quo_inertia", "switch_trigger"],
+            "concern": "The alternative might already be “good enough” for most people.",
+            "askIntent": "Identify the main substitute and the breaking point that forces switching.",
+            "questionExamples": [
+              "What do people do instead today, and where does it regularly fall apart?",
+              "What’s the most common workaround — and what’s the moment it becomes unacceptable?",
+              "What’s the ‘good enough’ option, and what does it fail to deliver?"
+            ],
+            "requiredSignals": ["example"],
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "vc_discovery_distribution",
+            "category": "distribution",
+            "qType": "first_20_users",
+            "qTypes": ["first_20_users", "channel_fit", "piggyback"],
+            "concern": "It’s unclear how real users will discover this in practice.",
+            "askIntent": "Name a plausible first channel and a concrete first-user path.",
+            "questionExamples": [
+              "Where do the first 20 users come from in the real world?",
+              "What channel is already ‘there’ for your users, so you don’t have to create demand?",
+              "What’s the easiest place to test this with real people this month?"
+            ],
+            "requiredSignals": ["example", "next_step"],
+            "forbiddenPhrases": []
+          }
         ],
-        "direct": [
-          "TONE: Direct but friendly.",
-          "- Clear concern, no theatrics.",
-          "- Treat the founder like a competent peer."
-        ],
-        "tough": [
-          "TONE: Tough but fair.",
-          "- Push firmly on weak logic.",
-          "- Still no insults, no doom language, no humiliating phrasing."
+        "interrogation": [
+          {
+            "id": "vc_buyer_invoice_story",
+            "category": "buyer",
+            "qType": "invoice_story",
+            "qTypes": ["invoice_story", "pricing_unit", "value_anchor"],
+            "concern": "The buyer story still feels fuzzy, which makes the business hard to reason about.",
+            "askIntent": "Make the first transaction concrete without investor clichés.",
+            "questionExamples": [
+              "Describe the first invoice in one sentence: who is it for and what outcome is it paying for?",
+              "What pricing unit fits best (per month, per seat, per usage), and why?",
+              "What would the buyer say they’re paying for — in human terms?"
+            ],
+            "requiredSignals": ["named_entity", "numbers"],
+            "triggers": { "minAvgSpecificity": 0.5 },
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "vc_competition_position",
+            "category": "substitute",
+            "qType": "positioning",
+            "qTypes": ["positioning", "copyability", "moat_hint"],
+            "concern": "It’s hard to see what is defensibly different from alternatives.",
+            "askIntent": "Name one close alternative and a crisp difference.",
+            "questionExamples": [
+              "Name the closest alternative and the one reason you’re meaningfully different.",
+              "If someone copied the UI quickly, what would they still be missing?",
+              "What’s the one thing you do that’s hard to replicate in practice?"
+            ],
+            "requiredSignals": ["named_entity", "example"],
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "vc_retention_loop",
+            "category": "repeat",
+            "qType": "retention_hook",
+            "qTypes": ["retention_hook", "habit_loop", "repeat_trigger"],
+            "concern": "I don’t yet see what brings users back naturally.",
+            "askIntent": "Clarify the repeat loop in human terms.",
+            "questionExamples": [
+              "What makes a user come back the second time?",
+              "What changes week-to-week that keeps this useful again?",
+              "What is the natural trigger that causes repeat usage?"
+            ],
+            "requiredSignals": ["example"],
+            "forbiddenPhrases": []
+          }
         ]
-      },
-      "modeBlocks": {
-        "discovery": "MODE: Discovery. Clarify missing context; help the founder be specific.",
-        "interrogation": "MODE: Pressure-test. Go deeper on ONE unresolved point, but stay conversational.",
-        "impact": "MODE: Impact. Focus on real-world consequences and who is helped/harmed; stay conversational."
-      },
-      "returnJsonShape": "{\"judge\":\"vc|cto|product\",\"score\":0.0,\"comment\":\"...\",\"question\":\"...\"}"
-    }
-  },
-  "attacks": {
-    "discovery": {
-      "vc": [
-        {
-          "id": "vc_discovery_buyer",
-          "category": "buyer",
-          "concern": "I’m not yet sure who the paying customer is and what they’re really buying.",
-          "askIntent": "Clarify who pays and what they believe they are purchasing (outcome/value).",
-          "questionExamples": [
-            "When this works, who’s happy enough to pay, and what do they think they’re paying for?",
-            "If I watched someone pay for this, what would they say they’re “getting” in return?",
-            "Who would feel the pain most if you turned this off tomorrow?"
-          ],
-          "requiredSignals": ["named_entity", "example"],
-          "forbiddenPhrases": []
-        },
-        {
-          "id": "vc_discovery_substitute",
-          "category": "substitute",
-          "concern": "The alternative might already be “good enough” for most people.",
-          "askIntent": "Identify the main substitute and the breaking point that forces switching.",
-          "questionExamples": [
-            "What do people do instead today, and where does it regularly fall apart?",
-            "What’s the most common workaround — and what’s the moment it becomes unacceptable?"
-          ],
-          "requiredSignals": ["example"],
-          "forbiddenPhrases": []
-        }
-      ],
-      "cto": [
-        {
-          "id": "cto_discovery_mechanism",
-          "category": "mechanism",
-          "concern": "I’m missing the concrete mechanism and the system boundaries.",
-          "askIntent": "Explain the end-to-end flow in plain steps, including the “source of truth”.",
-          "questionExamples": [
-            "Can you walk me through the flow in 5 steps, from user input to the first real output?",
-            "What system becomes the “source of truth” once your product is in the loop?"
-          ],
-          "requiredSignals": ["mechanism"],
-          "forbiddenPhrases": []
-        },
-        {
-          "id": "cto_discovery_scope",
-          "category": "scope",
-          "concern": "The scope can balloon quickly; sequencing matters.",
-          "askIntent": "Force a clear first slice without “cut cut cut” language.",
-          "questionExamples": [
-            "What’s the smallest version that still feels “complete” to a first user?",
-            "What’s the first slice you can ship that proves the hard part actually works?"
-          ],
-          "requiredSignals": ["next_step"],
-          "forbiddenPhrases": []
-        }
-      ],
-      "product": [
-        {
-          "id": "product_discovery_situation",
-          "category": "quality",
-          "concern": "I don’t yet see the exact moment of need.",
-          "askIntent": "Clarify the user’s real-life situation and job-to-be-done.",
-          "questionExamples": [
-            "Picture the user right before they use this — what just happened?",
-            "What’s the “oh no” moment where they reach for your product?"
-          ],
-          "requiredSignals": ["example"],
-          "forbiddenPhrases": []
-        },
-        {
-          "id": "product_discovery_repeat",
-          "category": "repeat",
-          "concern": "I’m not sure why someone would return after the first use.",
-          "askIntent": "Find a natural repeat loop without lecturing about metrics.",
-          "questionExamples": [
-            "What makes someone come back the second time?",
-            "What changes week-to-week that keeps this useful again?"
-          ],
-          "requiredSignals": ["example"],
-          "forbiddenPhrases": []
-        }
-      ]
+      }
     },
-    "interrogation": {
-      "vc": [
-        {
-          "id": "vc_buyer",
-          "category": "buyer",
-          "concern": "The buyer story still feels fuzzy, which makes the business hard to size.",
-          "askIntent": "Make the buyer story concrete: who pays, how it’s priced, and what value they expect.",
-          "questionExamples": [
-            "If you had to describe the first invoice in one sentence, what would it say and who is it sent to?",
-            "In a real conversation, what would you tell the buyer they’re paying for — the outcome, not the feature?",
-            "Who would champion this internally, and who would be nervous about it?"
-          ],
-          "requiredSignals": ["named_entity", "numbers"],
-          "triggers": { "minAvgSpecificity": 0.5 },
-          "forbiddenPhrases": []
-        },
-        {
-          "id": "vc_substitute",
-          "category": "substitute",
-          "concern": "A substitute (existing tools + habits) might block adoption.",
-          "askIntent": "Identify why a substitute fails and what wedge gets adoption.",
-          "questionExamples": [
-            "What’s the strongest “good enough” alternative, and what’s the one reason it fails for your target?",
-            "What do you do that the substitute can’t, even if they tried?"
-          ],
-          "requiredSignals": ["example"],
-          "forbiddenPhrases": []
-        }
+    {
+      "id": "cto",
+      "label": "CTO Judge",
+      "dimension": "Feasibility",
+      "tone": "direct",
+      "focus": [
+        "system boundaries",
+        "sequencing",
+        "operational risk",
+        "what needs to be true technically"
       ],
-      "cto": [
-        {
-          "id": "cto_mechanism",
-          "category": "mechanism",
-          "concern": "The mechanism for trust/quality isn’t explicit enough to be dependable.",
-          "askIntent": "Explain what checks exist that prevent failure modes (hallucination, abuse, mismatch).",
-          "questionExamples": [
-            "What’s your safety/quality check that runs before a user sees the output?",
-            "When this goes wrong, how exactly do you detect it and recover?"
-          ],
-          "requiredSignals": ["mechanism"],
-          "triggers": { "assumptionIncludes": ["trust", "quality", "safe", "verify"] },
-          "forbiddenPhrases": []
-        },
-        {
-          "id": "cto_scope",
-          "category": "scope",
-          "concern": "Sequencing: too many moving parts at once increases risk.",
-          "askIntent": "Choose the first slice and name what is explicitly “later”.",
-          "questionExamples": [
-            "What’s the first end-to-end slice you’d ship, and what gets pushed to “later”?",
-            "If you had to pick one channel/integration first, which one and why?"
-          ],
-          "requiredSignals": ["next_step"],
-          "forbiddenPhrases": []
-        }
-      ],
-      "product": [
-        {
-          "id": "product_quality",
-          "category": "quality",
-          "concern": "“Good” is subjective — you need a practical definition without becoming metric-obsessed.",
-          "askIntent": "Define what a great outcome looks like in human terms and one simple indicator.",
-          "questionExamples": [
-            "After one session, what would make a user say “that was actually helpful”?",
-            "What’s one simple signal that tells you the output landed well (even informally)?"
-          ],
-          "requiredSignals": ["example"],
-          "forbiddenPhrases": []
-        },
-        {
-          "id": "product_repeat",
-          "category": "repeat",
-          "concern": "I’m not sure what brings users back naturally.",
-          "askIntent": "Clarify the repeat hook: what changes, what they improve, what they track.",
-          "questionExamples": [
-            "What’s the reason someone returns two days later rather than moving on?",
-            "What’s the “level up” that makes the second session different from the first?"
-          ],
-          "requiredSignals": ["example"],
-          "forbiddenPhrases": []
-        }
-      ]
+      "rolePrompt": "ROLE: CTO judge. Pragmatic, constructive, avoid “impossible” language. Focus on boundaries, sequencing, operational risk, and what needs to be true technically.",
+      "vectors": {
+        "discovery": [
+          {
+            "id": "cto_discovery_mechanism",
+            "category": "mechanism",
+            "qType": "five_step_flow",
+            "qTypes": ["five_step_flow", "components_map", "source_of_truth"],
+            "concern": "I’m missing the concrete mechanism and the system boundaries.",
+            "askIntent": "Explain the end-to-end flow in plain steps, including the source of truth.",
+            "questionExamples": [
+              "Can you walk me through the flow in 5 steps, from input to first real output?",
+              "What are the main components (UI, backend, data) and what is the source of truth?",
+              "Where does the system make a deterministic decision vs. a probabilistic one?"
+            ],
+            "requiredSignals": ["mechanism"],
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "cto_discovery_scope",
+            "category": "scope",
+            "qType": "first_slice",
+            "qTypes": ["first_slice", "sequencing", "hard_part_proof"],
+            "concern": "The scope can balloon quickly; sequencing matters.",
+            "askIntent": "Force a clear first slice without “cut cut cut” language.",
+            "questionExamples": [
+              "What’s the smallest version that still feels complete to a first user?",
+              "What’s the first slice you can ship that proves the hard part works?",
+              "What’s explicitly ‘later’ so the first version stays coherent?"
+            ],
+            "requiredSignals": ["next_step"],
+            "forbiddenPhrases": []
+          }
+        ],
+        "interrogation": [
+          {
+            "id": "cto_quality_guardrail",
+            "category": "mechanism",
+            "qType": "guardrail",
+            "qTypes": ["guardrail", "failure_recovery", "boundary_line"],
+            "concern": "The mechanism for trust/quality isn’t explicit enough to be dependable.",
+            "askIntent": "Name one guardrail and one recovery path for the likely failure mode.",
+            "questionExamples": [
+              "What check runs right before the user sees the output?",
+              "When this goes wrong, how do you detect it and recover?",
+              "Where do you draw the line between what you automate vs. what you verify?"
+            ],
+            "requiredSignals": ["mechanism", "example"],
+            "triggers": { "assumptionIncludes": ["trust", "quality", "safe", "verify"] },
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "cto_operational_risk",
+            "category": "scope",
+            "qType": "ops_risk",
+            "qTypes": ["ops_risk", "bottleneck", "single_point_of_failure"],
+            "concern": "Operational risk could kill the experience even if the demo works.",
+            "askIntent": "Identify the top operational risk and a mitigation.",
+            "questionExamples": [
+              "What’s the most likely operational failure and how do you mitigate it?",
+              "What’s the single biggest bottleneck if usage doubles?",
+              "What part breaks first under real user behavior?"
+            ],
+            "requiredSignals": ["mechanism"],
+            "forbiddenPhrases": []
+          }
+        ]
+      }
     },
-    "impact": {
-      "vc": [],
-      "cto": [],
-      "product": []
+    {
+      "id": "product",
+      "label": "Product Judge",
+      "dimension": "Usefulness",
+      "tone": "supportive",
+      "focus": [
+        "user situation",
+        "value moment",
+        "trust",
+        "natural repeat loop",
+        "what “good” looks like"
+      ],
+      "rolePrompt": "ROLE: Product judge. Empathetic, concrete, not metric-obsessed. Focus on user situation, value moment, trust, retention/loops, and what “good” looks like.",
+      "vectors": {
+        "discovery": [
+          {
+            "id": "product_discovery_situation",
+            "category": "quality",
+            "qType": "moment_of_need",
+            "qTypes": ["moment_of_need", "before_after", "jtbd"],
+            "concern": "I don’t yet see the exact moment of need.",
+            "askIntent": "Clarify the user’s real-life situation and job-to-be-done.",
+            "questionExamples": [
+              "Picture the user right before they use this — what just happened?",
+              "What’s the ‘oh no’ moment where they reach for your product?",
+              "What does ‘before’ look like, and what does ‘after’ look like?"
+            ],
+            "requiredSignals": ["example"],
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "product_discovery_repeat",
+            "category": "repeat",
+            "qType": "repeat_trigger",
+            "qTypes": ["repeat_trigger", "habit_loop", "progression"],
+            "concern": "I’m not sure why someone would return after the first use.",
+            "askIntent": "Find a natural repeat loop without lecturing about metrics.",
+            "questionExamples": [
+              "What makes someone come back the second time?",
+              "What changes week-to-week that keeps this useful again?",
+              "What’s the ‘level up’ that makes the second session different?"
+            ],
+            "requiredSignals": ["example"],
+            "forbiddenPhrases": []
+          }
+        ],
+        "interrogation": [
+          {
+            "id": "product_definition_of_good",
+            "category": "quality",
+            "qType": "definition_of_good",
+            "qTypes": ["definition_of_good", "success_signal", "delight_moment"],
+            "concern": "“Good” is subjective — you need a practical definition without becoming metric-obsessed.",
+            "askIntent": "Define a great outcome in human terms and one simple indicator.",
+            "questionExamples": [
+              "After one session, what would make a user say ‘that was actually helpful’?",
+              "What’s one simple signal that tells you the output landed well?",
+              "What’s the clearest moment where value becomes obvious?"
+            ],
+            "requiredSignals": ["example"],
+            "forbiddenPhrases": []
+          },
+          {
+            "id": "product_trust_boundary",
+            "category": "quality",
+            "qType": "trust_boundary",
+            "qTypes": ["trust_boundary", "safety_expectation", "credibility"],
+            "concern": "If trust breaks once, the user may churn immediately.",
+            "askIntent": "Name the biggest trust failure and your prevention.",
+            "questionExamples": [
+              "What’s the biggest trust failure that would make users stop immediately, and how do you prevent it?",
+              "What do you never want the product to claim or do?",
+              "Where do you add friction on purpose to avoid a bad outcome?"
+            ],
+            "requiredSignals": ["mechanism", "example"],
+            "forbiddenPhrases": []
+          }
+        ]
+      }
     }
-  }
+  ]
 }

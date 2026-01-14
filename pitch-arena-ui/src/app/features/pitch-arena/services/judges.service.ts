@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AttackVector, JudgeTone, PanelMode } from '../models/pitch';
-import { ArenaConfig, ArenaJudgeConfig, ArenaJudgeId } from '../models/arena-config';
+import { ArenaConfig, ArenaJudgeConfig, ArenaJudgeId, AttackVector, JudgeTone, PanelMode } from '../models/arena-config';
 
 type SharedPromptOpts = {
   round: number;

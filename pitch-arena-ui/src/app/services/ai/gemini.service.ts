@@ -140,7 +140,7 @@ export class GeminiService {
 
 textPrompt(userText: string, prompt: string): Promise<any> {
 
-  console.log("calling the ai", userText, prompt)
+  //console.log("calling the ai", userText, prompt)
 
   return this.model
     .generateContent([prompt, { text: userText || "" }])
@@ -156,7 +156,7 @@ textPrompt(userText: string, prompt: string): Promise<any> {
           .trim();
 
         //this.imageText = cleaned;
-        console.log(cleaned)
+        //console.log(cleaned)
         const jsonObject = JSON.parse(cleaned);
 
         // ✅ return the parsed JSON – the Promise resolves to this
