@@ -1,6 +1,5 @@
 export type ArenaJudgeId = string; // config-driven (e.g. "tech", "innovation")
 
-
 export type ArenaGlobalStyle = {
   toneDefault: JudgeTone;
   modes: Record<PanelMode, { label: string; goal: string }>;
@@ -18,7 +17,7 @@ export type ArenaGlobalStyle = {
 
 export type AttackLibrary = {
   string: string;
-  mode: PanelMode;            // discovery or interrogation
+  mode: PanelMode; // discovery or interrogation
   vectors: AttackVector[];
 };
 
@@ -26,7 +25,7 @@ export type CriteriaWeight = {
   id: string;
   label: string;
   weightPct: number;
-}
+};
 
 export type ArenaRubric = {
   overallFormula: 'weightedAverage';
@@ -34,22 +33,21 @@ export type ArenaRubric = {
     min: number;
     max: number;
     decimals: string;
-  }
-  criteriaWeights?: CriteriaWeight[]
+  };
+  criteriaWeights?: CriteriaWeight[];
   source?: {
     name?: string;
-    url?:string;
-  }
+    url?: string;
+  };
   dimensions: Array<{
-    key: string;                 // "fundability"
-    label: string;               // "Fundability"
-    weight: number;              // 0..1
-    guidance: string;            // used inside prompts to avoid repetition
+    key: string; // "fundability"
+    label: string; // "Fundability"
+    weight: number; // 0..1
+    guidance: string; // used inside prompts to avoid repetition
   }>;
 };
 
 export type JudgeTone = 'supportive' | 'direct' | 'tough';
-
 
 export type RequiredSignal =
   | 'named_entity'
@@ -57,8 +55,6 @@ export type RequiredSignal =
   | 'mechanism'
   | 'example'
   | 'next_step';
-
-
 
 export type AttackCategory =
   | 'buyer'
@@ -75,7 +71,7 @@ export type AttackVector = {
   // “Concern” is what the judge is worried about (kept short and human)
   concern: string;
 
- // ✅ NEW: “question form” to avoid repetition (why/how/contrast/quantify/etc.)
+  // ✅ NEW: “question form” to avoid repetition (why/how/contrast/quantify/etc.)
   qType?: string;
 
   // “Ask intent” describes the information needed (not a literal question)
@@ -90,12 +86,13 @@ export type AttackVector = {
   triggers?: { minAvgSpecificity?: number; assumptionIncludes?: string[] };
 };
 
-
 export type ArenaJudgeConfig = {
   id: ArenaJudgeId;
   label: string;
   dimension: string; // e.g. "Technical Execution (40%)"
+  safety?: string[];
   tone?: JudgeTone;
+  profileConfig?: string[];//technically only the 
   focus?: string[];
   rolePrompt?: string;
   vectors?: {
@@ -104,16 +101,24 @@ export type ArenaJudgeConfig = {
   };
 };
 
+
+
+export type ArenaConstraints = {
+  maxRounds: number;
+  toneFloor: string;
+  noInvestorTalk: boolean;
+  timeboxPerJudgeSeconds: number;
+  fastMode?: boolean;
+  parseMode?: 'none' | 'fast' | 'full';
+  summaryMode?: 'none' | 'template' | 'llm';
+  llmTimeoutMs?: number;
+};
+
 export type ArenaObjective = {
-  thesis:string;
+  thesis: string;
   successDefinition: string[];
-  constraints?: {
-      maxRounds: number;
-      toneFloor: string;
-      noInvestorTalk: boolean;
-      timeboxPerJudgeSeconds: number;
-  }
-}
+  constraints?: ArenaConstraints;
+};
 
 export type ArenaConfig = {
   id: string;
@@ -121,6 +126,7 @@ export type ArenaConfig = {
   description?: string;
   objective?: ArenaObjective;
   rubric?: ArenaRubric;
+  safety?: string[];
   voices?: Record<string, string>;
   globalStyle?: ArenaGlobalStyle;
   judges: ArenaJudgeConfig[];
@@ -231,25 +237,25 @@ export type ArenaMemory = {
 export type Verdict = 'pass' | 'maybe' | 'fail';
 
 export type EndSummary = {
-  finalScore: number;              // overall
+  finalScore: number; // overall
   verdict: 'pass' | 'maybe' | 'fail';
-  oneLiner: string;                // crisp takeaway
+  oneLiner: string; // crisp takeaway
 
-  strengths: string[];             // 3–5 bullets
-  biggestRisks: string[];          // 3–5 bullets
+  strengths: string[]; // 3–5 bullets
+  biggestRisks: string[]; // 3–5 bullets
   assumptionsToTest: Array<{
     assumption: string;
-    test: string;                 // how to test in 7 days
-    successMetric: string;         // measurable
+    test: string; // how to test in 7 days
+    successMetric: string; // measurable
   }>;
 
-  next7Days: string[];             // 5–8 steps
-  next30Days: string[];            // 5–8 steps
+  next7Days: string[]; // 5–8 steps
+  next30Days: string[]; // 5–8 steps
 
   recommendedMvp: {
     user: string;
-    flow: string[];                // steps
-    mustCut: string[];             // features to delete
+    flow: string[]; // steps
+    mustCut: string[]; // features to delete
   };
 
   pricingAndGtm: {
@@ -259,17 +265,17 @@ export type EndSummary = {
   };
 };
 
-
 export type PitchParse = {
   version: string;
   ideaName: string;
   pitchText: string;
-  entities: { buyer: boolean, 
-    price: boolean, 
-    metric: boolean, 
-    data: boolean, 
-    time: boolean, 
-    wedge: boolean 
+  entities: {
+    buyer: boolean;
+    price: boolean;
+    metric: boolean;
+    data: boolean;
+    time: boolean;
+    wedge: boolean;
   };
   claims: Array<{
     id: string;

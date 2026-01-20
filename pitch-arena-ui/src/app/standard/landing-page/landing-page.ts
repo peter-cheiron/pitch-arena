@@ -1,5 +1,6 @@
 // pitch-arena-landing.component.ts
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 type PreviewCard = {
   title: string;
@@ -40,6 +41,7 @@ type Plan = {
   description: string;
   bullets: string[];
   cta: string;
+  message: string;
 };
 
 @Component({
@@ -49,6 +51,12 @@ type Plan = {
 })
 export class LandingPageComponent {
   currentYear = new Date().getFullYear();
+
+  router = inject(Router)
+
+  joinBeta(message){
+    this.router.navigateByUrl("/contact?subject=" + message)
+  }
 
   previewCards: PreviewCard[] = [
     {
@@ -120,7 +128,7 @@ export class LandingPageComponent {
         'Outputs a clear action plan and roadmap',
       ],
     },
-        {
+      /*  {
       title: 'Host your Arena',
       badge: 'Custom Arena',
       description:
@@ -131,7 +139,7 @@ export class LandingPageComponent {
         'Pre-screen candidates to avoid over interviewing',
         'Let candidates feel the process withour being overwhelmed.',
       ],
-    },
+    },*/
   ];
 
   judges: JudgeCard[] = [
@@ -185,28 +193,30 @@ export class LandingPageComponent {
 
   plans: Plan[] = [
     {
-      title: 'Free',
-      price: '€0',
+      title: 'Challenger',
+      price: '€TBD',
       description: 'Perfect to pressure-test ideas and run a few quick rounds.',
       bullets: [
-        'Fun mode rounds',
+        'Multiple Arenas',
         'Core judge panel (VC, CTO, Product)',
-        'Basic scoring + feedback',
+        'Scoring + feedback',
         'Export summary',
       ],
-      cta: 'Start free',
+      cta: 'Join Beta',
+      message : 'beta'
     },
     {
-      title: 'Pro',
-      price: '€—',
-      description: 'For founders who want deeper context, serious iteration, and investor-grade outputs.',
+      title: 'Host',
+      price: '€TBD',
+      description: 'For people interested in designing and running their own arenas.',
       bullets: [
-        'Pro mode rounds (deep analysis)',
-        'Full judge panel (VC, CTO, CPO, CMO, CFO)',
-        'Long context across rounds',
-        'Action plan + stronger synthesis',
+        'Full arena configuration',
+        'Define or re-use personalities',
+        'Invite people and teams',
+        'Get results and feedback',
       ],
-      cta: 'Join waitlist',
+      cta: 'Join Waitlist',
+      message: 'team'
     },
   ];
 }

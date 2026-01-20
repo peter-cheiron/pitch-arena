@@ -5,10 +5,11 @@
         class="rounded-2xl border p-4 md:p-5 transition hover:-translate-y-0.5"
         style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
         <div class="flex items-start gap-3">
+          <!--todo boost-->
           <div
-            class="h-12 w-12 rounded-xl grid place-items-center text-lg font-semibold border shrink-0"
+            class="h-32 w-32 rounded-xl grid place-items-center text-lg font-semibold border shrink-0"
             style="border-color: var(--color-border); background: color-mix(in srgb, var(--color-surface) 88%, var(--color-text) 12%);">
-            {{ arena.name[0] }}
+            <img [src]="arena.image"/>
           </div>
 
           <div class="space-y-2 min-w-0">

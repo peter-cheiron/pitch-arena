@@ -14,10 +14,14 @@
       "endOfRound": ["quick_verdict", "top_strength", "top_risk", "next_step_24h"]
     },
     "constraints": {
-      "maxRounds": 2,
       "noInvestorTalk": true,
       "toneFloor": "respectful",
-      "timeboxPerJudgeSeconds": 20
+      "timeboxPerJudgeSeconds": 20,
+      "maxRounds": 2,
+      "fastMode": false,
+      "parseMode": "fast",
+      "summaryMode": "template",
+      "llmTimeoutMs": 10000
     }
   },
   "rubric": {

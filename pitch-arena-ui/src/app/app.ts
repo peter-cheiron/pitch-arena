@@ -56,7 +56,11 @@ export class App {
     this.localeService.init();
 
     effect(() => {
-      //anything to check like profile?
+      if(this.user()){
+        this.profileService.getById(this.user().uid).then(profile => {
+          this.profile = profile
+        })
+      }
     })
   }
 

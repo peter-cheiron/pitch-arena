@@ -1,0 +1,191 @@
+<div class="p-4 space-y-4">
+  <div
+    class="space-y-4 rounded-lg border p-4"
+    style="background: var(--color-surface); border-color: var(--color-border); color: var(--color-text); box-shadow: var(--shadow-elev);"
+  >
+  <div class="flex flex-col md:flex-row gap-3 md:items-end">
+    <div class="flex-1">
+      <label class="block text-xs font-medium mb-1">Arena path (assets/arenas/*.json)</label>
+      <input
+        class="w-full border rounded px-3 py-2"
+        [value]="arenaPath()"
+        (input)="arenaPath.set(($any($event.target).value))"
+        placeholder="arena_gemini_hackathon_ready"
+      />
+    </div>
+
+    <button class="px-3 py-2 rounded border" (click)="loadArenaFromAssets(arenaPath())">
+      Load from assets
+    </button>
+    <button class="px-3 py-2 rounded bg-neutral-900 text-white" (click)="loadArenaFromEditor()">
+      Load from editor
+    </button>
+    <button class="px-3 py-2 rounded border" (click)="resetRunState()">
+      Reset run
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Left: Arena + Proposition -->
+    <div class="space-y-4">
+      <div class="rounded border p-3">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <div class="text-sm font-semibold">Arena JSON</div>
+            <div class="text-xs text-neutral-500">Edit config then “Load from editor”.</div>
+          </div>
+          <div class="text-xs text-neutral-500">
+            @if (arenaLoaded()) { Loaded } @else { Not loaded }
+          </div>
+        </div>
+
+        <textarea
+          class="w-full mt-2 border rounded p-2 font-mono text-xs h-[260px]"
+          [value]="arenaJsonText()"
+          (input)="arenaJsonText.set(($any($event.target).value))"
+        ></textarea>
+
+        <div class="flex flex-wrap gap-2 mt-2 items-center">
+          <label class="text-xs font-medium">Judge:</label>
+
+          <select
+            class="border rounded px-2 py-1 text-sm"
+            [value]="judgeId()"
+            (change)="judgeId.set(($any($event.target).value))"
+          >
+            @for (j of judges(); track j.id) {
+              <option [value]="j.id">{{ j.label }} ({{ j.id }})</option>
+            }
+          </select>
+
+          <label class="text-xs font-medium ml-2">Mode:</label>
+          <select
+            class="border rounded px-2 py-1 text-sm"
+            [value]="mode()"
+            (change)="mode.set(($any($event.target).value))"
+          >
+            <option value="discovery">discovery</option>
+            <option value="interrogation">interrogation</option>
+            <option value="impact">impact</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="rounded border p-3">
+        <div class="text-sm font-semibold">Static proposition (profile JSON)</div>
+        <div class="text-xs text-neutral-500">This is what the judge sees as “truth”.</div>
+
+        <textarea
+          class="w-full mt-2 border rounded p-2 font-mono text-xs h-[220px]"
+          [value]="propositionProfileText()"
+          (input)="propositionProfileText.set(($any($event.target).value))"
+        ></textarea>
+
+        <div class="mt-3">
+          <div class="text-sm font-semibold">Last delta (optional)</div>
+          <div class="text-xs text-neutral-500">Keep it short for speed (best).</div>
+          <textarea
+            class="w-full mt-2 border rounded p-2 font-mono text-xs h-[100px]"
+            [value]="lastDeltaText()"
+            (input)="lastDeltaText.set(($any($event.target).value))"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="rounded border p-3">
+        <div class="flex items-center gap-2">
+          <button
+            class="px-3 py-2 rounded bg-neutral-900 text-white disabled:opacity-50"
+            [disabled]="!arenaLoaded() || inFlight()"
+            (click)="runOneTurn()"
+          >
+            Run 1 turn
+          </button>
+
+          <div class="flex items-center gap-2">
+                <input
+                type="number"
+                min="1"
+                max="20"
+                [value]="batchCount()"
+                (input)="setBatchCount($any($event.target).value)"
+                />
+            <button
+              class="px-3 py-2 rounded border disabled:opacity-50"
+              [disabled]="!arenaLoaded() || inFlight()"
+              (click)="runBatch()"
+            >
+              Run batch
+            </button>
+          </div>
+
+          <div class="ml-auto text-xs text-neutral-500">
+            Turn: {{ turnCounter() }}
+          </div>
+        </div>
+
+        <details class="mt-3">
+          <summary class="cursor-pointer text-sm">Prompt preview (debug)</summary>
+          <pre class="mt-2 text-xs bg-neutral-50 border rounded p-2 overflow-auto max-h-[240px]">{{ buildPromptPreview() }}</pre>
+        </details>
+      </div>
+    </div>
+
+    <!-- Right: outputs -->
+    <div class="space-y-4">
+      <div class="rounded border p-3">
+        <div class="text-sm font-semibold">Last result</div>
+
+        @if (lastResult(); as r) {
+          <div class="mt-2 text-sm">
+            <div class="flex flex-wrap gap-2 items-center">
+              <span class="px-2 py-0.5 rounded border text-xs">score: {{ r.score }}</span>
+              <span class="px-2 py-0.5 rounded border text-xs">asked: {{ r.askedCriteriaId }}</span>
+              @if (r.verdictHint) {
+                <span class="px-2 py-0.5 rounded border text-xs">hint: {{ r.verdictHint }}</span>
+              }
+            </div>
+
+            <div class="mt-3 whitespace-pre-wrap">{{ r.comment }}</div>
+            <div class="mt-3 font-medium">Question</div>
+            <div class="whitespace-pre-wrap">{{ r.question }}</div>
+
+            <div class="mt-3 font-medium">Coverage</div>
+            <pre class="text-xs bg-neutral-50 border rounded p-2 overflow-auto max-h-[220px]">{{ r.coverage | json }}</pre>
+          </div>
+        } @else {
+          <div class="mt-2 text-xs text-neutral-500">No turns run yet.</div>
+        }
+      </div>
+
+      <div class="rounded border p-3">
+        <div class="text-sm font-semibold">Turn history (quick scan)</div>
+        <div class="text-xs text-neutral-500">You’re looking for diversity + alignment with objective.</div>
+
+        <div class="mt-2 space-y-2 max-h-[320px] overflow-auto">
+          @for (row of results(); track row.turn) {
+            <div class="border rounded p-2">
+              <div class="flex items-center justify-between">
+                <div class="text-xs text-neutral-600">Turn {{ row.turn }}</div>
+                <div class="text-xs text-neutral-600">score {{ row.score }}</div>
+              </div>
+              <div class="text-xs mt-1">
+                <span class="px-2 py-0.5 rounded border">{{ row.askedCriteriaId }}</span>
+              </div>
+              <div class="mt-2 text-sm whitespace-pre-wrap">{{ row.question }}</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="rounded border p-3">
+        <div class="text-sm font-semibold">Chat view (optional)</div>
+        <!--
+        <chat-ui [messages]="messages()" (sendMessage)="gotMessage($event)"></chat-ui>
+         If your ChatUiComponent requires sendMessage, you can ignore this panel or wire it.
+             This lab doesn't need user input; it's a run button workflow. -->
+      </div>
+    </div>
+  </div>
+</div>
+</div>

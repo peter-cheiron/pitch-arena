@@ -34,7 +34,8 @@ export class ContactUsComponent {
   dialog = inject(Dialog)
 
   messageMap = {
-    "demo-access": "I would like demo access please because: " 
+    "demo-access": "I would like demo access please because: ",
+    "beta": "Please put me on the beta tester waiting list." 
   }
 
   constructor(private router : Router,

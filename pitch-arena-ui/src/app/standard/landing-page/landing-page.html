@@ -67,17 +67,20 @@
 
         <div class="flex flex-wrap items-center gap-3" id="cta">
           <button
+            (click)="joinBeta('beta')"
             class="inline-flex items-center rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-emerald-400"
             type="button"
           >
-            Start a pitch (free)
+            Join the Beta
           </button>
+          
           <button
             class="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:border-slate-500"
             type="button"
           >
-            View a demo round
+            Watch the Video
           </button>
+          
         </div>
 
         <!--
@@ -176,11 +179,11 @@
       <div>
         <h2 class="text-xl font-semibold tracking-tight text-slate-50">Presentors and Judges</h2>
         <p class="max-w-2xl text-sm text-slate-300">
-          There are two modes that can be played and we are planning to expose the 'arena as a service' so that you can create your own experience.
+          There are different modes (and variations between), you can pick quick mode for rapid challenges or slow it down giving the judges time to think and discuss. 
         </p>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-4 md:grid-cols-2">
         @for (mode of modes; track mode.title) {
           <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
             <div class="flex items-center justify-between">
@@ -261,7 +264,8 @@
       <div>
         <h2 class="text-xl font-semibold tracking-tight text-slate-50">Pricing</h2>
         <p class="max-w-2xl text-sm text-slate-300">
-          Keep it simple: try it for free, upgrade when you want deeper context and more rounds.
+          There are two models: one for people that just want to test themselves and their ideas. 
+          The other is aimed at incubators, accelerators, hackathons etc who want to design and host their own arenas.
         </p>
       </div>
 
@@ -284,6 +288,7 @@
             <button
               class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-emerald-400"
               type="button"
+              (click)="joinBeta(plan.message)"
             >
               {{ plan.cta }}
             </button>
@@ -305,8 +310,9 @@
           <button
             class="inline-flex items-center rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-emerald-400"
             type="button"
+            (click)="joinBeta('beta')"
           >
-            Start a pitch
+            Join the beta
           </button>
           <button
             class="inline-flex items-center rounded-lg border border-emerald-400/60 px-4 py-2 text-sm font-medium text-emerald-100 hover:bg-emerald-500/10"

@@ -4,6 +4,9 @@ import { HttpClient } from '@angular/common/http';
 import {
   Component,
   ElementRef,
+  EventEmitter,
+  Input,
+  Output,
   ViewChild,
   computed,
   effect,
@@ -29,6 +32,8 @@ import {
   PanelMode,
   PitchParse,
   Verdict,
+  ArenaObjective,
+  ArenaConstraints,
 } from './models/arena-config';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -38,8 +43,7 @@ import {
 } from './prompt-functions';
 import { ArenaTranscript } from './arena-transcript';
 import { coerceJson, exportConversation } from './export-functions';
-
-// ---------------- Types ----------------
+import { AiUsageContext } from '#services/db/db-ai-usage.service';
 
 @Component({
   selector: 'app-pitch-arena',
@@ -49,7 +53,7 @@ import { coerceJson, exportConversation } from './export-functions';
 })
 export class PitchArena {
   private http = inject(HttpClient);
-  ai = inject(GeminiService);
+  geminiService = inject(GeminiService);
   private voice = inject(VoiceService);
   private judgesService = inject(JudgesService);
 
@@ -62,11 +66,14 @@ export class PitchArena {
   }
 
   private nowMs() {
-    if (typeof performance !== 'undefined' && performance.now) return performance.now();
+    if (typeof performance !== 'undefined' && performance.now)
+      return performance.now();
     return Date.now();
   }
 
   // ---------------- Config ----------------
+
+  private usedQTypesByJudge = new Map<Exclude<string,'host'>, string[]>();
 
   judges: Array<{ id: string; label: string; dimension: string }> = [];
   judgeVoices: Record<string, string> = {};
@@ -76,6 +83,64 @@ export class PitchArena {
 
   isFinalRound = computed(() => this.round() >= this.maxRounds());
   roundLabel = computed(() => `Round ${this.round()} / ${this.maxRounds()}`);
+
+  //-----------fast mode idea
+
+  /**
+   * there are certain time issues that might be helped with
+   * configuring different options ... its something to test.
+   *
+   */
+  private arenaCfg(): ArenaConfig | null {
+    return (this.judgesService.getArena?.() ?? null) as any;
+  }
+
+  private constraints(): ArenaConstraints {
+    return (
+      this.arenaCfg()?.objective?.constraints ?? {
+        maxRounds: 3,
+        toneFloor: '0',
+        noInvestorTalk: false,
+        timeboxPerJudgeSeconds: 0,
+      }
+    );
+  }
+
+  private fastModeEnabled(): boolean {
+    return !!this.constraints().fastMode;
+  }
+
+  private parseMode(): 'none' | 'fast' | 'full' {
+    return (this.constraints().parseMode ?? 'full') as any;
+  }
+
+  private summaryMode(): 'none' | 'template' | 'llm' {
+    return (this.constraints().summaryMode ?? 'llm') as any;
+  }
+
+  private llmTimeoutMs(): number {
+    const n = Number(this.constraints().llmTimeoutMs ?? 6500);
+    return Number.isFinite(n) ? n : 6500;
+  }
+
+  private withTimeout<T>(
+    p: Promise<T>,
+    ms: number,
+    fallback: () => T | Promise<T>
+  ): Promise<T> {
+    console.log("the timeout is set to ", ms)
+    let t: any;
+    const timeout = new Promise<T>((resolve, reject) => {
+      t = setTimeout(() => {
+        Promise.resolve()
+          .then(fallback)
+          .then(resolve)
+          .catch(reject);
+      }, Math.max(800, ms));
+    });
+
+    return Promise.race([p, timeout]).finally(() => clearTimeout(t));
+  }
 
   // ---------------- State ----------------
 
@@ -150,21 +215,20 @@ export class PitchArena {
   // ---------------- UI plumbing ----------------
 
   @ViewChild('chatWindow') chatWindow?: ElementRef<HTMLElement>;
+  
   private autoScrollEffect = effect(() => {
     this.chat();
     queueMicrotask(() => this.scrollChatToBottom());
   });
 
   constructor() {
-    this.chat.set([
-      {
-        id: crypto.randomUUID(),
-        role: 'judge',
-        judgeId: 'host',
-        title: 'Host • Warm-up',
-        text: 'Welcome to Pitch Arena, what is your name?',
-      },
-    ]);
+    this.setChat(
+      crypto.randomUUID(),
+      'judge',
+      'host',
+      'Host • Warm-up',
+      'Welcome to Pitch Arena, what is your name?'
+    );
   }
 
   ngOnInit() {
@@ -173,12 +237,12 @@ export class PitchArena {
     if (path) this.loadArena(path);
 
     const qp = this.route.snapshot.queryParamMap;
-
     const round = Number(qp.get('round') ?? '1');
     const mode = qp.get('mode') as any as PanelMode | null;
     const autoProfile = qp.get('autoProfile') === '1';
-    const ctx = qp.get('ctx') === '1';
+    //const ctx = qp.get('ctx') === '1';
 
+    //to think about for the test mode as well.
     if (autoProfile) {
       this.profile.set({
         founderName: 'Test Founder',
@@ -251,6 +315,18 @@ export class PitchArena {
     }
   }
 
+  setChat(id, role, judgeId, title, text) {
+    this.chat.set([
+      {
+        id: id,
+        role: role,
+        judgeId: judgeId,
+        title: title,
+        text: text,
+      },
+    ]);
+  }
+
   reset() {
     this.phase.set('intro');
     this.round.set(1);
@@ -258,15 +334,13 @@ export class PitchArena {
 
     this.profile.set({ founderName: '', ideaName: '', pitch: '' });
 
-    this.chat.set([
-      {
-        id: crypto.randomUUID(),
-        role: 'judge',
-        judgeId: 'host',
-        title: 'Host • Warm-up',
-        text: 'Welcome to Pitch Arena. In one line: who are you?',
-      },
-    ]);
+    this.setChat(
+      crypto.randomUUID(),
+      'judge',
+      'host',
+      'Host • Warm-up',
+      'Welcome to Pitch Arena. In one line: who are you?'
+    );
 
     this.input.set('');
     this.judgeRuns.set([]);
@@ -313,8 +387,16 @@ export class PitchArena {
     const system = this.judgesService.hostSystemPrompt();
     const user = this.judgesService.hostUserPrompt(prof, lastHostQ, userAnswer);
 
-    this.ai
-      .textPrompt(user, system)
+    const usage:  AiUsageContext =       {
+      arenaId: this.judgesService.getArena().id,
+      //sessionId: this.sessionId,
+      round: this.round(),
+      judgeId: 'host',
+      purpose: 'warmup',
+    }
+
+    this.geminiService
+      .textPrompt(user, system, usage)
       .then((raw) => {
         const json = this.coerceHostJson(raw);
 
@@ -322,7 +404,6 @@ export class PitchArena {
           this.profile.update((p) => ({ ...p, ...json.profile }));
 
         if ((json.comment ?? '').trim()) {
-          //TODO think about refactoring this update into a function
           this.chat.update((list) =>
             list.concat({
               id: crypto.randomUUID(),
@@ -521,6 +602,57 @@ export class PitchArena {
     if (!attacks) return;
 
     const end = this.startTimer('submitAnswersAndRescore');
+    //--
+    // ✅ FAST MODE: no evalResolution, no parse update, instant advance
+    if (this.fastModeEnabled()) {
+      const currentRuns = this.judgeRuns();
+
+      currentRuns.forEach((r) => {
+        const prev = this.memory.get(r.judge);
+
+        const resolvedAttackIds = prev?.resolvedAttackIds?.slice() ?? [];
+        const askedAttackIds = prev?.askedAttackIds?.slice() ?? [];
+
+        const attackId = attacks[r.judge];
+        askedAttackIds.push(attackId);
+        const MAX_HISTORY = 10;
+        while (askedAttackIds.length > MAX_HISTORY) askedAttackIds.shift();
+
+        // in fast mode, treat asked as resolved to force variety next round
+        if (!resolvedAttackIds.includes(attackId))
+          resolvedAttackIds.push(attackId);
+
+        this.memory.set(r.judge, {
+          lastScore: r.score,
+          lastQuestion: r.question,
+          lastAnswer: r.answer,
+          lastAttackId: attackId,
+          resolvedAttackIds,
+          askedAttackIds,
+        });
+      });
+
+      this.lastOverall = this.avg(currentRuns.map((x) => x.score));
+
+      if (this.round() >= this.maxRounds()) {
+        this.endArena();
+        return;
+      }
+
+      this.round.set(this.round() + 1);
+      this.updatePanelModeForRound();
+      this.judgeRuns.set([]);
+      this.currentJudgeIndex.set(0);
+      this.rescoreFeedback.set('Rescore complete. Starting next round…');
+      this.startRound();
+      this.rescoring.set(false);
+      end();
+      return;
+    }
+
+    //--
+
+    
     this.rescoring.set(true);
     this.rescoreFeedback.set('Rescoring…');
     const currentRuns = this.judgeRuns();
@@ -607,6 +739,75 @@ export class PitchArena {
   private async buildRoundContext(): Promise<PitchParse> {
     const end = this.startTimer('buildRoundContext');
     try {
+      const mode = this.parseMode();
+
+      // ✅ none: minimal parse, zero LLM
+      if (mode === 'none') {
+        return {
+          version: 'none',
+          ideaName: (this.profile().ideaName ?? '').trim() || 'Untitled idea',
+          pitchText: (this.profile().pitch ?? '').trim(),
+          claims: [],
+          assumptions: [],
+          openQuestions: [],
+          entities: {},
+        } as any;
+      }
+
+      // ✅ fast: derive parse from profile, zero LLM
+      if (mode === 'fast') {
+        const p = this.buildFastParseFromProfile();
+        this.arenaContext.set(p);
+        return p;
+      }
+
+      // full: current behavior
+      if (this.round() <= 1 || !this.arenaContext()) {
+        const p = await this.buildParseFromPitch();
+        this.arenaContext.set(p);
+        return p;
+      }
+
+      return this.arenaContext()!;
+    } finally {
+      end();
+    }
+  }
+
+  private buildFastParseFromProfile(): PitchParse {
+    const prof = this.profile();
+    const ideaName = (prof.ideaName ?? '').trim() || 'Untitled idea';
+    const pitchText = (prof.pitch ?? '').trim();
+
+    const mkClaim = (id: string, type: any, text: string) => ({
+      id,
+      type,
+      text,
+      specificityScore: text?.trim() ? 0.65 : 0.2,
+      confidence: 0.6,
+      tags: ['profile'],
+    });
+
+    return {
+      version: 'fast',
+      ideaName,
+      pitchText,
+      claims: [
+        mkClaim('c_user', 'user', prof.targetUser ?? ''),
+        mkClaim('c_ctx', 'context', prof.targetContext ?? ''),
+        mkClaim('c_val', 'value', prof.firstValue ?? ''),
+        mkClaim('c_dist', 'distribution', prof.acquisitionPath ?? ''),
+      ].filter((c) => (c.text ?? '').trim().length > 0),
+      assumptions: [],
+      openQuestions: [],
+      entities: { buyer: false, price: false, wedge: true, metric: false },
+    } as any;
+  }
+
+  /*
+  private async buildRoundContext(): Promise<PitchParse> {
+    const end = this.startTimer('buildRoundContext');
+    try {
       // Round 1 or no context: full parse from pitch
       if (this.round() <= 1 || !this.arenaContext()) {
         const p = await this.buildParseFromPitch();
@@ -619,7 +820,7 @@ export class PitchArena {
     } finally {
       end();
     }
-  }
+  }*/
 
   private buildParseFromPitch(): Promise<PitchParse> {
     const end = this.startTimer('buildParseFromPitch');
@@ -630,66 +831,88 @@ export class PitchArena {
     const env = { ideaName, pitchText };
     const a = promptExtractClaims(env);
 
-    return this.ai.textPrompt(a.user, a.system).then((rawClaims) => {
-      const claimsObj = this.coerceJson(rawClaims, {
-        claims: [],
-        entities: {},
-      });
+            const aiUsage: AiUsageContext = {
+          arenaId: this.judgesService.getArena().id,
+          //sessionId: this.sessionId,
+          round: this.round(),
+          judgeId: 'buildParseFromPitch',
+          purpose: 'parse_assumptions',
+        }
 
-      const base: PitchParse = {
-        version: '1.0',
-        ideaName,
-        pitchText,
-        claims: (claimsObj.claims ?? []).map((c: any, i: number) => ({
-          id: String(c.id ?? `c${i + 1}`),
-          type: c.type ?? 'value',
-          text: String(c.text ?? ''),
-          quote: c.quote ? String(c.quote) : undefined,
-          specificityScore: this.clamp01(Number(c.specificityScore ?? 0.2)),
-          confidence: this.clamp01(Number(c.confidence ?? 0.6)),
-          tags: Array.isArray(c.tags) ? c.tags.map(String) : [],
-        })),
-        assumptions: [],
-        openQuestions: [],
-        entities: claimsObj.entities ?? {},
-      };
-
-      const b = promptBuildAssumptions(base);
-      return this.ai.textPrompt(b.user, b.system).then((rawAssumptions) => {
-        const aObj = this.coerceJson(rawAssumptions, {
-          assumptions: [],
-          openQuestions: [],
+    return this.geminiService
+      .textPrompt(a.user, a.system, aiUsage)
+      .then((rawClaims) => {
+        const claimsObj = this.coerceJson(rawClaims, {
+          claims: [],
+          entities: {},
         });
 
-        base.assumptions = (aObj.assumptions ?? []).map(
-          (x: any, i: number) => ({
-            id: String(x.id ?? `a${i + 1}`),
-            claimId: String(x.claimId ?? base.claims[0]?.id ?? 'c1'),
-            category: x.category ?? 'technical',
-            statement: String(x.statement ?? ''),
-            criticality: x.criticality ?? 'medium',
-            testability: x.testability ?? 'medium',
-            confidence: this.clamp01(Number(x.confidence ?? 0.6)),
-          })
-        );
+        const base: PitchParse = {
+          version: '1.0',
+          ideaName,
+          pitchText,
+          claims: (claimsObj.claims ?? []).map((c: any, i: number) => ({
+            id: String(c.id ?? `c${i + 1}`),
+            type: c.type ?? 'value',
+            text: String(c.text ?? ''),
+            quote: c.quote ? String(c.quote) : undefined,
+            specificityScore: this.clamp01(Number(c.specificityScore ?? 0.2)),
+            confidence: this.clamp01(Number(c.confidence ?? 0.6)),
+            tags: Array.isArray(c.tags) ? c.tags.map(String) : [],
+          })),
+          assumptions: [],
+          openQuestions: [],
+          entities: claimsObj.entities ?? {},
+        };
 
-        base.openQuestions = (aObj.openQuestions ?? [])
-          .slice(0, 3)
-          .map((q: any, i: number) => ({
-            id: String(q.id ?? `q${i + 1}`),
-            priority: q.priority ?? 'p1',
-            question: String(q.question ?? ''),
-            linkedTo: Array.isArray(q.linkedTo) ? q.linkedTo.map(String) : [],
-          }));
+        const aiUsage: AiUsageContext = {
+          arenaId: this.judgesService.getArena().id,
+          //sessionId: this.sessionId,
+          round: this.round(),
+          judgeId: 'promptBuildAssumptions',
+          purpose: 'parse_assumptions',
+        }
 
-        return base;
-      });
-    }).finally(end);
+        const b = promptBuildAssumptions(base);
+        return this.geminiService.textPrompt(b.user, b.system, aiUsage).then((rawAssumptions) => {
+          const aObj = this.coerceJson(rawAssumptions, {
+            assumptions: [],
+            openQuestions: [],
+          });
+
+          base.assumptions = (aObj.assumptions ?? []).map(
+            (x: any, i: number) => ({
+              id: String(x.id ?? `a${i + 1}`),
+              claimId: String(x.claimId ?? base.claims[0]?.id ?? 'c1'),
+              category: x.category ?? 'technical',
+              statement: String(x.statement ?? ''),
+              criticality: x.criticality ?? 'medium',
+              testability: x.testability ?? 'medium',
+              confidence: this.clamp01(Number(x.confidence ?? 0.6)),
+            })
+          );
+
+          base.openQuestions = (aObj.openQuestions ?? [])
+            .slice(0, 3)
+            .map((q: any, i: number) => ({
+              id: String(q.id ?? `q${i + 1}`),
+              priority: q.priority ?? 'p1',
+              question: String(q.question ?? ''),
+              linkedTo: Array.isArray(q.linkedTo) ? q.linkedTo.map(String) : [],
+            }));
+
+          return base;
+        });
+      })
+      .finally(end);
   }
 
   private async updateArenaContextFromLastRound(): Promise<void> {
     const end = this.startTimer('updateArenaContextFromLastRound');
     try {
+      // ✅ demo speed: do not call LLM to update parse
+      if (this.fastModeEnabled() || this.parseMode() !== 'full') return;
+
       const prev = this.arenaContext();
       if (!prev) return;
 
@@ -706,7 +929,9 @@ export class PitchArena {
         delta,
       ].join('\n');
 
-      const raw = await this.ai.textPrompt(user, system);
+      
+
+      const raw = await this.geminiService.textPrompt(user, system);
       const obj = this.coerceJson(raw, null);
       if (!obj) return;
 
@@ -776,6 +1001,59 @@ export class PitchArena {
         .join(' | ');
 
       const usedCategories = new Set<AttackCategory>();
+
+const pick = (judge: Exclude<string, 'host'>) => {
+  const mem = this.memory.get(judge);
+  const resolved = new Set(mem?.resolvedAttackIds ?? []);
+  const all = this.vectorsFor(judge) ?? [];
+  const asked = new Set(mem?.askedAttackIds ?? []);
+
+  // available = not resolved and not recently asked
+  const available = all.filter((v) => v?.id && !resolved.has(v.id) && !asked.has(v.id));
+
+  // ✅ if empty, allow re-asking but still diversify by qType
+  const pool = available.length ? available : all.filter(v => v?.id);
+
+  if (!pool.length) return mem?.lastAttackId || 'fallback_no_vectors';
+
+  // triggers
+  const triggered = pool.filter((v) => {
+    const min = v.triggers?.minAvgSpecificity;
+    if (typeof min === 'number' && !(avgSpec < min)) return false;
+
+    const inc = v.triggers?.assumptionIncludes ?? [];
+    if (inc.length && !inc.some((t) => assumptionText.includes(String(t).toLowerCase()))) return false;
+
+    return true;
+  });
+  const candidates = triggered.length ? triggered : pool;
+
+  // ✅ qType history across rounds
+  const qHist = this.usedQTypesByJudge.get(judge) ?? [];
+  const qSet = new Set(qHist);
+
+  const firstUnusedQType = candidates.find((v) => !!(v as any).qType && !qSet.has(String((v as any).qType)));
+  const firstUnusedCategory = candidates.find((v) => v.category && !usedCategories.has(v.category));
+  const chosen = firstUnusedQType ?? firstUnusedCategory ?? candidates[0];
+
+  if (!chosen) return mem?.lastAttackId || 'fallback_no_candidate';
+
+  const qt = String((chosen as any).qType ?? '');
+  if (qt) {
+    qHist.push(qt);
+    // keep short memory window
+    while (qHist.length > 8) qHist.shift();
+    this.usedQTypesByJudge.set(judge, qHist);
+  }
+
+  usedCategories.add(chosen.category);
+  this.lastCategory.set(judge, chosen.category);
+
+  return chosen.id;
+};
+
+
+      /*
       const usedQTypes = new Set<string>(); // ✅ NEW
 
       const pick = (judge: Exclude<string, 'host'>) => {
@@ -836,7 +1114,7 @@ export class PitchArena {
         this.lastCategory.set(judge, chosen.category);
 
         return chosen.id;
-      };
+      };*/
 
       const panelJudges = this.judges
         .filter((j) => j.id !== 'host')
@@ -918,8 +1196,17 @@ export class PitchArena {
     const system =
       'You are a sharp pitch coach reviewing the full conversation. Use the transcript to craft a concise follow-up or advice. Avoid markdown.';
 
-    this.ai
-      .textPrompt(user, system)
+    const aiUsage: AiUsageContext = {
+      arenaId: this.judgesService.getArena().id,
+      //sessionId: this.sessionId,
+      round: this.round(),
+      judgeId: 'repromptConversation',
+      purpose: 'reprompt',
+    }
+
+
+    this.geminiService
+      .textPrompt(user, system, aiUsage)
       .then((res) => {
         const text =
           typeof res === 'string' ? res : JSON.stringify(res, null, 2);
@@ -949,29 +1236,16 @@ export class PitchArena {
     env: { ideaName: string; pitch: string; round: number },
     parse: PitchParse,
     attackId: string
-  ): Promise<{
-    judge: Exclude<string, 'host'>;
-    score: number;
-    comment: string;
-    question: string;
-  }> {
+  ): Promise<{ judge: Exclude<string, 'host'>; score: number; comment: string; question: string }> {
+
     const end = this.startTimer(`callJudgeWithAttack:${judge}`);
     const vector = this.vectorsFor(judge).find((v) => v.id === attackId);
-
-    /*
-    if (!vector) {
-      
-    }*/
-
     const mem = this.memory.get(judge);
 
     const previouslyAsked =
       !!mem &&
       (mem.lastAttackId === attackId ||
-        this.isSimilarQuestion(
-          mem.lastQuestion ?? '',
-          vector.questionExamples
-        ));
+        this.isSimilarQuestion(mem.lastQuestion ?? '', vector?.questionExamples ?? []));
 
     const lastTopic = this.lastCategory.get(judge) ?? null;
 
@@ -981,34 +1255,110 @@ export class PitchArena {
       round: this.round(),
       previouslyAsked,
       lastTopic,
-      tone: this.judgeTone(), // ✅ new
-      mode: this.panelMode(), // ✅ new
+      tone: this.judgeTone(),
+      mode: this.panelMode(),
     });
 
+    // ✅ shrink payload for speed: don’t stringify huge objects
     const user = [
       `ROUND: ${env.round}`,
       `IDEA NAME: ${env.ideaName}`,
       `PITCH: ${env.pitch}`,
       '',
-      'STRUCTURED CONTEXT:',
+      'CONTEXT (TOP):',
       JSON.stringify({
-        topClaims: (parse.claims ?? []).slice(0, 6),
-        assumptions: (parse.assumptions ?? []).slice(0, 6),
-        openQuestions: (parse.openQuestions ?? []).slice(0, 3),
+        topClaims: (parse.claims ?? []).slice(0, 4),
+        assumptions: (parse.assumptions ?? []).slice(0, 3),
         attackId,
+        qType: (vector as any)?.qType ?? null,
+        category: vector?.category ?? null,
       }),
     ].join('\n');
 
-    return this.ai.textPrompt(user, system).then((raw) => {
-      const json = this.coerceJudgeJson(raw, judge);
-      return {
-        judge,
-        score: this.clampScoreByMode(json.score),
-        comment: String(json.comment ?? '').trim(),
-        question: String(json.question ?? '').trim(),
-      };
-    }).finally(end);
+    //const TIMEOUT_MS = 2200; // tune: 1500–3500 for demo mode
+
+    const llmCall = this.geminiService.textPrompt(user, system);
+
+    return this.withTimeout(
+      llmCall.then((raw) => {
+        const json = this.coerceJudgeJson(raw, judge);
+        return {
+          judge,
+          score: this.clampScoreByMode(json.score),
+          comment: String(json.comment ?? '').trim(),
+          question: String(json.question ?? '').trim(),
+        };
+      }),
+      this.constraints().llmTimeoutMs,
+      () => {
+        const fb = this.fallbackQuestion(judge, vector);
+        return { judge, ...fb };
+      }
+    ).finally(end);
   }
+
+  private fallbackQuestion(judge: Exclude<string, 'host'>, vector?: any): { score: number; comment: string; question: string } {
+  const mem = this.memory.get(judge);
+  const qType = String(vector?.qType ?? 'generic');
+  const cat = String(vector?.category ?? 'general');
+
+  // rotate index from history so it changes each round even if timeout repeats
+  const askedCount = (mem?.askedAttackIds?.length ?? 0) + (mem?.resolvedAttackIds?.length ?? 0);
+  const rot = askedCount % 4;
+
+  const bank: Record<string, string[]> = {
+    invoice: [
+      "Describe the first invoice: who pays, for what outcome, and how often?",
+      "What would the receipt say in plain words (buyer + outcome)?",
+      "What’s the pricing unit that fits best (per month/seat/usage) and why?"
+    ],
+    substitute_map: [
+      "What do they do today step-by-step (tools/habits) and where does it break?",
+      "Walk me through the current workaround in 4 steps; which step is painful?",
+      "What’s the ‘good enough’ alternative and what’s the one thing it can’t do?"
+    ],
+    switching_pain: [
+      "Give me one real moment where the current approach fails badly enough to force change.",
+      "What’s the breaking incident that makes them actively seek a new solution?",
+      "What’s the consequence when they keep the status quo for another month?"
+    ],
+    channel_first20: [
+      "Where do the first 20 users come from (one exact community/place/partner)?",
+      "Name one specific distribution hook you can run this week to get 10 users.",
+      "What’s your easiest ‘already there’ channel and why is it credible?"
+    ],
+    numbers_value: [
+      "In a typical week per user, what do you save or improve (time/cost/errors)?",
+      "Give one rough number: value per user per month (even a guess).",
+      "What’s your target latency/time-to-value for a first session (in minutes)?"
+    ],
+    competitor_diff: [
+      "Name the closest alternative and the one defensible difference you keep.",
+      "If they copied your UI, what would they still be missing?",
+      "Who do users compare you to in their head today?"
+    ],
+    retention_loop: [
+      "What changes week-to-week that makes users return naturally?",
+      "Why would they come back a second time instead of moving on?",
+      "What’s the repeat trigger that creates habit (not ‘because it’s cool’)?"
+    ],
+    generic: [
+      "What’s one concrete end-to-end example (who, when, outcome)?",
+      "What’s the smallest complete v1 that still proves the hard part works?",
+      "What’s the single biggest risk and the next test you’ll run in 7 days?"
+    ],
+  };
+
+  const list = bank[qType] ?? bank['generic'];
+  const question = list[rot] ?? list[0];
+
+  return {
+    score: 6.0,
+    comment: `Quick fallback (timeout): I need one sharper detail (${cat}/${qType}).`,
+    question,
+  };
+}
+
 
   private isSimilarQuestion(lastQ: string, examples: string[]): boolean {
     const a = this.norm(lastQ);
@@ -1092,7 +1442,7 @@ export class PitchArena {
       `FOUNDER ANSWER: ${answer}`,
     ].join('\n');
 
-    return this.ai
+    return this.geminiService
       .textPrompt(user, system)
       .then((r) => {
         const s = String(r).toLowerCase();
@@ -1274,105 +1624,116 @@ export class PitchArena {
       transcript,
     ].join('\n');
 
-    return this.ai.textPrompt(user, system).then((raw) => {
-      console.log(raw)
-      const json = coerceJson(raw, null);
+    const aiUsage: AiUsageContext = {
+      arenaId: this.judgesService.getArena().id,
+      //sessionId: this.sessionId,
+      round: this.round(),
+      judgeId: 'report',
+      purpose: 'final_summary',
+    }
 
-      console.log(json)
+    return this.geminiService
+      .textPrompt(user, system, aiUsage)
+      .then((raw) => {
+        console.log(raw);
+        const json = coerceJson(raw, null);
 
-      // fallback always valid
-      const fallback: EndSummary = {
-        finalScore,
-        verdict: 'maybe',
-        oneLiner: 'Summary unavailable (model returned invalid JSON).',
-        strengths: [],
-        biggestRisks: [],
-        assumptionsToTest: [],
-        next7Days: [],
-        next30Days: [],
-        recommendedMvp: { user: '', flow: [], mustCut: [] },
-        pricingAndGtm: { whoPays: '', pricingIdea: '', firstChannel: '' },
-      };
+        console.log(json);
 
-      if (!json || typeof json !== 'object') return fallback;
+        // fallback always valid
+        const fallback: EndSummary = {
+          finalScore,
+          verdict: 'maybe',
+          oneLiner: 'Summary unavailable (model returned invalid JSON).',
+          strengths: [],
+          biggestRisks: [],
+          assumptionsToTest: [],
+          next7Days: [],
+          next30Days: [],
+          recommendedMvp: { user: '', flow: [], mustCut: [] },
+          pricingAndGtm: { whoPays: '', pricingIdea: '', firstChannel: '' },
+        };
 
-      const normalizeVerdict = (v: any): EndSummary['verdict'] => {
-        const s = String(v ?? '').toLowerCase();
+        if (!json || typeof json !== 'object') return fallback;
 
-        // accept lots of model variants
-        if (
-          s === 'pass' ||
-          s.includes('strong yes') ||
-          s.includes('yes') ||
-          s.includes('go') ||
-          s.includes('ship')
-        )
-          return 'pass';
+        const normalizeVerdict = (v: any): EndSummary['verdict'] => {
+          const s = String(v ?? '').toLowerCase();
 
-        if (
-          s === 'fail' ||
-          s.includes('no') ||
-          s.includes('reject') ||
-          s.includes('not ready') ||
-          s.includes('needs more') ||
-          s.includes('validation')
-        )
-          return 'maybe'; // map “needs more validation” to maybe
+          // accept lots of model variants
+          if (
+            s === 'pass' ||
+            s.includes('strong yes') ||
+            s.includes('yes') ||
+            s.includes('go') ||
+            s.includes('ship')
+          )
+            return 'pass';
 
-        if (s === 'maybe' || s.includes('unclear') || s.includes('neutral'))
+          if (
+            s === 'fail' ||
+            s.includes('no') ||
+            s.includes('reject') ||
+            s.includes('not ready') ||
+            s.includes('needs more') ||
+            s.includes('validation')
+          )
+            return 'maybe'; // map “needs more validation” to maybe
+
+          if (s === 'maybe' || s.includes('unclear') || s.includes('neutral'))
+            return 'maybe';
+
           return 'maybe';
+        };
 
-        return 'maybe';
-      };
+        const asStringArray = (x: any) =>
+          Array.isArray(x)
+            ? x.map((v) => String(v ?? '').trim()).filter(Boolean)
+            : [];
 
-      const asStringArray = (x: any) =>
-        Array.isArray(x)
-          ? x.map((v) => String(v ?? '').trim()).filter(Boolean)
-          : [];
+        const asAssumptions = (x: any): EndSummary['assumptionsToTest'] =>
+          Array.isArray(x)
+            ? x
+                .map((a: any) => ({
+                  assumption: String(a?.assumption ?? '').trim(),
+                  test: String(a?.test ?? '').trim(),
+                  successMetric: String(a?.successMetric ?? '').trim(),
+                }))
+                .filter((a) => a.assumption || a.test || a.successMetric)
+            : [];
 
-      const asAssumptions = (x: any): EndSummary['assumptionsToTest'] =>
-        Array.isArray(x)
-          ? x
-              .map((a: any) => ({
-                assumption: String(a?.assumption ?? '').trim(),
-                test: String(a?.test ?? '').trim(),
-                successMetric: String(a?.successMetric ?? '').trim(),
-              }))
-              .filter((a) => a.assumption || a.test || a.successMetric)
-          : [];
+        const safe: EndSummary = {
+          finalScore,
+          verdict: normalizeVerdict((json as any).verdict),
+          oneLiner:
+            String((json as any).oneLiner ?? '').trim() || fallback.oneLiner,
 
-      const safe: EndSummary = {
-        finalScore,
-        verdict: normalizeVerdict((json as any).verdict),
-        oneLiner:
-          String((json as any).oneLiner ?? '').trim() || fallback.oneLiner,
+          strengths: asStringArray((json as any).strengths),
+          biggestRisks: asStringArray((json as any).biggestRisks),
+          assumptionsToTest: asAssumptions((json as any).assumptionsToTest),
 
-        strengths: asStringArray((json as any).strengths),
-        biggestRisks: asStringArray((json as any).biggestRisks),
-        assumptionsToTest: asAssumptions((json as any).assumptionsToTest),
+          next7Days: asStringArray((json as any).next7Days),
+          next30Days: asStringArray((json as any).next30Days),
 
-        next7Days: asStringArray((json as any).next7Days),
-        next30Days: asStringArray((json as any).next30Days),
+          recommendedMvp: {
+            user: String((json as any)?.recommendedMvp?.user ?? '').trim(),
+            flow: asStringArray((json as any)?.recommendedMvp?.flow),
+            mustCut: asStringArray((json as any)?.recommendedMvp?.mustCut),
+          },
 
-        recommendedMvp: {
-          user: String((json as any)?.recommendedMvp?.user ?? '').trim(),
-          flow: asStringArray((json as any)?.recommendedMvp?.flow),
-          mustCut: asStringArray((json as any)?.recommendedMvp?.mustCut),
-        },
+          pricingAndGtm: {
+            whoPays: String((json as any)?.pricingAndGtm?.whoPays ?? '').trim(),
+            pricingIdea: String(
+              (json as any)?.pricingAndGtm?.pricingIdea ?? ''
+            ).trim(),
+            firstChannel: String(
+              (json as any)?.pricingAndGtm?.firstChannel ?? ''
+            ).trim(),
+          },
+        };
 
-        pricingAndGtm: {
-          whoPays: String((json as any)?.pricingAndGtm?.whoPays ?? '').trim(),
-          pricingIdea: String(
-            (json as any)?.pricingAndGtm?.pricingIdea ?? ''
-          ).trim(),
-          firstChannel: String(
-            (json as any)?.pricingAndGtm?.firstChannel ?? ''
-          ).trim(),
-        },
-      };
-
-      return safe;
-    }).finally(end);
+        return safe;
+      })
+      .finally(end);
   }
 
   /*  
