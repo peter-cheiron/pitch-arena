@@ -1,16 +1,23 @@
 import { Component, NgZone, inject, signal, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ChatUIMessage, ChatUiComponent } from './chat-ui';
-import { ArenaConfig, ArenaJudgeConfig, ChatMsg } from '../models/arena-config';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ChatUIMessage, ChatUiComponent } from './ui/chat-ui';
+import { ChatUiHorizontalComponent } from './ui/chat-ui-horizontal';
+import {
+  ArenaConfig,
+  ArenaJudgeConfig,
+  ChatMsg,
+} from '../deprecated/models/arena-config';
 import { HostService } from '../services/host.service';
 import { ArenaService } from '../services/arena-service';
 import {
   JudgeMemoryLite,
   JudgeService,
   JudgeTurnResult,
-} from '../services/judge.service';
+} from '../deprecated/services/judge.service';
 import { GeminiService } from '#services/ai/gemini.service';
 import { buildEndSummary, EndSummary, getPitchArenaPitch } from './helpers';
+import { UiToggleButtonComponent } from 'src/app/ui/ui-toggle-button/ui-toggle-button.component';
+import { JudgeCard } from './ui/judge-card/judge-card';
 
 type Phase = 'asking' | 'awaitingAnswer' | 'ended';
 
@@ -28,8 +35,14 @@ export type JudgeRun = {
 
 @Component({
   selector: 'chat-page',
-  imports: [ChatUiComponent],
-  templateUrl: './host-page.html',
+  imports: [
+    //ChatUiComponent,
+    ChatUiHorizontalComponent,
+    //UiToggleButtonComponent,
+    JudgeCard,
+    UiToggleButtonComponent
+],
+  templateUrl: './arena-page-alt.html',
 })
 export class ArenaPage {
   // services
@@ -40,6 +53,7 @@ export class ArenaPage {
 
   // angular
   route = inject(ActivatedRoute);
+  router = inject(Router);
   zone = inject(NgZone);
 
   // config + setup
@@ -87,12 +101,67 @@ export class ArenaPage {
   >([]);
 
   // UI messages
-  messages = signal<ChatUIMessage[]>([
-    { id: this.generateID(), text: 'Arena test room', role: 'system' },
-  ]);
+  messages = signal<ChatUIMessage[]>([]);
+
+  //some config
+  liveScoring = false;
+  seeThinking = false;
 
   // derived
   roundLabel = computed(() => `Round ${this.round()} / ${this.maxRounds()}`);
+  activeJudgeId = computed(() => this.getActiveJudgeForThisTurn()?.id ?? null);
+
+  isJudgeSpeaking(judgeId: string): boolean {
+    return this.phase() !== 'ended' && this.activeJudgeId() === judgeId;
+  }
+
+  quitArena() {
+    const confirmed = window.confirm('Leave the arena? Your session will end.');
+    if (!confirmed) return;
+    this.router.navigateByUrl('/arenas');
+  }
+
+  judgeCard = computed(() => {
+    const judge = this.getActiveJudgeForThisTurn();
+    const turn = this.currentTurn();
+    const coverage = turn?.coverage ?? [];
+    //const first = coverage[0];
+    //const second = coverage[1];
+    const ratingFromStatus = (
+      status: 'missing' | 'partial' | 'clear' | undefined,
+    ) => (status === 'clear' ? 2 : status === 'partial' ? 1 : 0);
+    const statusLabel = (
+      status: 'missing' | 'partial' | 'clear' | undefined,
+    ) => (status ? `${status[0].toUpperCase()}${status.slice(1)}` : '');
+
+    /*
+    const weakness =
+      coverage.find((c) => c.status === 'missing')?.id ??
+      first?.id ??
+      'n/a';
+      */
+    const resist =
+      turn?.askedCriteriaId ??
+      coverage.find((c) => c.status === 'partial')?.id ??
+      'n/a';
+
+    return {
+      topTitle: this.roundLabel(),
+      rightTag: 'Score',
+      name: judge?.label ?? 'Judge',
+      hp: turn?.score != null ? turn.score.toFixed(1) : '--',
+      imageLabel: judge?.dimension ?? judge?.label ?? 'Judge',
+      criteriaTitle: 'Tone',
+      criteriaText: judge.tone,
+      rating: 2,
+      criteria2Title: 'Focus',
+      criteria2Text: judge.focus.join(', '),
+      rating2: 2,
+      dimension: judge.dimension,
+      resist,
+      tone: judge?.tone ?? 'direct',
+    };
+  });
 
   ngOnInit() {
     const path = this.route.snapshot.paramMap.get('path') ?? 'gemini';
@@ -115,6 +184,8 @@ export class ArenaPage {
       const cfg = await this.arenaService.getArenaConfig(path);
       this.arenaConfig.set(cfg);
       this.logEvent('arena.load.config', { cfg });
+
+      this.addMessage("system", "Goal:" + this.arenaConfig().goal)
 
       // rounds
       const maxRoundsFromCfg = cfg.objective?.constraints?.maxRounds;
@@ -139,13 +210,15 @@ export class ArenaPage {
 
       // basic safety: if there are no judges, keep usable
       if (!this.judgeOrder.length) {
+        this.addMessage("system", 'No judges found in this arena config (excluding host).')
+        /*
         this.messages.update((m) => [
           ...m,
           this.createMessage(
             'system',
-            'No judges found in this arena config (excluding host).'
+            'No judges found in this arena config (excluding host).',
           ),
-        ]);
+        ]);*/
       }
 
       // init state
@@ -195,6 +268,17 @@ export class ArenaPage {
     } finally {
       // timings later if you want
     }
+  }
+
+  addMessage(type, text){
+    this.messages.update((messages) => [
+        ...messages,
+        this.createMessage(type, text),
+    ]);
+  }
+
+  updateMessageList(message) {
+    this.messages.update((m) => [...m, message]);
   }
 
   /**
@@ -306,7 +390,9 @@ export class ArenaPage {
       }
 
       this.profile = this.hostService.mergeProfiles(this.profile, obj?.profile);
-      this.lastQuestion = String(obj?.nextQuestion ?? 'Tell me one more detail.');
+      this.lastQuestion = String(
+        obj?.nextQuestion ?? 'Tell me one more detail.',
+      );
 
       this.messages.update((messages) => [
         ...messages,
@@ -343,16 +429,25 @@ export class ArenaPage {
     });
 
     // update per-judge memory
-    this.judgeMemory.set(judge.id, this.judgeService.nextMemory(mem ?? undefined, res));
+    this.judgeMemory.set(
+      judge.id,
+      this.judgeService.nextMemory(mem ?? undefined, res),
+    );
     this.currentTurn.set(res);
+
+    var judgeReply = `${judge.label} • ${this.roundLabel()}`;
+    if (this.liveScoring) {
+      judgeReply += `• Score ${res.score.toFixed(1)}`;
+    }
+    if (this.seeThinking) {
+      judgeReply += `\n${res.comment}\n`;
+    }
+    judgeReply += `\n${res.question}`;
 
     // emit judge message
     this.messages.update((msgs) => [
       ...msgs,
-      this.createMessage(
-        'ai',
-        `${judge.label} • ${this.roundLabel()} • Score ${res.score.toFixed(1)}\n${res.comment}\n\n${res.question}`
-      ),
+      this.createMessage('ai', judgeReply),
     ]);
 
     this.phase.set('awaitingAnswer');
@@ -415,7 +510,10 @@ export class ArenaPage {
 
     this.messages.update((msgs) => [
       ...msgs,
-      this.createMessage('system', `Ended • Final score: ${finalScore.toFixed(1)}`),
+      this.createMessage(
+        'system',
+        `Ended • Final score: ${finalScore.toFixed(1)}`,
+      ),
     ]);
 
     await this.generateSummary(finalScore);
@@ -458,8 +556,10 @@ export class ArenaPage {
 
   private normalizeVerdict(v: any): 'pass' | 'maybe' | 'fail' {
     const s = String(v ?? '').toLowerCase();
-    if (s.includes('pass') || s.includes('go') || s.includes('strong')) return 'pass';
-    if (s.includes('fail') || s.includes('no') || s.includes('reject')) return 'fail';
+    if (s.includes('pass') || s.includes('go') || s.includes('strong'))
+      return 'pass';
+    if (s.includes('fail') || s.includes('no') || s.includes('reject'))
+      return 'fail';
     return 'maybe';
   }
 

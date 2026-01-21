@@ -1,7 +1,7 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 import { SpeechService } from '#services/ai/speech.eleven.service';
-import { ChatMsg } from '../models/arena-config';
+import { ChatMsg } from '../deprecated/models/arena-config';
 
 @Injectable({ providedIn: 'root' })
 export class VoiceService {

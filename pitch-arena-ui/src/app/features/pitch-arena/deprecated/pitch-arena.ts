@@ -16,7 +16,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { JudgesService } from './services/judges.service';
-import { VoiceService } from './services/voice.service';
+import { VoiceService } from '../services/voice.service';
 import {
   ArenaConfig,
   ArenaMemory,

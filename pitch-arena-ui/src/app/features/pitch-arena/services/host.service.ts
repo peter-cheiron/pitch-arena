@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { ArenaConfig, ArenaJudgeConfig } from '../models/arena-config';
+import { ArenaConfig, ArenaJudgeConfig } from '../deprecated/models/arena-config';
 import { GeminiService } from '#services/ai/gemini.service';
 
 type HostProfile = Record<string, unknown>;

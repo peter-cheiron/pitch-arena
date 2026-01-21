@@ -1,0 +1,126 @@
+<div class="space-y-4 m-4">
+  @if (arenaConfig(); as cfg) {
+    <section
+      class="rounded-2xl border p-4 md:p-5 space-y-4"
+      style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+        <div class="space-y-1">
+          <p class="text-[11px] uppercase tracking-wide" style="color: var(--color-muted);">
+            Arena details
+          </p>
+          <div class="flex items-center gap-2">
+            <h3 class="text-lg font-semibold leading-tight">{{ cfg.name }}</h3>
+            <span class="text-[11px] px-2 py-0.5 rounded-full border"
+                  style="border-color: var(--color-border); background: color-mix(in srgb, var(--color-muted) 10%, var(--color-surface));">
+              {{ cfg.id }}
+            </span>
+          </div>
+          <p class="text-sm leading-snug" style="color: var(--color-muted);">
+            {{ cfg.description || 'No description provided.' }}
+          </p>
+          @if(cfg.objective){
+            <p class="text-sm leading-snug" style="color: var(--color-muted);">
+              <strong>Thesis</strong>: {{cfg.objective.thesis}}
+            </p>
+            <div class="text-sm leading-snug" style="color: var(--color-muted);">
+              <strong>Success Definition</strong>:
+              <ul>
+                @for(line of cfg.objective.successDefinition; track line){
+                  <li>{{line}}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        <div class="text-right text-xs space-y-0.5" style="color: var(--color-muted);">
+          <div class="font-semibold text-sm" style="color: var(--color-text);">
+            {{ cfg.name }}
+          </div>
+          <div>{{ cfg.id }}</div>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div>
+          <ui-button-pill (onClick)="launchArena()">Launch the Arena</ui-button-pill>
+        </div>
+
+        <div>
+          <ui-button-pill (onClick)="launchLab()">Test in Lab</ui-button-pill>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-1 gap-3">
+        <div class="border rounded-xl p-3 space-y-3"
+             style="border-color: var(--color-border); background: color-mix(in srgb, var(--color-surface) 94%, var(--color-muted) 6%);">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-semibold">Judges panel</h4>
+            <span class="text-[11px] px-2 py-0.5 rounded-full border"
+                  style="border-color: var(--color-border); background: color-mix(in srgb, var(--color-muted) 10%, var(--color-surface));">
+              {{ cfg.judges.length }}
+            </span>
+          </div>
+          <div
+            class="flex flex-wrap justify-center gap-4"
+            style="--judge-card-width: 16rem; --judge-card-height: 380px; --judge-card-image-height: 9rem; --judge-card-outer-padding: 1rem; --judge-card-content-padding: 0.75rem; --judge-card-footer-offset: 0.75rem;">
+            @for (judge of cfg.judges; track judge.id) {
+              <judge-card
+                [topTitle]="'Panel'"
+                [rightTag]="'Score'"
+                [name]="judge.label"
+                [hp]="'--'"
+                [criteriaTitle]="'Tone'"
+                [criteriaText]="judge.tone ?? 'direct'"
+                [rating]="0"
+                [criteria2Title]="'Focus'"
+                [criteria2Text]="(judge.dimension ?? '')"
+                [rating2]="0"
+                [weakness]="'n/a'"
+                [resist]="'n/a'"
+                [tone]="judge.dimension"
+              ></judge-card>
+            }
+          </div>
+        </div>
+
+        <!--
+        @if (cfg.rubric) {
+          <div class="border rounded-xl p-3 space-y-2"
+               style="border-color: var(--color-border); background: color-mix(in srgb, var(--color-surface) 94%, var(--color-muted) 6%);">
+            <h4 class="text-sm font-semibold">Rubric</h4>
+            <p class="text-[11px]" style="color: var(--color-muted);">
+              Scale {{ cfg.rubric.scale.min }}–{{ cfg.rubric.scale.max }} ({{ cfg.rubric.scale.decimals }} decimals)
+            </p>
+            <ul class="space-y-2">
+              @for (item of cfg.rubric.criteriaWeights; track item.id) {
+                <li class="flex items-center justify-between gap-2 rounded-lg p-2"
+                    style="background: color-mix(in srgb, var(--color-surface) 92%, var(--color-muted) 8%);">
+                  <div>
+                    <p class="text-sm font-medium leading-tight">{{ item.label }}</p>
+                    <p class="text-[11px]" style="color: var(--color-muted);">
+                      {{ item.id }}
+                    </p>
+                  </div>
+                  <span class="text-xs font-semibold">{{ item.weightPct }}%</span>
+                </li>
+              }
+            </ul>
+
+            @if (cfg.rubric.source) {
+              <p class="text-[11px]" style="color: var(--color-muted);">
+                Source: {{ cfg.rubric.source.name }} — {{ cfg.rubric.source.url }}
+              </p>
+            }
+          </div>
+        }-->
+
+      </div>
+    </section>
+  } @else {
+    <section class="rounded-2xl border p-4 md:p-5 text-sm"
+             style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev); color: var(--color-muted);">
+      Loading arena details...
+    </section>
+  }
+</div>

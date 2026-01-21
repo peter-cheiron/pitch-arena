@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { ArenaConfig } from '../models/arena-config';
+import { ArenaConfig } from '../deprecated/models/arena-config';
 import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 

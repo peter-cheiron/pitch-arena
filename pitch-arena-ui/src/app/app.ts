@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { WaitService } from './ui/dialogs/wait-service/wait-service.component';
 import { NavigationService } from '#services/navigation.service';
 import { LocaleService } from '#services/locale.service';
@@ -35,6 +35,8 @@ export class App {
   private profileService = inject(DbUserService)
   profile: Profile;
   
+  route = inject(ActivatedRoute)
+
 
   constructor(){
     /**
@@ -65,10 +67,10 @@ export class App {
   }
 
   showHeader(){
-    return true; //this.user() ? true :false; 
+    return !this.router.url.includes("/arena/")
   }
 
   showFooter(){
-    return true;  
+    return !this.router.url.includes("/arena/")  
   }
 }

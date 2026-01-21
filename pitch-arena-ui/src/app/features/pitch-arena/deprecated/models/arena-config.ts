@@ -27,6 +27,7 @@ export type CriteriaWeight = {
   weightPct: number;
 };
 
+/*
 export type ArenaRubric = {
   overallFormula: 'weightedAverage';
   scale?: {
@@ -45,7 +46,7 @@ export type ArenaRubric = {
     weight: number; // 0..1
     guidance: string; // used inside prompts to avoid repetition
   }>;
-};
+};*/
 
 export type JudgeTone = 'supportive' | 'direct' | 'tough';
 
@@ -123,9 +124,10 @@ export type ArenaObjective = {
 export type ArenaConfig = {
   id: string;
   name: string;
+  goal?: string;
   description?: string;
   objective?: ArenaObjective;
-  rubric?: ArenaRubric;
+  //rubric?: ArenaRubric;
   safety?: string[];
   voices?: Record<string, string>;
   globalStyle?: ArenaGlobalStyle;

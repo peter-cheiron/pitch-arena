@@ -15,6 +15,7 @@ import { ArenaConfig } from '../models/arena-config';
 import { ActivatedRoute } from '@angular/router';
 import { promptMergedParse } from '../prompt-functions';
 
+
 export type JudgeJson = {
   judge: Exclude<string, 'host'>;
   score: number;

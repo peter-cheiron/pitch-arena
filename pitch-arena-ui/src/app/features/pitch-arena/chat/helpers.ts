@@ -1,4 +1,4 @@
-import { ArenaConfig } from "../models/arena-config";
+import { ArenaConfig } from "../deprecated/models/arena-config";
 import { JudgeRun } from "./arena-page";
 
 export function getPitchArenaPitch() {

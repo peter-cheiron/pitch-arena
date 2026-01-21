@@ -1,7 +1,4 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { ArenaConfig } from '../models/arena-config';
-import { UiButtonPillComponent } from "#ui";
+import { Component, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '#services/auth';
 import { DbUserService } from '#services/db';
@@ -10,7 +7,7 @@ import { TermsDialogComponent } from 'src/app/standard/terms/terms-dialog/terms-
 
 @Component({
   selector: 'app-arenas',
-  imports: [UiButtonPillComponent],
+  imports: [],
   templateUrl: './arenas.html'
 })
 export class Arenas {
@@ -26,10 +23,6 @@ export class Arenas {
   //--eof user
 
   router = inject(Router)
-
-  //note that I need to move the config to a nice safe storage space and 
-  //also add in an editor and viewer.
-  private http = inject(HttpClient);
 
   arenas = [
     {name: "proptech", 
@@ -47,17 +40,12 @@ export class Arenas {
     {name: "gemini fast", 
       image:"/assets/images/gemini-3.webp",
       description: "A faster test arena for demo and testing purposes.", 
-      path: "arena_gemini3_fast"},
+      path: "gemini"},
     {name: "Solo VC", 
       image:"/assets/images/vc.jpg",
       description: "A one on one with an annoying VC that hates investing.", 
       path: "solo_vc"}
   ]
-
-  path = null;
-
-  config = signal<ArenaConfig | null>(null)
-  selectedArena = signal<(typeof this.arenas)[number] | null>(null)
 
   constructor(){
     effect(() => {
@@ -93,24 +81,8 @@ export class Arenas {
   });
 }
 
-  selectArena(arena: (typeof this.arenas)[number]) {
-    this.selectedArena.set(arena);
-    this.loadArena(arena.path);
-    this.path = arena.path;
-  }
-
-  loadArena(path: string){
-    this.http.get<ArenaConfig>('/assets/arenas/' + path + ".json").subscribe(value => {
-      this.config.set(value)
-    })
-  }
-
-  launchArena(){
-    this.router.navigateByUrl("/arena/" + this.path )
-  }
-
-  launchLab(){
-    this.router.navigateByUrl("/lab/" + this.path )
+  goToDetails(arena: (typeof this.arenas)[number]) {
+    this.router.navigateByUrl("/arenas/" + arena.path)
   }
 
 }

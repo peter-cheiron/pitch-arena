@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, effect, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { VoiceService } from "../services/voice.service";
+import { VoiceService } from "../../services/voice.service";
 
 // ---------------- Types ----------------
 export type ChatUIMessage = {
@@ -19,10 +19,10 @@ export type ChatUIMessage = {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-3 h-screen">
       <div
         #chatWindow
-        class="h-[52vh] overflow-y-auto rounded-2xl border px-4 py-4 space-y-3"
+        class="h-[80vh] overflow-y-auto rounded-2xl border px-4 py-4 space-y-3"
         style="border-color: var(--color-border); background: var(--color-surface);"
       >
         @if (!messages.length) {

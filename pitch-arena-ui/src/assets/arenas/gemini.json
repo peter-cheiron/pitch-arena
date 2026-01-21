@@ -1,6 +1,7 @@
 {
   "id": "arena_gemini_hackathon_ready",
   "name": "Gemini Hackathon Readiness Arena (Fast)",
+  "goal": "Is this ready to win a Gemini hackathon?",
   "description": "Goal-focused arena: judge evaluates ONLY whether this is ready to submit/demo for a Gemini hackathon-style event.",
   "safety": [
     "no adult entertainment",
@@ -43,22 +44,6 @@
       "parseMode": "none",
       "summaryMode": "template",
       "llmTimeoutMs": 8000
-    }
-  },
-  "rubric": {
-    "scale": { "min": 0, "max": 10, "decimals": 1 },
-    "criteriaWeights": [
-      { "id": "demo_clarity", "label": "Demo Clarity", "weightPct": 30 },
-      { "id": "gemini_essentiality", "label": "Gemini Is Essential", "weightPct": 25 },
-      { "id": "build_plan", "label": "48–72h Build Plan", "weightPct": 25 },
-      { "id": "story_submission", "label": "Submission Story", "weightPct": 15 },
-      { "id": "safety_boundaries", "label": "Safety & Boundaries", "weightPct": 5 }
-    ],
-    "scoreGuidance": {
-      "9_10": "Ready: crisp demo + clear Gemini role + credible build plan; minimal risk.",
-      "7_8": "Nearly ready: one key gap (demo ambiguity, Gemini role, or scope) remains.",
-      "5_6": "Not ready: too vague or scope too big; Gemini role unclear; plan missing.",
-      "0_4": "Confusing or unsafe; cannot demo credibly in hackathon timeframe."
     }
   },
   "voices": {
@@ -122,7 +107,7 @@
     },
     {
       "id": "vc",
-      "label": "Hackathon Judge",
+      "label": "VC Judge",
       "dimension": "Hackathon Readiness",
       "tone": "direct, practical, demo-first",
       "focus": [
