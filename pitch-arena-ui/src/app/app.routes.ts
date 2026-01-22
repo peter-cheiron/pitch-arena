@@ -8,11 +8,12 @@ import { FaqComponent } from './standard/faq/faq.component';
 import { Terms } from './standard/terms/terms';
 import { ArenaPage } from './features/pitch-arena/chat/arena-page';
 import { ArenaDetails } from './features/pitch-arena/arena-details/arena-details';
+import { ArenaPageNew } from './features/pitch-arena/chat/arena-page-new';
 
 export const routes: Routes = [
 { path: '', component: LandingPageComponent, pathMatch: 'full' },
-{ path: 'arena', component: ArenaPage, pathMatch: 'full', canActivate: [AuthGuard] },
-{ path: 'arena/:path', component: ArenaPage, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'arena', component: ArenaPageNew, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'arena/:path', component: ArenaPageNew, pathMatch: 'full', canActivate: [AuthGuard] },
 { path: 'arenas/:path', component: ArenaDetails, pathMatch: 'full', canActivate: [AuthGuard] },
 { path: 'arenas', component: Arenas, pathMatch: 'full', canActivate: [AuthGuard] },
 

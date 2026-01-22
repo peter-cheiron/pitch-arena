@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { ArenaConfig, ArenaJudgeConfig } from '../deprecated/models/arena-config';
+import { ArenaConfig, ArenaJudgeConfig } from '../arena-models';
 import { GeminiService } from '#services/ai/gemini.service';
 
 type HostProfile = Record<string, unknown>;
@@ -19,6 +19,7 @@ export class HostService {
     return this.gemini.textPrompt(user, system);
   }
 
+  //TODO have a bunch of different welcome messages
   getWelcomeMessage(){
     //this is something to think about
   }

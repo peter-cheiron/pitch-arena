@@ -1,23 +1,25 @@
 import { Component, NgZone, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ChatUIMessage, ChatUiComponent } from './ui/chat-ui';
+import { ChatUIMessage } from './ui/chat-ui';
 import { ChatUiHorizontalComponent } from './ui/chat-ui-horizontal';
+import { buildInteractions, downloadJson } from './ui/ui-utils';
 import {
   ArenaConfig,
   ArenaJudgeConfig,
 } from '../arena-models';
 import { HostService } from '../services/host.service';
-import { ArenaService } from '../services/arena-service';
+import { ArenaMemory, ArenaService, newArenaMemory, updateArenaMemory } from '../services/arena-service';
 
 import { GeminiService } from '#services/ai/gemini.service';
-import { buildEndSummary, EndSummary, getPitchArenaPitch } from './helpers';
+import { avg, buildEndSummary, coerceJson, createMessage, EndSummary, getPitchArenaPitch, normalizeVerdict } from './helpers';
 import { UiToggleButtonComponent } from 'src/app/ui/ui-toggle-button/ui-toggle-button.component';
 import { JudgeCard } from './ui/judge-card/judge-card';
-import { JudgeMemoryLite, JudgeService } from '../services/judge.service';
-import { UiButtonPillComponent } from '#ui';
-import { JudgeTurnResult } from '../services/new-judge.service';
+import { JudgeTurnArgs, JudgeTurnResult, NewJudgeService } from '../services/new-judge.service';
+import { UiButtonPillComponent } from "#ui";
+import { PanelJudgeService } from '../services/panel-judge.service';
 
-type Phase = 'asking' | 'awaitingAnswer' | 'ended';
+//we need to pad the room out a bit
+type Phase = 'asking' | 'awaitingAnswer' | 'hostFiller' | 'ended';
 
 export type JudgeRun = {
   judgeId: string;
@@ -31,24 +33,37 @@ export type JudgeRun = {
   coverage?: any;
 };
 
+type StageId = 'clarify' | 'pressure' | 'decision';
+
+type RoundIntent = {
+  phaseId: string;
+  goal: string;
+  primaryCriteria: string[];
+  judgeIds: string[]; // who speaks this round (ordered)
+};
+
 @Component({
   selector: 'chat-page',
   imports: [
-    //ChatUiComponent,
     ChatUiHorizontalComponent,
-    //UiToggleButtonComponent,
-    UiButtonPillComponent,
     JudgeCard,
-    UiToggleButtonComponent
+    UiToggleButtonComponent,
+    UiButtonPillComponent
 ],
   templateUrl: './arena-page-alt.html',
 })
-export class ArenaPage {
+export class ArenaPageNew {
   // services
   gemini = inject(GeminiService);
   hostService = inject(HostService);
   arenaService = inject(ArenaService);
-  judgeService = inject(JudgeService);
+  judgeService = inject(NewJudgeService);
+
+  //lets see if its at least faster with a mutli panel round
+  panelJudgeService = inject(PanelJudgeService);
+  // buffer: the results for the current round, computed once
+  roundJudges = signal<ArenaJudgeConfig[]>([]);
+  roundTurns  = signal<JudgeTurnResult[]>([]);
 
   // angular
   route = inject(ActivatedRoute);
@@ -83,7 +98,10 @@ export class ArenaPage {
   currentJudgeIndexInRound = signal<number>(0);
 
   // per-judge memory (critical)
-  judgeMemory = new Map<string, JudgeMemoryLite>();
+  //judgeMemory = new Map<string, JudgeMemoryLite>();
+
+  //new global arena style
+  arenaMemory = signal<ArenaMemory>(newArenaMemory());
 
   // history
   judgeRuns = signal<JudgeRun[]>([]);
@@ -115,52 +133,11 @@ export class ArenaPage {
   }
 
   quitArena() {
+    //TODO use an actual dialog not an alert
     const confirmed = window.confirm('Leave the arena? Your session will end.');
     if (!confirmed) return;
     this.router.navigateByUrl('/arenas');
   }
-
-  judgeCard = computed(() => {
-    const judge = this.getActiveJudgeForThisTurn();
-    const turn = this.currentTurn();
-    const coverage = turn?.coverage ?? [];
-    //const first = coverage[0];
-    //const second = coverage[1];
-    const ratingFromStatus = (
-      status: 'missing' | 'partial' | 'clear' | undefined,
-    ) => (status === 'clear' ? 2 : status === 'partial' ? 1 : 0);
-    const statusLabel = (
-      status: 'missing' | 'partial' | 'clear' | undefined,
-    ) => (status ? `${status[0].toUpperCase()}${status.slice(1)}` : '');
-
-    /*
-    const weakness =
-      coverage.find((c) => c.status === 'missing')?.id ??
-      first?.id ??
-      'n/a';
-      */
-    const resist =
-      turn?.askedCriteriaId ??
-      coverage.find((c) => c.status === 'partial')?.id ??
-      'n/a';
-
-    return {
-      topTitle: this.roundLabel(),
-      rightTag: 'Score',
-      name: judge?.label ?? 'Judge',
-      hp: turn?.score != null ? turn.score.toFixed(1) : '--',
-      imageLabel: judge?.dimension ?? judge?.label ?? 'Judge',
-      criteriaTitle: 'Tone',
-      criteriaText: judge.tone,
-      rating: 2,
-      criteria2Title: 'Focus',
-      criteria2Text: judge.focus.join(', '),
-      rating2: 2,
-      dimension: judge.dimension,
-      resist,
-      tone: judge?.tone ?? 'direct',
-    };
-  });
 
   ngOnInit() {
     const path = this.route.snapshot.paramMap.get('path') ?? 'gemini';
@@ -213,7 +190,7 @@ export class ArenaPage {
       }
 
       // init state
-      this.judgeMemory.clear();
+      //this.judgeMemory.clear();
       this.judgeRuns.set([]);
       this.endSummary.set(null);
       this.phase.set('asking');
@@ -249,10 +226,7 @@ export class ArenaPage {
         'Welcome. Quick warm-up: who are you, and what are you trying to build?';
       this.lastQuestion = hostWelcome;
 
-      this.messages.update((messages) => [
-        ...messages,
-        this.createMessage('ai', hostWelcome),
-      ]);
+      this.addMessage('ai', hostWelcome);
       this.logEvent('message.ai', { text: hostWelcome });
 
       this.arenaLoaded.set(true);
@@ -261,10 +235,10 @@ export class ArenaPage {
     }
   }
 
-  addMessage(type, text){
+  addMessage(type, text) {
     this.messages.update((messages) => [
-        ...messages,
-        this.createMessage(type, text),
+      ...messages,
+      createMessage(type, text),
     ]);
   }
 
@@ -277,17 +251,37 @@ export class ArenaPage {
    * - If host not done: run host turn
    * - Else: treat it as answer to current judge question and advance
    */
-  gotMessage(message: string) {
+  async gotMessage(message: string) {
+    const promptStartedAt = performance.now();
     const answer = (message ?? '').trim();
     if (!answer) return;
 
+    if (this.phase() === 'hostFiller') {
+      this.arenaMemory.update(m => ({
+        ...m,
+        hostNotes: [
+          ...(m.hostNotes ?? []),
+          {
+            type: 'counter',
+            q: this.pendingHostQuestion,
+            a: answer,
+            round: this.round()
+          }
+        ]
+      }));
+
+      this.pendingHostQuestion = null;
+      this.addMessage('system', 'Noted.');
+      return;
+    }
+
     // echo user message
-    const chat = this.createMessage('user', answer);
-    this.messages.update((messages) => [...messages, chat]);
+    const chat = createMessage('user', answer);
+    this.updateMessageList(chat);
     this.logEvent('message.user', { message: chat });
 
     if (!this.HOST_DONE) {
-      this.runChatAsHost(answer);
+      this.runChatAsHost(answer, promptStartedAt);
       return;
     }
 
@@ -309,20 +303,30 @@ export class ArenaPage {
         score: turn.score,
         comment: turn.comment,
         question: turn.question,
-        answer,
+        answer,//need to track this as its the user prompt 
         askedCriteriaId: (turn as any).askedCriteriaId,
         coverage: (turn as any).coverage,
       },
     ]);
 
+    this.arenaMemory.set(
+      updateArenaMemory(this.arenaMemory(), activeJudge.id, turn, answer, {
+        keepLastCriteria: 10,
+        keepLastQuestions: 12,
+      })
+    );
+
+
     // advance within the round (next judge in this round), otherwise end round
-    const judgesThisRound = this.getJudgesForRound();
+    //const judgesThisRound = this.getJudgesForRound();
+    const judgesThisRound = this.roundJudges();    
+
     const nextIdx = this.currentJudgeIndexInRound() + 1;
 
     if (nextIdx < judgesThisRound.length) {
       this.currentJudgeIndexInRound.set(nextIdx);
       this.phase.set('asking');
-      this.startJudgeTurn();
+      this.startJudgeTurn(promptStartedAt);
       return;
     }
 
@@ -335,13 +339,19 @@ export class ArenaPage {
     this.round.set(this.round() + 1);
     this.currentJudgeIndexInRound.set(0);
     this.phase.set('asking');
-    this.startJudgeTurn();
+
+    this.roundTurns.set([]);
+    this.roundJudges.set([]);
+
+    await this.startJudgeTurn(promptStartedAt);
+
+
   }
 
   /**
    * Host turn: merges profile + asks next question until ready=true
    */
-  private runChatAsHost(answer: string) {
+  private runChatAsHost(answer: string, promptStartedAt?: number) {
     const cfg = this.arenaConfig();
     if (!cfg || !this.host) return;
 
@@ -353,8 +363,14 @@ export class ArenaPage {
 
     this.logEvent('host.prompt.created', { prompt });
 
+    const startedAt = promptStartedAt ?? performance.now();
+
     this.hostService.runPrompt(answer, prompt, null).then((raw) => {
       this.logEvent('host.prompt.response.raw', { raw });
+      const elapsedMs = Math.round(performance.now() - startedAt);
+      this.logEvent('host.prompt.duration', { elapsedMs });
+
+      console.log("host time taken", elapsedMs)
 
       let obj: any = null;
       try {
@@ -366,10 +382,7 @@ export class ArenaPage {
       this.logEvent('host.prompt.response.parsed', { obj });
 
       if (obj?.ready) {
-        this.messages.update((messages) => [
-          ...messages,
-          this.createMessage('system', 'Warm-up complete. Judges start now.'),
-        ]);
+        this.addMessage('system', 'Warm-up complete. Judges start now.');
 
         this.HOST_DONE = true;
         this.currentJudgeIndexInRound.set(0);
@@ -385,64 +398,138 @@ export class ArenaPage {
         obj?.nextQuestion ?? 'Tell me one more detail.',
       );
 
-      this.messages.update((messages) => [
-        ...messages,
-        this.createMessage('ai', this.lastQuestion!),
-      ]);
+      this.addMessage('ai', this.lastQuestion!);
     });
   }
 
-  /**
-   * Ask the next judge question (ONE LLM call).
-   * - chooses judge based on judgesPerRound + rotation
-   * - keeps per-judge memory
-   */
-  private async startJudgeTurn() {
-    if (this.phase() === 'ended') return;
+//its a filler idea
+HOST_FILLER_QUESTIONS = [
+  "What’s the one thing you deliberately cut from the demo?",
+  "What assumption would you test first if you had a week?",
+  "Which part is the most fragile technically?",
+  "Who would hate this product?",
+  "What surprised you while building this?"
+];
 
-    const cfg = this.arenaConfig();
-    if (!cfg) return;
+pendingHostQuestion: string = "";
 
-    const judge = this.getActiveJudgeForThisTurn();
-    if (!judge) {
-      // nothing to ask, end safely
-      this.finish();
-      return;
-    }
+pickCounterQuestionForPhase(round, stageId){
+  return this.HOST_FILLER_QUESTIONS[round]
+}
 
-    const mem = this.judgeMemory.get(judge.id) ?? null;
+askHostCounterQuestion() {
+  const q = this.pickCounterQuestionForPhase(this.round(), this.stageForRound(this.round(), this.maxRounds()));
+  this.pendingHostQuestion = q;
+  this.addMessage('ai', `Host: ${q}`);
+}
 
-    const res = await this.judgeService.runTurn(cfg, judge, {
-      profile: this.profile ?? {},
-      lastDelta: this.buildLastDeltaForJudge(judge.id),
-      memory: mem ?? undefined,
-      mode: this.round() <= 1 ? 'discovery' : 'interrogation',
-    });
+/**
+ * the idea now would be to have filler questions in order to 
+ * hide the pauses ... 
+ * @param promptStartedAt 
+ * @returns 
+ */
+private async ensureRoundTurns(promptStartedAt?: number) {
 
-    // update per-judge memory
-    this.judgeMemory.set(
-      judge.id,
-      this.judgeService.nextMemory(mem ?? undefined, res),
-    );
-    this.currentTurn.set(res);
-
-    var judgeReply = `${judge.label} • ${this.roundLabel()}`;
-    if (this.liveScoring) {
-      judgeReply += `• Score ${res.score.toFixed(1)}`;
-    }
-    if (this.seeThinking) {
-      judgeReply += `\n${res.comment}\n`;
-    }
-    judgeReply += `\n${res.question}`;
-
-    // emit judge message
-    this.messages.update((msgs) => [
-      ...msgs,
-      this.createMessage('ai', judgeReply),
-    ]);
-
-    this.phase.set('awaitingAnswer');
+  //new idea pad it out
+  if (!this.roundTurns().length) {
+    this.phase.set('hostFiller');
+    this.askHostCounterQuestion();
   }
+
+  const cfg = this.arenaConfig();
+  if (!cfg) return;
+
+  // already computed
+  if (this.roundTurns().length && this.roundJudges().length) return;
+
+  const judgesThisRound = this.getJudgesForRound();
+  this.roundJudges.set(judgesThisRound);
+
+  if (!judgesThisRound.length) return;
+
+  const mem = this.arenaMemory();
+  const intent = this.planNextIntent(cfg, this.round(), this.judgesPerRound());
+
+  const judgeArgs: JudgeTurnArgs = {
+    profile: this.profile ?? {},
+    lastDelta: this.buildLastDeltaPackedForPanel(judgesThisRound),
+    memory: mem ?? undefined,
+    mode: this.round() <= 1 ? 'discovery' : 'interrogation',
+    round: this.round(),
+    maxRounds: this.maxRounds(),
+    intent,
+  };
+
+  const startedAt = promptStartedAt ?? performance.now();
+  const res = await this.panelJudgeService.runPanelTurn(cfg, judgesThisRound, judgeArgs);
+
+  /*
+const ordered = judgesThisRound.map(j =>
+  res.panel.find(p => p.judge === j.id) ??
+  res.panel.find(p => (p as any).judgeId === j.id) ??
+  {
+    judge: j.id,
+    score: 6,
+    comment: 'Quick fallback: need one sharper detail.',
+    question: 'What’s one concrete end-to-end example (who, when, outcome)?',
+    coverage: [],
+    askedCriteriaId: undefined,
+    verdictHint: 'maybe',
+  }
+);
+this.roundTurns.set(ordered);*/
+
+
+const ordered: JudgeTurnResult[] = judgesThisRound.map((j) => {
+  return (
+    res.panel.find(p => p.judge === j.id) ??
+    res.panel.find(p => (p as any).judgeId === j.id) ??
+    {
+      judge: j.id,
+      score: 6,
+      comment: 'Quick fallback: need one sharper detail.',
+      question: 'What’s one concrete end-to-end example (who, when, outcome)?',
+      coverage: [],
+      askedCriteriaId: undefined,
+      verdictHint: 'maybe',
+    }
+  );
+});
+  this.roundTurns.set(ordered);
+
+
+  const elapsedMs = Math.round(performance.now() - startedAt);
+  this.logEvent('judge.panel.duration', { elapsedMs, round: this.round(), judgeIds: judgesThisRound.map(j => j.id) });
+}
+
+private async startJudgeTurn(promptStartedAt?: number) {
+  if (this.phase() === 'ended') return;
+
+  await this.ensureRoundTurns(promptStartedAt);
+
+  const judgesThisRound = this.roundJudges();
+  const idx = this.currentJudgeIndexInRound();
+
+  const judge = judgesThisRound[idx] ?? null;
+  const res = this.roundTurns()[idx] ?? null;
+
+  if (!judge || !res) {
+    // If we can't find the next judge/turn, end safely
+    this.finish();
+    return;
+  }
+
+  this.currentTurn.set(res);
+
+  let judgeReply = `${judge.label}`;
+  if (this.liveScoring) judgeReply += ` • Score ${res.score.toFixed(1)}`;
+  if (this.seeThinking) judgeReply += `\n${res.comment}\n`;
+  judgeReply += `\n${res.question}`;
+
+  this.addMessage('ai', judgeReply);
+  this.phase.set('awaitingAnswer');
+}
 
   /**
    * Judges participating in the current round.
@@ -453,27 +540,45 @@ export class ArenaPage {
     const all = this.judgeOrder ?? [];
     if (!all.length) return [];
 
+    const stage = this.stageForRound(this.round(), this.maxRounds());
+
+    const lineup = (this.arenaConfig() as any)?.lineup?.[stage] as string[] | undefined;
+    if (lineup?.length) {
+      const map = new Map(all.map(j => [j.id, j]));
+      return lineup.map(id => map.get(id)).filter(Boolean) as ArenaJudgeConfig[];
+    }
+
+    // fallback to your old logic (judgesPerRound rotation)
     const n = this.judgesPerRound();
     if (!n || n >= all.length) return all;
 
-    // rotate windows across rounds: round 1 starts at 0, round 2 starts at n, etc.
     const start = ((this.round() - 1) * n) % all.length;
-
-    // take n judges, wrapping around
     const picked: ArenaJudgeConfig[] = [];
-    for (let i = 0; i < n; i++) {
-      picked.push(all[(start + i) % all.length]);
-    }
+    for (let i = 0; i < n; i++) picked.push(all[(start + i) % all.length]);
     return picked;
   }
 
   private getActiveJudgeForThisTurn(): ArenaJudgeConfig | null {
-    const judges = this.getJudgesForRound();
+    const judges = this.roundJudges().length ? this.roundJudges() : this.getJudgesForRound();
     if (!judges.length) return null;
 
     const idx = this.currentJudgeIndexInRound();
     return judges[idx] ?? judges[0] ?? null;
   }
+
+  private buildLastDeltaPackedForPanel(judgesThisRound: ArenaJudgeConfig[]): string | undefined {
+  const map: Record<string, string> = {};
+  for (const j of judgesThisRound) {
+    const d = this.buildLastDeltaForJudge(j.id);
+    if (d) map[j.id] = d;
+  }
+  const any = Object.keys(map).length > 0;
+  if (!any) return undefined;
+
+  // keep it short-ish
+  return `LastDeltaByJudge:\n${JSON.stringify(map)}`;
+}
+
 
   private buildLastDeltaForJudge(judgeId: string): string | undefined {
     // most recent run from THIS judge
@@ -491,21 +596,64 @@ export class ArenaPage {
     return `Previous (panel):\nQ: ${last.question}\nA: ${last.answer}`;
   }
 
+  //-------------- intentional methods :-| 
+
+
+private stageForRound(round: number, maxRounds: number): StageId {
+  if (maxRounds <= 1) return 'decision';
+  if (round <= 1) return 'clarify';
+  if (round >= maxRounds) return 'decision';
+  return 'pressure';
+}
+
+/**
+ * question aren't we just heading back to where we were before?
+ * @param cfg 
+ * @param round 
+ * @param judgesPerRound 
+ * @returns 
+ */
+planNextIntent(cfg: ArenaConfig, round: number, judgesPerRound: number): RoundIntent {
+  const phases = (cfg as any).phases ?? [];
+  const phase = phases[Math.min(round - 1, phases.length - 1)] ?? {
+    id: 'default',
+    goal: 'Clarify the idea with friendly precision.',
+    primaryCriteria: []
+  };
+
+  const judges = (cfg.judges ?? []).filter(j => j.id !== 'host');
+
+  const matches = (j: any) => {
+    const ids = (j.criteriaConfig ?? []).map((c: any) => c.id);
+    const wanted = phase.primaryCriteria ?? [];
+    return wanted.filter((x: string) => ids.includes(x)).length;
+  };
+
+  const ordered = [...judges].sort((a: any, b: any) => matches(b) - matches(a));
+  let picked = ordered.filter((j: any) => matches(j) > 0);
+
+  if (!picked.length) picked = ordered.slice(0, 1); // fallback at least one judge
+
+  if (judgesPerRound > 0) picked = picked.slice(0, judgesPerRound);
+
+  return {
+    phaseId: phase.id,
+    goal: phase.goal,
+    primaryCriteria: phase.primaryCriteria ?? [],
+    judgeIds: picked.map((j: any) => j.id),
+  };
+}
+
+
   // ---------------- ending + summary ----------------
 
   private async finish() {
     if (this.phase() === 'ended') return;
     this.phase.set('ended');
 
-    const finalScore = this.avg(this.judgeRuns().map((r) => r.score));
+    const finalScore = avg(this.judgeRuns().map((r) => r.score));
 
-    this.messages.update((msgs) => [
-      ...msgs,
-      this.createMessage(
-        'system',
-        `Ended • Final score: ${finalScore.toFixed(1)}`,
-      ),
-    ]);
+    this.addMessage('system', `Ended • Final score: ${finalScore.toFixed(1)}`);
 
     await this.generateSummary(finalScore);
   }
@@ -522,17 +670,14 @@ export class ArenaPage {
         profile: this.profile ?? {},
         judgeRuns: this.judgeRuns(),
         textPrompt: (user, system) => this.gemini.textPrompt(user, system),
-        coerceJson: (raw, fallback) => this.coerceJson(raw, fallback),
-        normalizeVerdict: (v) => this.normalizeVerdict(v),
+        coerceJson: (raw, fallback) => coerceJson(raw, fallback),
+        normalizeVerdict: (v) => normalizeVerdict(v),
       });
 
       this.endSummary.set(result.summary);
 
       if (result.messageText) {
-        this.messages.update((msgs) => [
-          ...msgs,
-          this.createMessage('system', result.messageText),
-        ]);
+        this.addMessage('system', result.messageText);
       }
     } finally {
       this.summarizing.set(false);
@@ -542,51 +687,30 @@ export class ArenaPage {
   // ---------------- utils ----------------
 
   exportConversation(){
-    console.error("you didn't implement here")
+    const interactions = buildInteractions(this.messages());
+
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      interactions,
+    };
+
+    downloadJson(payload, `pitch-arena-conversation-${Date.now()}.json`);
   }
 
   exportPrompts(){
-    console.error("you didn't implement here")
-  }
+    const interactions = buildInteractions(this.messages());
 
-  private avg(nums: number[]) {
-    return nums.reduce((a, n) => a + n, 0) / Math.max(1, nums.length);
-  }
+    const promptEvents = this.eventLog().filter((event) =>
+      String(event.type).includes('prompt'),
+    );
 
-  private normalizeVerdict(v: any): 'pass' | 'maybe' | 'fail' {
-    const s = String(v ?? '').toLowerCase();
-    if (s.includes('pass') || s.includes('go') || s.includes('strong'))
-      return 'pass';
-    if (s.includes('fail') || s.includes('no') || s.includes('reject'))
-      return 'fail';
-    return 'maybe';
-  }
-
-  private coerceJson(raw: any, fallback: any) {
-    if (raw && typeof raw === 'object') return raw;
-    const s = String(raw ?? '')
-      .trim()
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```[\s\r\n]*$/i, '')
-      .trim();
-    try {
-      return JSON.parse(s);
-    } catch {
-      return fallback;
-    }
-  }
-
-  createMessage(role: 'system' | 'user' | 'ai', text: string): ChatUIMessage {
-    return {
-      id: this.generateID(),
-      text,
-      role,
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      interactions,
+      prompts: promptEvents,
     };
-  }
 
-  generateID() {
-    return crypto.randomUUID();
+    downloadJson(payload, `pitch-arena-prompts-${Date.now()}.json`);
   }
 
   private logEvent(type: string, payload: unknown) {

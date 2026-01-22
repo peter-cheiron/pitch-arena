@@ -29,9 +29,15 @@
         }
     </div>
 
+    <!--
     <div class="flex justify-center">
-      <h1 class="font-extrabold">Goal: {{arenaConfig().goal}}</h1>
+      <h1 class="font-extrabold">Goal: 
+        @if(arenaConfig()){
+          {{arenaConfig().goal}}
+        }
+      </h1>
     </div>
+    -->
     
     <div class="flex min-h-0 flex-1 gap-4">
       
@@ -39,12 +45,18 @@
         (send)="gotMessage($event)"
         [messages]="messages()"></chat-ui-horizontal>
 
+        <!--
+        this is a good idea but do I want it 
+        one thought is that it could be a live coach option!
+        -->
         <div class=" w-1/6">
         <h2 class="text-xl font-bold">Conversation Options</h2>
         <p class="text-sm">To get realism set these to false but if you want to know what to work on set true. </p>
         <div class="flex flex-col">
             <ui-toggle-button [(selected)]="liveScoring" label="See Live Scoring"></ui-toggle-button> 
             <ui-toggle-button [(selected)]="seeThinking" label="See Judge Thinking"></ui-toggle-button> 
+            <ui-button-pill (onClick)="exportConversation()">Export Conversation</ui-button-pill>
+            <ui-button-pill (onClick)="exportPrompts()">Export Prompts</ui-button-pill>
         </div>
         </div>
 

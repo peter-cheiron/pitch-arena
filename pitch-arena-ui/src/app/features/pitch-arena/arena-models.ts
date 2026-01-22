@@ -15,77 +15,7 @@ export type ArenaGlobalStyle = {
   };
 };
 
-export type AttackLibrary = {
-  string: string;
-  mode: PanelMode; // discovery or interrogation
-  vectors: AttackVector[];
-};
-
-export type CriteriaWeight = {
-  id: string;
-  label: string;
-  weightPct: number;
-};
-
-/*
-export type ArenaRubric = {
-  overallFormula: 'weightedAverage';
-  scale?: {
-    min: number;
-    max: number;
-    decimals: string;
-  };
-  criteriaWeights?: CriteriaWeight[];
-  source?: {
-    name?: string;
-    url?: string;
-  };
-  dimensions: Array<{
-    key: string; // "fundability"
-    label: string; // "Fundability"
-    weight: number; // 0..1
-    guidance: string; // used inside prompts to avoid repetition
-  }>;
-};*/
-
 export type JudgeTone = 'supportive' | 'direct' | 'tough';
-
-export type RequiredSignal =
-  | 'named_entity'
-  | 'numbers'
-  | 'mechanism'
-  | 'example'
-  | 'next_step';
-
-export type AttackCategory =
-  | 'buyer'
-  | 'substitute'
-  | 'mechanism'
-  | 'scope'
-  | 'quality'
-  | 'repeat';
-
-export type AttackVector = {
-  id: string;
-  category: AttackCategory;
-
-  // “Concern” is what the judge is worried about (kept short and human)
-  concern: string;
-
-  // ✅ NEW: “question form” to avoid repetition (why/how/contrast/quantify/etc.)
-  qType?: string;
-
-  // “Ask intent” describes the information needed (not a literal question)
-  askIntent: string;
-
-  // Examples show the model what “conversational” looks like.
-  // The model must rephrase (not copy verbatim).
-  questionExamples: string[];
-
-  forbiddenPhrases: string[];
-  requiredSignals: RequiredSignal[];
-  triggers?: { minAvgSpecificity?: number; assumptionIncludes?: string[] };
-};
 
 export type ArenaJudgeConfig = {
   id: ArenaJudgeId;
@@ -96,13 +26,23 @@ export type ArenaJudgeConfig = {
   profileConfig?: string[];//technically only the 
   focus?: string[];
   rolePrompt?: string;
-  vectors?: {
-    discovery?: AttackVector[];
-    interrogation?: AttackVector[];
-  };
+
+    // ✅ NEW (optional)
+  criteriaConfig?: Array<{
+    id: string;
+    description: string;
+    signals?: string[];
+    weight?: number;
+    questionStarters?: string[];
+  }>;
+
+  // ✅ NEW (optional): lets the judge feel stage-aware without “round game”
+  stageHints?: Partial<Record<'clarify' | 'pressure' | 'decision', {
+    goal: string;
+    preferCriteriaIds?: string[];
+    avoidCriteriaIds?: string[];
+  }>>;
 };
-
-
 
 export type ArenaConstraints = {
   maxRounds: number;
@@ -127,16 +67,40 @@ export type ArenaConfig = {
   goal?: string;
   description?: string;
   objective?: ArenaObjective;
+  phases: RoundIntent[];
   //rubric?: ArenaRubric;
   safety?: string[];
   voices?: Record<string, string>;
   globalStyle?: ArenaGlobalStyle;
   judges: ArenaJudgeConfig[];
+  
+  // ✅ NEW optional
+  lineup?: Partial<Record<'clarify' | 'pressure' | 'decision', string[]>>;
+
+  // ✅ NEW optional
+  stages?: Array<{ id: 'clarify' | 'pressure' | 'decision'; label: string }>;
+
 };
+
+//the idea is to have a notion of intentions and phases where we question on a topic for a bit
+//these are examples but its adjustable
+type IntentPhase =
+  | 'clarify_core'
+  | 'stress_weakest'
+  | 'decision_ready';
+
+export type RoundIntent = {
+  phase: string;//the intent phase above
+  goal: string; // human-readable
+  primaryCriteria: string[];
+  secondaryCriteria?: string[];
+  aggressiveness: 'light' | 'medium' | 'hard';
+};
+
 
 export type PanelMode = 'discovery' | 'interrogation';
 
-export type Phase = 'intro' | 'judging' | 'answering' | 'results' | 'ended';
+//export type Phase = 'intro' | 'judging' | 'answering' | 'results' | 'ended';
 
 export type ArenaProfile = {
   founderName: string;
@@ -150,94 +114,9 @@ export type ArenaProfile = {
   inputSource?: string;
 };
 
-export type ChatMsg = {
-  id: string;
-  role: 'judge' | 'user' | 'system';
-  judgeId?: string;
-  title?: string;
-  text: string;
-
-  // voice
-  voiceId?: string;
-  audioUrl?: string;
-  audioState?: 'idle' | 'loading' | 'ready' | 'error';
-};
-
-export type JudgeRun = {
-  judge: Exclude<string, 'host'>;
-  judgeLabel: string;
-  dimension: string;
-  score: number;
-  delta: number | null;
-  comment: string;
-  question: string;
-  answer: string;
-};
-
-export type SelectedAttacks = Record<Exclude<string, 'host'>, string>;
-
-export type Claim = {
-  id: string;
-  type:
-    | 'value'
-    | 'user'
-    | 'market'
-    | 'technical'
-    | 'goToMarket'
-    | 'pricing'
-    | 'competition'
-    | 'ops';
-  text: string;
-  quote?: string;
-  specificityScore: number; // 0..1
-  confidence: number; // 0..1
-  tags: string[];
-};
-
-export type Assumption = {
-  id: string;
-  claimId: string;
-  category: 'technical' | 'market' | 'product' | 'execution' | 'legal';
-  statement: string;
-  criticality: 'existential' | 'high' | 'medium' | 'low';
-  testability: 'high' | 'medium' | 'low';
-  confidence: number; // 0..1
-};
-
-export type OpenQuestion = {
-  id: string;
-  priority: 'p0' | 'p1' | 'p2';
-  question: string;
-  linkedTo: string[];
-};
-
-export type HostJson = {
-  phase: 'intro';
-  ready: boolean;
-  nextQuestion: string;
-  profile?: Partial<ArenaProfile>;
-  comment?: string;
-};
-
-export type JudgeJson = {
-  judge: Exclude<string, 'host'>;
-  score: number;
-  comment: string;
-  question: string;
-};
-
-export type ArenaMemory = {
-  lastScore: number;
-  lastQuestion: string;
-  lastAnswer: string;
-  lastAttackId: string;
-  resolvedAttackIds: string[];
-  // ✅ NEW
-  askedAttackIds?: string[];
-};
-
 export type Verdict = 'pass' | 'maybe' | 'fail';
 
+/*
 export type EndSummary = {
   finalScore: number; // overall
   verdict: 'pass' | 'maybe' | 'fail';
@@ -265,8 +144,9 @@ export type EndSummary = {
     pricingIdea: string;
     firstChannel: string;
   };
-};
+};*/
 
+/*
 export type PitchParse = {
   version: string;
   ideaName: string;
@@ -311,4 +191,4 @@ export type PitchParse = {
     question: string;
     linkedTo: string[];
   }>;
-};
+};*/

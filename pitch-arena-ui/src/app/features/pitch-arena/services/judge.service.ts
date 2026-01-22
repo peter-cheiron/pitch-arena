@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { GeminiService } from '#services/ai/gemini.service';
-import { ArenaConfig, ArenaJudgeConfig } from '../models/arena-config';
+import { ArenaConfig, ArenaJudgeConfig } from '../arena-models';
+import { JudgeTurnResult } from './new-judge.service';
 
 /**
  * Middle-ground JudgeService:
@@ -58,15 +59,6 @@ export type JudgeTurnArgs = {
   lastA?: string;
 };
 
-export type JudgeTurnResult = {
-  judge: string;
-  score: number;                // 1–10
-  comment: string;              // <= ~85 words
-  question: string;             // one sentence max
-  coverage: CriteriaCoverage[]; // per criteria
-  askedCriteriaId?: CriteriaId; // what this question targets (for anti-repeat)
-  verdictHint?: 'pass' | 'maybe' | 'fail'; // optional (you can ignore)
-};
 
 @Injectable({ providedIn: 'root' })
 export class JudgeService {
@@ -109,7 +101,7 @@ export class JudgeService {
 
     // Expect you add this to ArenaJudgeConfig (middle ground)
     // If you haven't yet, you can keep it optional and fallback.
-    console.log(judge)
+    //console.log(judge)
     const criteriaConfig: JudgeCriteria[] =
       (judge as any).criteriaConfig ??
       this.defaultCriteriaForJudge(judge.id);

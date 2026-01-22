@@ -34,7 +34,7 @@ export class DbAIUsageService  extends DbInstanceService<AiUsageContext> {
 
   logUsage(aiUsage: AiUsageContext){
     this.create(aiUsage).then(id => {
-      console.log("usage logged", id)
+      console.log("usage logged", id, aiUsage)
     })
   }
   

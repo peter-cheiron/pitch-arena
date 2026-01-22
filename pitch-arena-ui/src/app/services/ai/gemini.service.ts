@@ -31,7 +31,7 @@ export class GeminiService {
     //TODO put this in a config file? don't use this with images until I know the prices.
     //I need to check what other parameters are available and see if I can add them.
     this.model = getGenerativeModel(vertexAI, {
-      model: 'gemini-2.5-flash', //"gemini-3-pro-preview"//"gemini-2.5-flash"
+      model: "gemini-3-flash-preview", // 'gemini-2.5-flash', //"gemini-3-pro-preview"//"gemini-2.5-flash"
     });
   }
 
@@ -46,6 +46,8 @@ export class GeminiService {
     system: string,
     usage: AiUsageContext = { purpose: 'dev' }){
       const startedAt = performance.now();
+
+    console.log("inputChars", user.length + system.length)
 
     return this.rawCall(user, system).finally(() => {
       if(usage.purpose !== 'dev'){
@@ -73,6 +75,8 @@ export class GeminiService {
       .then((result) => {
         const response = result.response;
         const text = response.text();
+
+        console.log("outputChars", text.length)
 
         if (this.isJSON(text)) {
           const cleaned = text
@@ -169,6 +173,8 @@ export class GeminiService {
             if (userText && userText.trim().length > 0) {
               parameters.push({ text: userText || '' });
             }
+
+            this.model. 
 
             this.model.generateContent(parameters).then((result) => {
               const response = result.response;

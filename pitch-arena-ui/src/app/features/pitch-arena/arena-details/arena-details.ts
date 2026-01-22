@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArenaConfig } from '../deprecated/models/arena-config';
+import { ArenaConfig } from '../arena-models';
 import { ArenaService } from '../services/arena-service';
 import { UiButtonPillComponent } from '#ui';
 import { JudgeCard } from '../chat/ui/judge-card/judge-card';

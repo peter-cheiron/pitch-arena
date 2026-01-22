@@ -1,8 +1,9 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 import { SpeechService } from '#services/ai/speech.eleven.service';
-import { ChatMsg } from '../deprecated/models/arena-config';
+import { ChatUIMessage } from '../chat/ui/chat-ui';
 
+//TODO note toself to test this as I think I just broke it
 @Injectable({ providedIn: 'root' })
 export class VoiceService {
   private audio = new Audio();
@@ -23,7 +24,7 @@ export class VoiceService {
     this.currentlyPlayingMsgId.set(null);
   }
 
-  playMsg(msg: ChatMsg) {
+  playMsg(msg: ChatUIMessage) {
     if (!msg.audioUrl) return;
 
     if (this.currentlyPlayingMsgId() === msg.id) {
@@ -43,11 +44,11 @@ export class VoiceService {
 
   ensureVoice(
     msgId: string,
-    chat: WritableSignal<ChatMsg[]>,
+    chat: WritableSignal<ChatUIMessage[]>,
     judgeVoices: Record<string, string>
   ) {
     const msg = chat().find((m) => m.id === msgId);
-    if (!msg || msg.role !== 'judge') return;
+    if (!msg || msg.role !== 'ai') return;
     if (msg.audioState === 'loading') return;
     if (msg.audioUrl) return;
 
@@ -57,7 +58,7 @@ export class VoiceService {
       )
     );
 
-    const voiceId = msg.voiceId || judgeVoices[msg.judgeId!];
+    const voiceId = msg.voiceId;// || judgeVoices[msg.judgeId!];
 
     this.speech
       .textToSpeechUrl(msg.text, voiceId)
