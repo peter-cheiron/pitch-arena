@@ -153,6 +153,12 @@ export class ArenaPageNew {
     this.loadArena(path, demo);
   }
 
+  /**
+   * 
+   * @param path 
+   * @param demo 
+   * @returns 
+   */
   private async loadArena(path: string, demo: boolean) {
     try {
       this.logEvent('arena.load.start', { path, demo });

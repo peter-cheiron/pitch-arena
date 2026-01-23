@@ -12,4 +12,8 @@ export interface Profile {
     profileImage?: string;
     location?: Location;
     locale?: string;
+
+    //for demo 
+    termsRead: boolean;
+    demoAccessCode: string;
 }

@@ -60,7 +60,7 @@ export class AuthService {
     return this.auth.authStateReady();
   }
 
-  async signInWithGoogle(returnUrl: string = "landing") {
+  async signInWithGoogle(returnUrl: string = "arenas") {
     this.returnUrl.set(returnUrl)
     await signInWithPopup(this.auth, new GoogleAuthProvider());
     const exists = await this.userService.exists(this.user().email);
@@ -71,7 +71,8 @@ export class AuthService {
         email: this.user().email,
         displayName: this.user().displayName,
         firstName: this.user().displayName, 
-        termsRead: false
+        termsRead: false,
+        demoAccessCode: ""
       });
     }
     await this.handleRedirect();

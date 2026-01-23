@@ -21,6 +21,9 @@ export class AuthGuard implements CanActivate {
     const user = await this.auth.user();
 
     if (user) return true;
+
+    //we need to add in whether the user has a code like DEMO_ACCESS
+
     this.router.navigate(['login'], {
       queryParamsHandling: 'merge',
       queryParams: { returnUrl: state.url },
