@@ -11,7 +11,7 @@
     <textarea
       #editor
       [rows]="rows"
-      class="flex-1 min-h-0 w-full resize-none border p-2 rounded overflow-auto"
+      class="flex-1 min-h-0 w-full bg-white resize-none border p-2 rounded overflow-auto"
       [ngModel]="markdown"
       (ngModelChange)="onTextChange($event)"
       (drop)="onDrop($event)"

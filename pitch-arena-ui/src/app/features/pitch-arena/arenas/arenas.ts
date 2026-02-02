@@ -40,14 +40,19 @@ export class Arenas {
     {name: "gemini fast", 
       image:"/assets/images/gemini-3.webp",
       description: "A faster test arena for demo and testing purposes.", 
-      path: "gemini"},
+      path: "gemini-clean"},
     {name: "Solo VC", 
       image:"/assets/images/vc.jpg",
       description: "A one on one with an annoying VC that hates investing.", 
-      path: "solo_vc"}
+      path: "solo_vc"},
+    {name: "hiring ManagerC", 
+      image:"/assets/images/vc.jpg",
+      description: "Hiring Manager Lift Encounter (Fast).", 
+      path: "hiring_manager"}
   ]
 
   constructor(){
+    //TODO this should be in the app no to block all access
     effect(() => {
       if(this.user()){
         this.profileService.getById(this.user().uid).then(profile => {

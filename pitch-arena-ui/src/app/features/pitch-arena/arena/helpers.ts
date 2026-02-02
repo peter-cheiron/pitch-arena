@@ -2,6 +2,35 @@ import { ArenaConfig } from "../arena-models";
 import { JudgeRun } from "./arena-page";
 import { ChatUIMessage } from "./ui/chat-ui";
 
+export type MicroTurn =
+  | { kind: 'none' }
+  | { kind: 'repeat'; prompt: string }           // “Sorry—say that again?”
+  | { kind: 'clarify'; prompt: string }          // “When you say X, do you mean Y?”
+  | { kind: 'ack'; text: string }                // “Got it.” / “Okay.”
+  | { kind: 'smalltalk'; text: string };         // short human filler
+
+export function detectMicroTurn(userText: string): MicroTurn {
+  const t = userText.trim().toLowerCase();
+
+  // user asks to repeat / didn’t understand
+  if (/(repeat|say that again|come again|rephrase|sorry\?|pardon|didn'?t catch)/.test(t)) {
+    return { kind: 'repeat', prompt: "Sure—what part should I repeat: the question or the feedback?" };
+  }
+
+  // user clearly confused
+  if (/(what do you mean|i don'?t get it|confusing|huh\?)/.test(t)) {
+    return { kind: 'clarify', prompt: "Okay—tell me what word or line threw you off." };
+  }
+
+  // user gives super short / unclear answer
+  if (t.length < 6) {
+    return { kind: 'clarify', prompt: "Sorry we didn't catch that, can you repeat?" };
+  }
+
+  return { kind: 'none' };
+}
+
+
 /**
  * 
  * @returns a hard coded pitch that can be used to accelerate the demo
@@ -417,6 +446,15 @@ Next 24h: ${summary.nextStep24h}`;
     }
   }
 
+export function createAIMessage(role: 'system' | 'user' | 'ai', aiTitle, text: string): ChatUIMessage {
+    return {
+      title: aiTitle,
+      id: generateID(),
+      text,
+      role,
+    };
+  }
+
   export function createMessage(role: 'system' | 'user' | 'ai', text: string): ChatUIMessage {
     return {
       id: generateID(),
@@ -424,6 +462,7 @@ Next 24h: ${summary.nextStep24h}`;
       role,
     };
   }
+
 
   export function generateID() {
     return crypto.randomUUID();

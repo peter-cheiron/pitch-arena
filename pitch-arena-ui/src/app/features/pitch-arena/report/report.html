@@ -1,0 +1,175 @@
+<div class="rounded-xl bg-white shadow-xl border w-full max-w-[960px]">
+  <div class="flex items-center justify-between px-5 py-4 border-b">
+    <div class="text-lg font-semibold">{{ data?.title || 'Arena Report' }}</div>
+    <button
+      type="button"
+      class="text-xs uppercase tracking-wide rounded border px-2 py-1 text-neutral-600 hover:text-neutral-900"
+      (click)="ref.close(false)"
+    >
+      Close
+    </button>
+  </div>
+
+  <div class="p-5 max-h-[70vh] overflow-auto space-y-6 text-sm text-neutral-800">
+    @if (pitch) {
+      <section class="space-y-2">
+        <div class="text-xs uppercase tracking-wide text-neutral-500">Founder Pitch</div>
+        <p class="rounded-lg border bg-neutral-50 p-3 leading-6">{{ pitch }}</p>
+      </section>
+    }
+
+    <section class="space-y-3">
+      <div class="text-xs uppercase tracking-wide text-neutral-500">End Summary</div>
+      @if (summary) {
+        <div class="flex flex-wrap items-center gap-3">
+          <span
+            class="rounded-full border px-2 py-1 text-xs font-semibold uppercase"
+            [class]="verdictClass(summary.verdict)"
+          >
+            {{ summary.verdict }}
+          </span>
+          <span class="text-sm text-neutral-600">Final score: {{ summary.finalScore }}</span>
+        </div>
+        <div class="grid gap-3">
+          <div>
+            <div class="text-xs uppercase tracking-wide text-neutral-500">One-liner</div>
+            <p class="leading-6">{{ summary.oneLiner }}</p>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <div class="text-xs uppercase tracking-wide text-neutral-500">Top Strength</div>
+              <p class="leading-6">{{ summary.topStrength }}</p>
+            </div>
+            <div>
+              <div class="text-xs uppercase tracking-wide text-neutral-500">Top Risk</div>
+              <p class="leading-6">{{ summary.topRisk }}</p>
+            </div>
+          </div>
+          <div>
+            <div class="text-xs uppercase tracking-wide text-neutral-500">Next 24 Hours</div>
+            <p class="leading-6">{{ summary.nextStep24h }}</p>
+          </div>
+        </div>
+      } @else {
+        <div class="rounded-lg border bg-neutral-50 p-3 text-neutral-600">
+          Summary is not available yet.
+        </div>
+      }
+    </section>
+
+    @if (coach) {
+      <section class="space-y-3">
+        <div class="text-xs uppercase tracking-wide text-neutral-500">Coach Report</div>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="rounded-full border px-2 py-1 text-xs font-semibold uppercase">
+            Coach Score: {{ coach.overallScore ?? 0 }}/10
+          </span>
+          @if (coach.summary) {
+            <span class="text-sm text-neutral-600">{{ coach.summary }}</span>
+          }
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+          @if ((coach.strength ?? []).length) {
+            <div>
+              <div class="text-xs uppercase tracking-wide text-neutral-500">Strengths</div>
+              <ul class="list-disc pl-4 space-y-1">
+                @for (item of coach.strength ?? []; track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @if ((coach.fixes ?? []).length) {
+            <div>
+              <div class="text-xs uppercase tracking-wide text-neutral-500">Fixes</div>
+              <ul class="list-disc pl-4 space-y-1">
+                @for (item of coach.fixes ?? []; track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+        @if (coach.drill) {
+          <div>
+            <div class="text-xs uppercase tracking-wide text-neutral-500">Drill</div>
+            <p class="leading-6">{{ coach.drill }}</p>
+          </div>
+        }
+        @if ((coach.gaps ?? []).length) {
+          <div>
+            <div class="text-xs uppercase tracking-wide text-neutral-500">Gaps</div>
+            <ul class="list-disc pl-4 space-y-1">
+              @for (item of coach.gaps ?? []; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if ((coach.criteria ?? []).length) {
+          <div>
+            <div class="text-xs uppercase tracking-wide text-neutral-500">Criteria</div>
+            <div class="space-y-2">
+              @for (criterion of coach.criteria ?? []; track criterion) {
+                <div class="rounded-lg border bg-neutral-50 p-3">
+                  <div class="flex items-center justify-between">
+                    <div class="font-medium">
+                      {{ criterion.label || criterion.id || 'Criteria' }}
+                    </div>
+                    <div class="text-xs text-neutral-500">
+                      {{ criterion.score ?? 0 }}/10
+                    </div>
+                  </div>
+                  @if (criterion.note) {
+                    <p class="mt-1 text-neutral-600">{{ criterion.note }}</p>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </section>
+    }
+
+    @if (judgeRuns.length) {
+      <section class="space-y-3">
+        <div class="text-xs uppercase tracking-wide text-neutral-500">Judge Runs</div>
+        <div class="space-y-3">
+          @for (run of judgeRuns; track run) {
+            <div class="rounded-lg border p-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="font-medium">{{ run.judgeLabel || 'Judge' }}</div>
+                <div class="text-xs text-neutral-500">
+                  Round {{ run.round ?? 0 }} • Score {{ run.score ?? 0 }}/10
+                </div>
+              </div>
+              @if (run.comment) {
+                <p class="mt-2 text-neutral-600">{{ run.comment }}</p>
+              }
+              @if (run.question || run.answer) {
+                <div class="mt-3 grid gap-2 text-xs text-neutral-500">
+                  @if (run.question) {
+                    <div><span class="font-semibold text-neutral-700">Q:</span> {{ run.question }}</div>
+                  }
+                  @if (run.answer) {
+                    <div><span class="font-semibold text-neutral-700">A:</span> {{ run.answer }}</div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+
+  <div class="px-5 py-3 border-t flex justify-end">
+    <button
+      type="button"
+      class="rounded border px-3 py-1 text-sm text-neutral-700 hover:text-neutral-900"
+      (click)="ref.close(true)"
+    >
+      Done
+    </button>
+  </div>
+</div>

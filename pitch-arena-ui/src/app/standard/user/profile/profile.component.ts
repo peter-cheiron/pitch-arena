@@ -46,7 +46,8 @@ export class ProfileComponent {
       about: '',
       roles: [],
       userId: '',
-      termsRead: false
+      termsRead: false, 
+      demoAccessKey: ""
     };
     
 

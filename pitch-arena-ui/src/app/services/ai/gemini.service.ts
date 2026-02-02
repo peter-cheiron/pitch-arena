@@ -1,8 +1,7 @@
-import { AuthService } from '#services/auth';
 import { AiUsageContext, DbAIUsageService } from '#services/db/db-ai-usage.service';
-import { computed, inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { getApp } from '@angular/fire/app';
-import { getAI, getGenerativeModel } from 'firebase/vertexai';
+import { getAI, getGenerativeModel, GoogleAIBackend} from 'firebase/vertexai';
 
 @Injectable({
   providedIn: 'root',
@@ -23,15 +22,35 @@ export class GeminiService {
 
   constructor() {
     // Initialize the Vertex AI service
-    const vertexAI = getAI(getApp());
+    //const vertexAI = getAI(getApp());
+
+    const ai = getAI(getApp(), { backend: new GoogleAIBackend() });
 
     // Initialize the generative model with a model that supports your use case
     // Gemini 2.5 models are versatile and can be used with all API capabilities
     // this is the only model that worked for images ... but be careful of the costs
     //TODO put this in a config file? don't use this with images until I know the prices.
     //I need to check what other parameters are available and see if I can add them.
-    this.model = getGenerativeModel(vertexAI, {
+    
+    // Set the thinking configuration
+    // Use a thinking level value appropriate for your model (example value shown here)
+    const generationConfig = {
+      thinkingConfig: {
+        thinkingLevel: 'LOW'
+      }
+    };
+    
+    this.model = getGenerativeModel(ai, {
       model: "gemini-3-flash-preview", // 'gemini-2.5-flash', //"gemini-3-pro-preview"//"gemini-2.5-flash"
+      generationConfig: {
+        maxOutputTokens: 2048,
+        // Cast to any to bypass the TS2353 error
+        thinkingConfig: {
+          includeThoughts: false,
+          // Note: Use thinkingBudget (token count) for these experimental models
+          thinkingBudget: 512 
+        }
+      } as any
     });
   }
 
@@ -47,9 +66,11 @@ export class GeminiService {
     usage: AiUsageContext = { purpose: 'dev' }){
       const startedAt = performance.now();
 
-    console.log("inputChars", user.length + system.length)
+    //console.log("inputChars", user.length + system.length)
 
     return this.rawCall(user, system).finally(() => {
+      var durationMs = performance.now() - startedAt
+      console.log("prompt", durationMs)
       if(usage.purpose !== 'dev'){
         this.aiUsageService.logUsage({
         ...usage,

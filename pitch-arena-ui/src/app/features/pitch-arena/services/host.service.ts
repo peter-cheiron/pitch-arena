@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ArenaConfig, ArenaJudgeConfig } from '../arena-models';
 import { GeminiService } from '#services/ai/gemini.service';
 
-type HostProfile = Record<string, unknown>;
+export type HostProfile = Record<string, unknown>;
 
 @Injectable({ providedIn: 'root' })
 export class HostService {
@@ -19,9 +19,35 @@ export class HostService {
     return this.gemini.textPrompt(user, system);
   }
 
-  //TODO have a bunch of different welcome messages
-  getWelcomeMessage(){
-    //this is something to think about
+  async parseMarkdownWithGemini(
+    md: string,
+    draft: Partial<HostProfile>
+  ): Promise<{ profile: Partial<HostProfile>; missing: (keyof HostProfile)[] }> {
+
+    //TODO as before the profile fields shouldn't be hardcoded but use the config
+    const system = [
+      'You are a strict parser that converts a hackathon project description into a HostProfile JSON.',
+      'Do NOT invent facts. Only use the provided text.',
+      'If a field is not clearly present, set it to null.',
+      'Return ONLY JSON with keys: profile, missing.',
+      'HostProfile fields: founderName, ideaName, pitch, targetUser, targetContext, firstValue, acquisitionPath, inputSource.',
+    ].join('\n');
+
+    const user = [
+      'Markdown (authoritative):',
+      md.slice(0, 6000),
+      '',
+      'Draft extracted fields (may be incomplete):',
+      JSON.stringify(draft),
+    ].join('\n');
+
+    const raw = await this.gemini.textPrompt(user, system);
+    const obj = typeof raw === 'string' ? JSON.parse(raw) : raw;
+
+    const profile = obj?.profile ?? {};
+    const missing = Array.isArray(obj?.missing) ? obj.missing : [];
+
+    return { profile, missing };
   }
 
   /**

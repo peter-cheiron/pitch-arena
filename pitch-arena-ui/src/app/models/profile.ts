@@ -15,5 +15,5 @@ export interface Profile {
 
     //for demo 
     termsRead: boolean;
-    demoAccessCode: string;
+    demoAccessKey: string;//we will use this to give access to demmo
 }

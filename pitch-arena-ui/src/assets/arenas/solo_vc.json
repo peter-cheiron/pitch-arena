@@ -1,81 +1,67 @@
 {
-  "id": "arena_vc_fast_solo",
-  "name": "VC Solo Arena (Fast)",
-  "description": "One-judge arena for fast iteration: Host + VC only, richer attack pool.",
+  "id": "arena_vc_lift_no_host",
+  "name": "VC Lift Encounter (No Host)",
+  "goal": "Can you land the idea in a rushed elevator pitch and earn a follow-up?",
+  "description": "Single-VC, time-boxed elevator encounter. No warm-up. VC starts immediately.",
   "safety": [
     "no adult entertainment",
-    "test anything to do with children",
+    "no NSFW",
+    "anything involving children must be framed as monitoring/assistance only, not autonomous care",
     "no medical advice",
-    "no NSFW"
+    "no illegal instructions"
   ],
   "objective": {
-    "thesis": "Fast loop test with a single VC judge, but many different question types to avoid repetition.",
+    "thesis": "Assess whether the founder can communicate a crisp one-liner, a believable demo hook, and why Gemini is essential—fast enough to earn a follow-up.",
     "successDefinition": [
-      "Warm-up completes quickly",
-      "VC produces varied questions across rounds",
-      "Rescore reliably advances and avoids repeats",
-      "End state reached within 1–2 rounds"
+      "One-liner is clear and memorable",
+      "User + moment of use are concrete",
+      "clear market with audience willing to pay", 
+      "Demo pitch is believable (10 seconds)",
+      "One clear next step (what you want from the VC / what happens next)",
+      "Basic safety boundary stated if domain is sensitive"
     ],
     "deliverables": {
       "endOfRound": [
-        "quick_verdict",
-        "top_strength",
-        "top_risk",
-        "next_step_24h"
+        "elevator_one_liner",
+        "who_for_and_when",
+        "demo_hook_10_seconds",
+        "clear_audience", 
+        "ask_or_next_step",
+        "follow_up_verdict"
+      ],
+      "endOfArena": [
+        "follow_up_verdict",
+        "one_change_to_make_it_punchier"
       ]
     },
     "constraints": {
-      "noInvestorTalk": false,
+      "hostEnabled": false,
       "toneFloor": "respectful",
       "timeboxPerJudgeSeconds": 20,
-      "maxRounds": 3,
-      "fastMode": false,
-      "parseMode": "fast",
+      "maxRounds": 1,
+      "fastMode": true,
+      "parseMode": "none",
       "summaryMode": "template",
-      "llmTimeoutMs": 10000
-    }
-  },
-  "rubric": {
-    "scale": { "min": 0, "max": 10, "decimals": 1 },
-    "criteriaWeights": [
-      { "id": "fundability", "label": "Fundability", "weightPct": 40 },
-      { "id": "feasibility", "label": "Feasibility", "weightPct": 35 },
-      { "id": "usefulness", "label": "Usefulness", "weightPct": 25 }
-    ],
-    "scoreGuidance": {
-      "9_10": "Crisp, concrete, compelling; few open gaps; clear next step.",
-      "7_8": "Solid, but missing one key detail or has one major risk unaddressed.",
-      "5_6": "Understandable but vague; unclear buyer/mechanism/loop; needs focus.",
-      "0_4": "Hard to understand or internally inconsistent; missing basics."
+      "llmTimeoutMs": 8000
     }
   },
   "voices": {
-    "host": "6F5Zhi321D3Oq7v1oNT4",
-    "vc": "NYC9WEgkq1u4jiqBseQ9"
+    "vc_lift": "NYC9WEgkq1u4jiqBseQ9"
   },
   "globalStyle": {
     "toneDefault": "direct",
     "modes": {
-      "discovery": {
-        "label": "Discovery",
-        "goal": "Clarify the idea with friendly precision."
-      },
-      "interrogation": {
-        "label": "Pressure-test",
-        "goal": "Go deeper on one weak spot without theatrics."
-      }
+      "discovery": { "label": "Lift", "goal": "Get to a crisp hook, fast." },
+      "interrogation": { "label": "Snap-check", "goal": "Pressure-test the weakest part in one question." }
     },
     "bannedPhrases": [
-      "who pays",
       "pull out their credit card",
       "what budget does it come from",
       "if you had 14 days",
-      "what do you cut",
       "vaporware",
       "marketing fluff",
       "glorified forum",
       "you will fail",
-      "worst customer segment",
       "starve",
       "catastrophic",
       "pass",
@@ -90,7 +76,7 @@
       "leverage ai"
     ],
     "conversationRules": {
-      "maxCommentWords": 80,
+      "maxCommentWords": 55,
       "oneQuestionOnly": true,
       "questionMaxSentences": 1,
       "deEscalateIfDefensive": true,
@@ -100,115 +86,89 @@
   },
   "judges": [
     {
-      "id": "host",
-      "label": "Host",
-      "dimension": "Warm-up",
-      "tone": "grumpy, wants the info but a little impatient",
-      "profileConfig": [
-        "founderName",
-        "ideaName",
-        "pitch",
-        "targetUser",
-        "targetContext",
-        "firstValue",
-        "acquisitionPath",
-        "inputSource"
-      ]
-    },
-    {
-      "id": "vc",
-      "label": "VC Judge",
-      "dimension": "Clarity & Viability",
-      "tone": "direct",
+      "id": "vc_lift",
+      "label": "VC (Lift)",
+      "dimension": "Follow-up likelihood",
+      "tone": "impatient, curious, pattern-matching; will only follow up if it’s instantly clear",
+      "focus": [
+        "one-liner punch",
+        "moment of use",
+        "demo hook",
+        "Gemini essentiality",
+        "next step ask",
+        "safety boundary if needed"
+      ],
       "criteriaConfig": [
         {
-          "id": "buyer_value",
-          "category": "buyer",
-          "weight": 2,
-          "description": "Make the buyer/value exchange concrete.",
-          "signals": ["named_entity", "example"],
-          "qTypes": ["clarify_who", "transaction_concrete"],
+          "id": "one_liner",
+          "category": "story",
+          "weight": 3,
+          "description": "One-liner is crisp, specific, memorable (no jargon).",
+          "signals": ["example"],
+          "qTypes": ["elevator_one_liner"],
           "questionStarters": [
-            "Who is happiest when this works, and what do they believe they gained?",
-            "If this disappeared tomorrow, who would feel it most and why?"
+            "Doors closing—8 seconds: give me the one-liner (who it’s for + what it does + outcome)."
           ]
         },
         {
-          "id": "moment_trigger",
+          "id": "moment_of_use",
           "category": "user",
           "weight": 2,
-          "description": "Clarify the trigger and moment of use.",
+          "description": "Concrete user + trigger moment (when/why they reach for it).",
           "signals": ["example"],
-          "qTypes": ["moment_trigger"],
+          "qTypes": ["who_for_and_when"],
           "questionStarters": [
-            "What happens right before someone reaches for this?",
-            "What is the 'oh no' moment that triggers action?"
+            "When exactly do they use it—what just happened right before they open it?"
           ]
         },
         {
-          "id": "substitute_break",
-          "category": "substitute",
+          "id": "demo_hook",
+          "category": "demo",
+          "weight": 3,
+          "description": "Believable 10-second demo hook: what I would see on screen.",
+          "signals": ["example", "timeline"],
+          "qTypes": ["demo_hook_10_seconds"],
+          "questionStarters": [
+            "In 10 seconds, what do I see—one action, one output?"
+          ]
+        },
+        {
+          "id": "one_liner",
+          "category": "market",
+          "weight": 6,
+          "description": "Audience or market is clear and there is real value to gained.",
+          "signals": ["market", "numbers"],
+          "qTypes": ["gemini_role_in_one_sentence"],
+          "questionStarters": [
+            "One sentence: where does Gemini sit in the loop and what does it produce?"
+          ]
+        },
+        {
+          "id": "ask_next_step",
+          "category": "plan",
           "weight": 2,
-          "description": "Name the substitute and where it breaks.",
-          "signals": ["example"],
-          "qTypes": ["substitute_break", "switch_moment"],
+          "description": "Clear next step / ask: what you want after this lift ride.",
+          "signals": ["next_step"],
+          "qTypes": ["ask_or_next_step"],
           "questionStarters": [
-            "What do they do today instead, and where does it fail?",
-            "What finally makes the workaround unacceptable?"
+            "What’s the one follow-up you want after this—intro, pilot, or 15 minutes?"
           ]
         },
         {
-          "id": "wedge_entry",
-          "category": "wedge",
+          "id": "safety_boundary",
+          "category": "safety",
           "weight": 1,
-          "description": "Find the smallest compelling entry point.",
-          "signals": ["example", "next_step"],
-          "qTypes": ["wedge_entry", "expansion_path"]
-        },
-        {
-          "id": "channel_realism",
-          "category": "distribution",
-          "weight": 1,
-          "description": "Force a realistic first acquisition path.",
-          "signals": ["example"],
-          "qTypes": ["channel_realism", "gtm_constraint"]
-        },
-        {
-          "id": "pricing_anchor",
-          "category": "pricing",
-          "weight": 1,
-          "description": "Get a rough price anchor tied to value.",
-          "signals": ["numbers", "example"],
-          "qTypes": ["pricing_anchor"]
-        },
-        {
-          "id": "retention_loop",
-          "category": "retention",
-          "weight": 1,
-          "description": "Explain why someone returns.",
-          "signals": ["example"],
-          "qTypes": ["retention_loop"]
-        },
-        {
-          "id": "scope_slice",
-          "category": "scope",
-          "weight": 1,
-          "description": "Define the smallest complete slice.",
-          "signals": ["next_step"],
-          "qTypes": ["scope_slice"]
-        },
-        {
-          "id": "trust_boundary",
-          "category": "trust",
-          "weight": 1,
-          "description": "Name worst failure + boundary between automate vs verify.",
-          "signals": ["example", "mechanism"],
-          "qTypes": ["trust_boundary"]
+          "description": "If the domain is sensitive, states one responsible-use boundary.",
+          "signals": ["constraint", "risk"],
+          "qTypes": ["safety_boundary"],
+          "questionStarters": [
+            "If there’s any sensitive angle here, what’s one boundary you enforce in the demo?"
+          ]
         }
       ],
       "scoring": {
         "usesRubric": true,
-        "dimension": "fundability"
+        "dimension": "follow_up_likelihood"
       }
     }
   ]

@@ -10,23 +10,25 @@
           </p>
           <div class="flex items-center gap-2">
             <h3 class="text-lg font-semibold leading-tight">{{ cfg.name }}</h3>
+            <!--
             <span class="text-[11px] px-2 py-0.5 rounded-full border"
                   style="border-color: var(--color-border); background: color-mix(in srgb, var(--color-muted) 10%, var(--color-surface));">
               {{ cfg.id }}
             </span>
+            -->
           </div>
           <p class="text-sm leading-snug" style="color: var(--color-muted);">
-            {{ cfg.description || 'No description provided.' }}
+           <strong>Description</strong>:  {{ cfg.description || 'No description provided.' }}
           </p>
           @if(cfg.objective){
             <p class="text-sm leading-snug" style="color: var(--color-muted);">
               <strong>Thesis</strong>: {{cfg.objective.thesis}}
             </p>
             <div class="text-sm leading-snug" style="color: var(--color-muted);">
-              <strong>Success Definition</strong>:
+              <strong>Success Criteria</strong>:
               <ul>
                 @for(line of cfg.objective.successDefinition; track line){
-                  <li>{{line}}</li>
+                  <li class="list-disc ml-6">{{line}}</li>
                 }
               </ul>
             </div>
@@ -43,7 +45,11 @@
 
       <div class="flex gap-4">
         <div>
-          <ui-button-pill (onClick)="launchArena()">Launch the Arena</ui-button-pill>
+          <ui-button-pill (onClick)="launchArena(true)">Launch Direct</ui-button-pill>
+        </div>
+
+        <div>
+          <ui-button-pill (onClick)="launchArena(false)">Launch With Deck</ui-button-pill>
         </div>
 
         <div>
@@ -69,12 +75,12 @@
                 [topTitle]="'Panel'"
                 [rightTag]="'Score'"
                 [name]="judge.label"
-                [hp]="'--'"
+                [image]="judge.image"
                 [criteriaTitle]="'Tone'"
                 [criteriaText]="judge.tone ?? 'direct'"
                 [rating]="0"
                 [criteria2Title]="'Focus'"
-                [criteria2Text]="(judge.dimension ?? '')"
+                [criteria2Text]="judge.persona.archetype ?? 'direct'"
                 [rating2]="0"
                 [weakness]="'n/a'"
                 [resist]="'n/a'"

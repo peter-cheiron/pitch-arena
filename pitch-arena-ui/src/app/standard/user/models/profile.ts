@@ -19,4 +19,5 @@ export interface Profile {
     locale?: string;
     options?:  ProfileOption[];
     termsRead: boolean;
+    demoAccessKey: string;
 }

@@ -14,15 +14,13 @@ import { AuthService } from '#services/auth';
 export class AuthGuard implements CanActivate {
   private auth = inject(AuthService);
   private router = inject(Router);
-
-  async canActivate(_: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  
+  async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     await this.auth.authStateReady();
 
     const user = await this.auth.user();
 
-    if (user) return true;
-
-    //we need to add in whether the user has a code like DEMO_ACCESS
+    if(user) return true
 
     this.router.navigate(['login'], {
       queryParamsHandling: 'merge',

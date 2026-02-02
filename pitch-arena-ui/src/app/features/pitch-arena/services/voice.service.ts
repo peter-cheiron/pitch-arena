@@ -1,7 +1,7 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 import { SpeechService } from '#services/ai/speech.eleven.service';
-import { ChatUIMessage } from '../chat/ui/chat-ui';
+import { ChatUIMessage } from '../arena/ui/chat-ui';
 
 //TODO note toself to test this as I think I just broke it
 @Injectable({ providedIn: 'root' })

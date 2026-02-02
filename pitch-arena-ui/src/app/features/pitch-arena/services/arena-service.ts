@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ArenaConfig } from '../arena-models';
 import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { CriteriaCoverage, JudgeTurnResult } from './new-judge.service';
+import { CriteriaCoverage, JudgeTurnResult } from './panel-judge.service';
 
 @Injectable({ providedIn: 'root' })
 export class ArenaService {

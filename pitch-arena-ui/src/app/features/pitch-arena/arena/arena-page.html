@@ -1,0 +1,85 @@
+<div class="m-2 flex h-screen flex-col gap-2 relative">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <button type="button" class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100" aria-label="Exit arena" title="Exit arena" (click)="quitArena()">
+        X
+      </button>
+      <ui-button-pill color="secondary" (onClick)="openConversationOptions()">Options</ui-button-pill>
+    </div>
+    <ui-toggle-button [(selected)]="judgesOnSide" label="Judges on side"></ui-toggle-button>
+  </div>
+
+    @let hostSpeaking = !HOST_DONE;
+    <div class="flex min-h-0 flex-1 gap-4" [class.flex-col]="!judgesOnSide" [class.flex-row]="judgesOnSide">
+      <div
+        class="flex gap-4"
+        [class.flex-wrap]="!judgesOnSide"
+        [class.justify-center]="!judgesOnSide"
+        [class.w-full]="!judgesOnSide"
+        [class.flex-col]="judgesOnSide"
+        [class.w-64]="judgesOnSide"
+        [class.overflow-y-auto]="judgesOnSide"
+        [class.pr-2]="judgesOnSide"
+        style="--judge-card-width: 16rem; --judge-card-height: 350px; --judge-card-image-height: 9rem; --judge-card-outer-padding: 1rem; --judge-card-content-padding: 0.75rem; --judge-card-footer-offset: 0.75rem;"
+      >
+          @for(judge of arenaConfig()?.judges ?? []; track judge.id){
+          <div
+            class="rounded-[22px] transition-colors duration-200"
+            [class.p-1]="!judgesOnSide"
+            [class.p-0.5]="judgesOnSide"
+            [style.background-color]="((hostSpeaking && judge.id === 'host') || isJudgeSpeaking(judge.id)) ? 'color-mix(in srgb, var(--color-primary) 18%, transparent)' : 'transparent'"
+            [style.box-shadow]="((hostSpeaking && judge.id === 'host') || isJudgeSpeaking(judge.id)) ? '0 0 0 3px color-mix(in srgb, var(--color-primary) 60%, transparent), 0 8px 20px -12px color-mix(in srgb, var(--color-primary) 60%, transparent)' : 'none'"
+            [style.transform]="((hostSpeaking && judge.id === 'host') || isJudgeSpeaking(judge.id)) ? 'translateY(-2px)' : 'none'"
+          >
+                <judge-card
+                  [topTitle]="'Panel'"
+                  [rightTag]="'Score'"
+                  [name]="judge.label"
+                  [hp]="'--'"
+                  [image]="judge.image"
+                  [criteriaTitle]="'Tone'"
+                  [criteriaText]="judge.tone ?? 'direct'"
+                  [rating]="0"
+                  [criteria2Title]="'Focus'"
+                  [criteria2Text]="(judge.dimension ?? '')"
+                  [rating2]="0"
+                  [weakness]="'n/a'"
+                  [resist]="'n/a'"
+                  [tone]="judge.dimension"
+                  [height]="judgesOnSide ? 180 : 220"
+                ></judge-card>
+          </div>
+          }
+      </div>
+    
+      <div class="flex min-h-0 flex-1" [class.h-full]="judgesOnSide">
+
+        @if(judgesOnSide){
+          <chat-ui class="flex-1" [class.h-full]="judgesOnSide"
+            (send)="gotMessage($event)"
+            [messages]="messages()">
+          </chat-ui>
+        }@else{
+          <chat-ui-horizontal class="flex-1" [class.h-full]="judgesOnSide"
+            (send)="gotMessage($event)"
+            [messages]="messages()">
+          </chat-ui-horizontal>
+        }
+
+        <ng-template #conversationOptions>
+          <div class="flex flex-col gap-3 text-sm">
+            <p class="text-neutral-600">To get realism set these to false but if you want to know what to work on set true.</p>
+            <div class="flex flex-col gap-2">
+              <ui-toggle-button [(selected)]="liveScoring" label="See Live Scoring"></ui-toggle-button>
+              <ui-toggle-button [(selected)]="seeThinking" label="See Judge Thinking"></ui-toggle-button>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">
+              <ui-button-pill color="secondary" (onClick)="exportConversation()">Export Conversation</ui-button-pill>
+              <ui-button-pill color="secondary" (onClick)="exportPrompts()">Export Prompts</ui-button-pill>
+              <ui-button-pill color="secondary" (onClick)="exportEndReport()">Export End Report</ui-button-pill>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+</div>

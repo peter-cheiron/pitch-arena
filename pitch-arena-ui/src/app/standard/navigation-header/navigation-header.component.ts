@@ -29,8 +29,9 @@ export class NavigationHeaderComponent {
   loggedInMenu = [
   //{ textSymbol: 'header.dashboard', path: '/dashboard', id: 10, children: []},
      { textSymbol: 'header.arenas', path: '/arenas', id: 13, children: []} ,
-   { textSymbol: 'header.arena', path: '/arena', id: 11, children: []} ,
-   { textSymbol: 'header.lab', path: '/lab', id: 12, children: []} ,
+   { textSymbol: 'header.pitch', path: '/pitches', id: 11, children: []} ,
+   { textSymbol: 'header.designer', path: '/designer', id: 15, children: []} ,
+   { textSymbol: 'header.lab', path: '/lab', id: 14, children: []} ,
   //{ textSymbol: 'header.locale', id: 1}
 ];
 

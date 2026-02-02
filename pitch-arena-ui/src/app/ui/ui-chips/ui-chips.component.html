@@ -1,10 +1,10 @@
 <div
   class="w-full relative rounded border transition-all ease-in-out duration-100
-         text-[var(--color-text)]
+         text-(--color-text)
          border-(--color-border)
          outline outline-transparent
          hover:border-[var(--color-text)]/30
-         focus-within:border-[var(--color-primary)]
+         focus-within:border-[var(--color-bg)]
          focus-within:outline-[var(--color-ring)]/25"
   [class.opacity-60]="disabled()"
   [class.pointer-events-none]="disabled()"
@@ -12,7 +12,7 @@
   <label
     [for]="id()"
     class="absolute text-sm font-bold top-0 left-0 px-3 pt-3
-           text-[var(--color-primary)]"
+           text-(--color-text)"
     [class.text-(--color-muted)]="disabled()"
   >
     {{ label() }}
@@ -25,13 +25,13 @@
     @for (chip of value; track chip) {
       <div
         class="px-2 py-1 rounded-full text-xs flex items-center
-               bg-[var(--color-primary)] text-[var(--color-text)]"
+               var(--color-bg) var(--color-text)"
       >
         {{ chip }}
         <button
           type="button"
           (click)="removeChip(chip)"
-          class="ml-1 hover:text-[var(--color-primary-600)]"
+          class="ml-1 hover:text-[var(--color-bg-600)]"
         >
           &times;
         </button>
@@ -48,7 +48,7 @@
         placeholder="Type ..."
         class="bg-transparent border-none text-sm outline-none w-32
                placeholder-[var(--color-muted)] placeholder:italic
-               text-[var(--color-black)]"
+               var(--color-text)"
         [disabled]="disabled()"
       />
 
@@ -65,7 +65,7 @@
               (click)="selectSuggestion(suggestion)"
               class="px-3 py-2 cursor-pointer text-sm
                      hover:bg-[var(--color-border)]/30
-                     text-[var(--color-text)]"
+                     var(--color-text)"
             >
               {{ suggestion }}
             </div>

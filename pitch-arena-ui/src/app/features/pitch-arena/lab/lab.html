@@ -1,0 +1,137 @@
+<div class="m-4 space-y-4">
+  <div class="flex flex-col gap-3 md:flex-row md:items-end">
+    <ui-input label="Arena path" [(value)]="arenaPath" placeholder="gemini"></ui-input>
+    <ui-button-pill (onClick)="loadArena()" [disabled]="loading">Load arena</ui-button-pill>
+  </div>
+
+  @if (arenaConfig) {
+    <div class="text-sm" style="color: var(--color-muted);">
+      Loaded: {{ arenaConfig.name }} ({{ arenaConfig.id }})
+    </div>
+
+  }
+
+  @if(pitches()){
+    <div>
+      @for(pitch of pitches(); track pitch; let i = $index){
+        <div>
+          <span class="p-2">Title: {{pitch.title}}</span>
+          <ui-toggle-button
+            [selected]="selectedPitchIndex === i"
+            (selectedChange)="selectPitch(pitch, i, $event)"></ui-toggle-button>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="flex flex-wrap gap-3">
+    <ui-button-pill color="secondary" (onClick)="createPrompt()" [disabled]="loading">Create prompt</ui-button-pill>
+    <ui-button-pill (onClick)="runJudges()" [disabled]="loading">Run judges</ui-button-pill>
+    <ui-button-pill color="secondary" (onClick)="clearResults()" [disabled]="loading">Clear</ui-button-pill>
+  </div>
+
+  @if (loading) {
+    <div class="text-sm" style="color: var(--color-muted);">Running judges...</div>
+  }
+
+  @if (error) {
+    <div class="text-sm" style="color: var(--color-danger);">{{ error }}</div>
+  }
+
+  @if (results.length) {
+    <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div class="grid gap-3">
+        @for (turn of results; track $index) {
+          <div class="rounded-2xl border p-4 cursor-pointer" (click)="selectQuestion(turn)" [style.border-color]="selectedTurn?.judge === turn.judge ? 'var(--color-primary)' : 'var(--color-border)'" style="background: var(--color-surface); box-shadow: var(--shadow-elev);">
+            <div class="flex items-center justify-between">
+              <div class="text-sm font-semibold">{{ getJudgeLabel(turn.judge) }}</div>
+              <div class="text-xs" style="color: var(--color-muted);">Score {{ turn.score.toFixed(1) }}</div>
+            </div>
+            <div class="mt-2 text-sm">{{ turn.question }}</div>
+          </div>
+        }
+      </div>
+
+      <div>
+        @if (selectedTurn) {
+          <div class="rounded-2xl border p-4" style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+            <div class="text-sm font-semibold">Selected: {{ getJudgeLabel(selectedTurn.judge) }}
+              <ui-button-pill (onClick)="copyPrompt()">Copy Prompt</ui-button-pill>
+            </div>
+            <div class="mt-2 text-sm">{{ selectedTurn.question }}</div>
+            <div class="mt-3 text-xs" style="color: var(--color-muted);">Thinking</div>
+            <div class="mt-1 text-sm whitespace-pre-wrap">{{ selectedTurn.comment }}</div>
+
+            <div class="mt-4 grid gap-3">
+              <div class="flex flex-wrap gap-4 text-xs">
+                <div>
+                  <div class="text-xs" style="color: var(--color-muted);">Score</div>
+                  <div class="text-sm font-semibold">{{ selectedTurn.score.toFixed(1) }}</div>
+                </div>
+                @if (selectedTurn.verdictHint) {
+                  <div>
+                    <div class="text-xs" style="color: var(--color-muted);">Verdict</div>
+                    <div class="text-sm font-semibold uppercase">{{ selectedTurn.verdictHint }}</div>
+                  </div>
+                }
+                @if (selectedTurn.askedCriteriaId) {
+                  <div>
+                    <div class="text-xs" style="color: var(--color-muted);">Asked criteria</div>
+                    <div class="text-sm font-semibold">{{ selectedTurn.askedCriteriaId }}</div>
+                  </div>
+                }
+              </div>
+              @if (selectedTurn.coverage?.length) {
+                <div>
+                  <div class="text-xs" style="color: var(--color-muted);">Coverage</div>
+                  <div class="mt-2 grid gap-2">
+                    @for (item of selectedTurn.coverage; track item.id) {
+                      <div class="rounded-lg border px-2 py-1" style="border-color: var(--color-border);">
+                        <div class="flex items-center justify-between text-xs">
+                          <div class="font-semibold">{{ item.id }}</div>
+                          <div class="uppercase" style="color: var(--color-muted);">{{ item.status }}</div>
+                        </div>
+                        @if (item.note) {
+                          <div class="mt-1 text-xs" style="color: var(--color-muted);">{{ item.note }}</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!--
+            @if (false) {
+              <div class="mt-4 rounded-xl border p-3" style="border-color: var(--color-border);">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="text-xs" style="color: var(--color-muted);">Prompt editor</div>
+                  <ui-button-pill color="secondary" (onClick)="executePrompt()" [disabled]="promptLoading">Run prompt</ui-button-pill>
+                </div>
+                <div class="mt-2 text-xs" style="color: var(--color-muted);">System</div>
+                <ui-markdown-editor [(markdown)]="editableSystemPrompt" [rows]="8" [showPreview]="false"></ui-markdown-editor>
+                <div class="mt-3 text-xs" style="color: var(--color-muted);">User</div>
+                <ui-markdown-editor [(markdown)]="editableUserPrompt" [rows]="8" [showPreview]="false"></ui-markdown-editor>
+                @if (promptLoading) {
+                  <div class="mt-2 text-xs" style="color: var(--color-muted);">Running prompt...</div>
+                }
+                @if (promptError) {
+                  <div class="mt-2 text-xs" style="color: var(--color-danger);">{{ promptError }}</div>
+                }
+                @if (promptResponse) {
+                  <div class="mt-3 text-xs" style="color: var(--color-muted);">Response</div>
+                  <pre class="mt-1 text-xs whitespace-pre-wrap">{{ promptResponse }}</pre>
+                }
+              </div>
+            }-->
+
+          </div>
+        } @else {
+          <div class="rounded-2xl border p-4 text-sm" style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev); color: var(--color-muted);">
+            Select a question to view details.
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

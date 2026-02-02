@@ -1,0 +1,59 @@
+<div>
+  <div class="flex">
+    <div class="ml-4 mt-8 w-1/5">
+      <p class="font-bold">Select a pitch to edit</p>
+      @for (b of pitches(); track b.id) {
+        <div (click)="pitchSelected(b.id)" class="cursor-pointer p-2 text-sm">
+          {{ b.title }}
+        </div>
+      }
+    </div>
+
+    <!--
+    the editor part
+    -->
+
+    <div class="w-4/5">
+
+    <ui-tab-section [tabs]="tabs" [(activeTab)]="currentTab">
+      <ui-button-pill right-actions (onClick)="new()">New</ui-button-pill>
+      <ui-button-pill right-actions (onClick)="save()">Save</ui-button-pill>
+    </ui-tab-section>
+
+    <div class="m-8">
+      @if (currentTab === "preview") {
+        <ui-markdown-viewer [markdown]="pitch.content"> </ui-markdown-viewer>
+      } @else if (currentTab === "tile") {
+        <div class="flex flex-col gap-2">
+          <ui-input
+            [(value)]="pitch.title"
+            placeholder="Title"
+            label="Title"
+          ></ui-input>
+          <ui-textarea
+            [(value)]="pitch.description"
+            placeholder="short description"
+            label="Short Description"
+          ></ui-textarea>
+          <ui-chips label="tags" [(value)]="pitch.tags"> </ui-chips>
+          <ui-image
+            [preview]="pitch?.image"
+            placeholder="Tile Image"
+            [useAI]="false"
+            label="Image"
+            (fileChanged)="imageFile($event)"
+          ></ui-image>
+        </div>
+      } @else {
+        <ui-markdown-editor
+          [rows]="30"
+          [(markdown)]="pitch.content"
+          [showPreview]="false"
+        ></ui-markdown-editor>
+      }
+    </div>
+  </div>
+
+    </div>
+
+</div>

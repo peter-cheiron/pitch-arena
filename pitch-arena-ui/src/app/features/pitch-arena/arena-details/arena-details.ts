@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ArenaConfig } from '../arena-models';
 import { ArenaService } from '../services/arena-service';
 import { UiButtonPillComponent } from '#ui';
-import { JudgeCard } from '../chat/ui/judge-card/judge-card';
+import { JudgeCard } from '../arena/ui/judge-card/judge-card';
 
 @Component({
   selector: 'app-arena-details',
@@ -34,10 +34,13 @@ export class ArenaDetails {
     }
   }
 
-  launchArena() {
+  launchArena(noDeck) {
     const path = this.arenaPath();
     if (!path) return;
-    this.router.navigateByUrl("/arena/" + path);
+    if(noDeck)
+      this.router.navigateByUrl("/arena/" + path);
+    else
+      this.router.navigateByUrl("/deck/" + path);
   }
 
   launchLab() {

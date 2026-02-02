@@ -19,11 +19,11 @@ export class UiMarkdownEditorComponent {
 
   @Input() markdown: string = '';
   @Input() showPreview: boolean = false;
-  @Output() contentChange = new EventEmitter<string>();
+  @Output() markdownChange = new EventEmitter<string>();
   @Output() imageUploaded = new EventEmitter<string>();
   @ViewChild('editor') editor!: ElementRef<HTMLTextAreaElement>;
 
-  @Input() rows = this.showPreview ? 10 : 30
+  @Input() rows =  10; //this.showPreview ? 10 : 30
 
   rendered: SafeHtml = '';
   imageService = inject(ImageService);
@@ -48,7 +48,7 @@ export class UiMarkdownEditorComponent {
 
   onTextChange(value: string) {
     this.markdown = value;
-    this.contentChange.emit(value);
+    this.markdownChange.emit(value);
     this.updatePreview();
   }
 

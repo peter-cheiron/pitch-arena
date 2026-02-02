@@ -15,6 +15,8 @@ export class JudgeCard {
 
   @Input() imageLabel = null;
 
+  @Input() image = "/assets/images/vc-card.jpg"
+
   @Input() criteriaTitle = "Fundability";
   @Input() criteriaText = "Market size, wedge, defensibility.";
   @Input() rating = 2;
@@ -26,4 +28,6 @@ export class JudgeCard {
   @Input() weakness = "transparancy";
   @Input() resist = "hand-wavy";
   @Input() tone = "";
+
+  @Input() height = 200;
 }

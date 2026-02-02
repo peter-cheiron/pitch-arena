@@ -306,8 +306,8 @@ listDocsRealtime(
     const q = query(dbCollection, ...qConstraints);
     const res = await getDocs(q);
 
-    const source = res.metadata.fromCache ? "local cache" : "server";
-    console.log("Data came from " + JSON.stringify(res.metadata));
+    //const source = res.metadata.fromCache ? "local cache" : "server";
+    //console.log("Data came from " + JSON.stringify(res.metadata));
 
     return res.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
   }

@@ -1,0 +1,16 @@
+<div class="m-8">
+  <h1 class="text-2xl">Please Enter Your Demo Key</h1>
+  <p class="p-4">
+    Currently this is in testing and access is by demo key only. If you have a
+    demo key please enter it into your profile (profile/edit).
+  </p>
+  <div class="p-4 max-w-md">
+    <ui-input [(value)]="demoAccessKey" label="Demo Key"></ui-input>
+    <ui-button-pill class="mt-4" type="button" (onClick)="saveDemoKey()"
+      >Save Demo Key</ui-button-pill
+    >
+    @if (statusMessage) {
+      <p class="mt-2 text-sm text-zinc-600">{{ statusMessage }}</p>
+    }
+  </div>
+</div>

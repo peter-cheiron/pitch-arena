@@ -115,7 +115,7 @@ export class UiButtonPillComponent {
       case 'secondary':
         // outline primary
         base.push(
-          'bg-[var(--color-surface)]',
+          'var(--color-surface)',
           'text-[var(--color-primary)]',
           'border-[var(--color-primary)]',
           'hover:bg-[var(--color-primary)]/10'
@@ -126,7 +126,7 @@ export class UiButtonPillComponent {
         // ghost / subtle
         base.push(
           'bg-transparent',
-          'text-[var(--color-text)]',
+          'var(--color-text)',
           'border-[var(--color-border)]',
           'hover:bg-[var(--color-border)]/20'
         );

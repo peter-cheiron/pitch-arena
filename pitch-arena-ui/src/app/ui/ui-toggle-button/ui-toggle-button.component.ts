@@ -11,10 +11,14 @@ export class UiToggleButtonComponent {
   @Input() label?: string;
   @Input() selected = false;
   @Output() selectedChange = new EventEmitter<boolean>();
+  //so you can set an id or similar
+  @Input() message = null;
+  @Output() messageChanged = new EventEmitter<string>();
 
   onToggle(e: Event) {
     const next = (e.target as HTMLInputElement).checked;
     this.selected = next; // keep local in sync
     this.selectedChange.emit(next); // let parent know
+    this.messageChanged.emit(this.message); // let parent know
   }
 }

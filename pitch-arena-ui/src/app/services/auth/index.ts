@@ -72,7 +72,7 @@ export class AuthService {
         displayName: this.user().displayName,
         firstName: this.user().displayName, 
         termsRead: false,
-        demoAccessCode: ""
+        demoAccessKey: ""
       });
     }
     await this.handleRedirect();

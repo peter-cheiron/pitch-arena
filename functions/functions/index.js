@@ -25,11 +25,11 @@ const eleven = require('./elevenlabs.js')
 exports.speechToText = eleven.speechToText;
 exports.textToSpeech = eleven.textToSpeech;
 
-/*
+
 const gemini = require('./gemini.js');
 exports.callGeminiSearch = gemini.callGeminiSearch;
 exports.askGeminiFilestore = gemini.askGeminiFilestore;
-*/
+exports.callGeminiPrompt = gemini.callGeminiPrompt
 
 
 
