@@ -45,3 +45,7 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
+
+# env settings need to be created
+/environments/environment.ts
+/environments/environment.prod.ts
