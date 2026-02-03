@@ -30,13 +30,17 @@ export class ArenaAuthGuard implements CanActivate {
       });
     }
 
-    const isArena = state.url.includes('/arena');
+    /*
+    const isArena = state.url.includes('/arena') 
+      || state.url.includes('/pitches')
+      || state.url.includes('/pitches');
 
-    if (!isArena) return true;
+    if (!isArena) return true;*/
 
     const profile = await this.profileService.getById(user.uid);
     const key = String(profile?.demoAccessKey ?? '').trim();
-    if (!key) return this.router.createUrlTree(['/sorry']);
+
+    if (!key || key.length === 0) return this.router.createUrlTree(['/sorry']);
 
     const keys = await this.keyService.runQuery({
       where: where('value', '==', key),

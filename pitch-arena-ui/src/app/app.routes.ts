@@ -20,22 +20,22 @@ export const routes: Routes = [
 { path: '', component: LandingPageComponent, pathMatch: 'full' },
 
 //TODO replace with proper authgurad later ArenaAuthGuard
-{ path: 'arena', component: ArenaPage, pathMatch: 'full', canActivate: [AuthGuard] },
-{ path: 'arena/:path', component: ArenaPage, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'arena', component: ArenaPage, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
+{ path: 'arena/:path', component: ArenaPage, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
 
 //TODO think about the deckguard as we will have to parse
-{ path: 'deck', component: Deck, pathMatch: 'full', canActivate: [AuthGuard] },
-{ path: 'deck/:path', component: Deck, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'deck', component: Deck, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
+{ path: 'deck/:path', component: Deck, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
 
 
-{ path: 'arenas/:path', component: ArenaDetails, pathMatch: 'full', canActivate: [AuthGuard] },
-{ path: 'arenas', component: Arenas, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'arenas/:path', component: ArenaDetails, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
+{ path: 'arenas', component: Arenas, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
 
-{ path: 'designer', component: ArenaDesigner, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'designer', component: ArenaDesigner, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
 
-{ path: 'coach', component: CoachTest, pathMatch: 'full', canActivate: [AuthGuard] },
-{ path: 'lab', component: Lab, pathMatch: 'full', canActivate: [AuthGuard] },
-{ path: 'pitches', component: Pitches, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'coach', component: CoachTest, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
+{ path: 'lab', component: Lab, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
+{ path: 'pitches', component: Pitches, pathMatch: 'full', canActivate: [ArenaAuthGuard] },
 
   ...userRoutes,
   ...contactRoutes,
