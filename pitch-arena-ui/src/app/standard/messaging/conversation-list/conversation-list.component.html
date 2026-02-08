@@ -1,0 +1,37 @@
+<div class="h-full overflow-y-auto p-3">
+  <div class="flex flex-col gap-2">
+    @for (conversation of conversations; track conversation) {
+      <button
+        type="button"
+        (click)="selectConversation(conversation)"
+        class="flex w-full items-center gap-3 rounded-xl border border-transparent bg-white/80 p-3 text-left text-slate-900 shadow-sm transition hover:-translate-y-[1px] hover:border-slate-200 hover:bg-white hover:shadow-md focus-visible:-translate-y-[1px] focus-visible:border-indigo-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-white active:translate-x-[1px]"
+      >
+        <div
+          class="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-gradient-to-br from-indigo-100 to-sky-100 text-base font-semibold text-indigo-700 shadow-sm"
+        >
+          @if (images[conversation.use] || conversation.fromUser?.profileImage) {
+            <img
+              [src]="images[conversation.use] || conversation.fromUser?.profileImage || 'https://via.placeholder.com/48'"
+              [alt]="conversation.fromUser?.displayName || ('messaging.avatar_alt' | translate)"
+              loading="lazy"
+              class="h-full w-full object-cover"
+            />
+          } @else {
+            <span>
+              {{ (conversation.fromUser?.displayName?.[0] || "?").toUpperCase() }}
+            </span>
+          }
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <p class="m-0 text-base font-semibold leading-tight text-slate-900">
+            {{ conversation.fromUser?.displayName || ('messaging.conversation_fallback' | translate) }}
+          </p>
+          <p class="m-0 mt-1 truncate text-sm text-slate-500">
+            {{ conversation.last || ('messaging.no_messages_yet' | translate) }}
+          </p>
+        </div>
+      </button>
+    }
+  </div>
+</div>

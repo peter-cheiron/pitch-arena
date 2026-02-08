@@ -1,0 +1,175 @@
+{
+  "id": "arena_vc_lift_no_host",
+  "name": "VC Lift Encounter (No Host)",
+  "goal": "Can you land the idea in a rushed elevator pitch and earn a follow-up?",
+  "description": "Single-VC, time-boxed elevator encounter. No warm-up. VC starts immediately.",
+  "safety": [
+    "no adult entertainment",
+    "no NSFW",
+    "anything involving children must be framed as monitoring/assistance only, not autonomous care",
+    "no medical advice",
+    "no illegal instructions"
+  ],
+  "objective": {
+    "thesis": "Assess whether the founder can communicate a crisp one-liner, a believable demo hook, and why Gemini is essential—fast enough to earn a follow-up.",
+    "successDefinition": [
+      "One-liner is clear and memorable",
+      "User + moment of use are concrete",
+      "clear market with audience willing to pay", 
+      "Demo pitch is believable (10 seconds)",
+      "One clear next step (what you want from the VC / what happens next)",
+      "Basic safety boundary stated if domain is sensitive"
+    ],
+    "deliverables": {
+      "endOfRound": [
+        "elevator_one_liner",
+        "who_for_and_when",
+        "demo_hook_10_seconds",
+        "clear_audience", 
+        "ask_or_next_step",
+        "follow_up_verdict"
+      ],
+      "endOfArena": [
+        "follow_up_verdict",
+        "one_change_to_make_it_punchier"
+      ]
+    },
+    "constraints": {
+      "hostEnabled": false,
+      "toneFloor": "respectful",
+      "timeboxPerJudgeSeconds": 20,
+      "maxRounds": 1,
+      "fastMode": true,
+      "parseMode": "none",
+      "summaryMode": "template",
+      "llmTimeoutMs": 8000
+    }
+  },
+  "voices": {
+    "vc_lift": "NYC9WEgkq1u4jiqBseQ9"
+  },
+  "globalStyle": {
+    "toneDefault": "direct",
+    "modes": {
+      "discovery": { "label": "Lift", "goal": "Get to a crisp hook, fast." },
+      "interrogation": { "label": "Snap-check", "goal": "Pressure-test the weakest part in one question." }
+    },
+    "bannedPhrases": [
+      "pull out their credit card",
+      "what budget does it come from",
+      "if you had 14 days",
+      "vaporware",
+      "marketing fluff",
+      "glorified forum",
+      "you will fail",
+      "starve",
+      "catastrophic",
+      "pass",
+      "no-go"
+    ],
+    "bannedCliches": [
+      "validate",
+      "do customer discovery",
+      "it depends",
+      "just iterate",
+      "go viral",
+      "leverage ai"
+    ],
+    "conversationRules": {
+      "maxCommentWords": 55,
+      "oneQuestionOnly": true,
+      "questionMaxSentences": 1,
+      "deEscalateIfDefensive": true,
+      "avoidRepetitiveTemplates": true,
+      "avoidCategoricalLanguage": true
+    }
+  },
+  "judges": [
+    {
+      "id": "vc_lift",
+      "label": "VC (Lift)",
+      "dimension": "Follow-up likelihood",
+      "tone": "impatient, curious, pattern-matching; will only follow up if it’s instantly clear",
+      "focus": [
+        "one-liner punch",
+        "moment of use",
+        "demo hook",
+        "Gemini essentiality",
+        "next step ask",
+        "safety boundary if needed"
+      ],
+      "criteriaConfig": [
+        {
+          "id": "one_liner",
+          "category": "story",
+          "weight": 3,
+          "description": "One-liner is crisp, specific, memorable (no jargon).",
+          "signals": ["example"],
+          "qTypes": ["elevator_one_liner"],
+          "questionStarters": [
+            "Doors closing—8 seconds: give me the one-liner (who it’s for + what it does + outcome)."
+          ]
+        },
+        {
+          "id": "moment_of_use",
+          "category": "user",
+          "weight": 2,
+          "description": "Concrete user + trigger moment (when/why they reach for it).",
+          "signals": ["example"],
+          "qTypes": ["who_for_and_when"],
+          "questionStarters": [
+            "When exactly do they use it—what just happened right before they open it?"
+          ]
+        },
+        {
+          "id": "demo_hook",
+          "category": "demo",
+          "weight": 3,
+          "description": "Believable 10-second demo hook: what I would see on screen.",
+          "signals": ["example", "timeline"],
+          "qTypes": ["demo_hook_10_seconds"],
+          "questionStarters": [
+            "In 10 seconds, what do I see—one action, one output?"
+          ]
+        },
+        {
+          "id": "one_liner",
+          "category": "market",
+          "weight": 6,
+          "description": "Audience or market is clear and there is real value to gained.",
+          "signals": ["market", "numbers"],
+          "qTypes": ["gemini_role_in_one_sentence"],
+          "questionStarters": [
+            "One sentence: where does Gemini sit in the loop and what does it produce?"
+          ]
+        },
+        {
+          "id": "ask_next_step",
+          "category": "plan",
+          "weight": 2,
+          "description": "Clear next step / ask: what you want after this lift ride.",
+          "signals": ["next_step"],
+          "qTypes": ["ask_or_next_step"],
+          "questionStarters": [
+            "What’s the one follow-up you want after this—intro, pilot, or 15 minutes?"
+          ]
+        },
+        {
+          "id": "safety_boundary",
+          "category": "safety",
+          "weight": 1,
+          "description": "If the domain is sensitive, states one responsible-use boundary.",
+          "signals": ["constraint", "risk"],
+          "qTypes": ["safety_boundary"],
+          "questionStarters": [
+            "If there’s any sensitive angle here, what’s one boundary you enforce in the demo?"
+          ]
+        }
+      ],
+      "scoring": {
+        "usesRubric": true,
+        "dimension": "follow_up_likelihood"
+      }
+    }
+  ]
+}

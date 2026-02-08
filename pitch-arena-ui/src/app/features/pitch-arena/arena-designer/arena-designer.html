@@ -1,0 +1,180 @@
+<div class="m-4 space-y-4">
+  <div class="flex flex-col gap-3 md:flex-row md:items-end">
+    <ui-input label="Arena Path" [(value)]="arenaPath" placeholder="gemini-clean"></ui-input>
+    <ui-button-pill (onClick)="reloadArena()">Load</ui-button-pill>
+    <ui-button-pill color="secondary" (onClick)="downloadConfig()">Download JSON</ui-button-pill>
+  </div>
+
+  <ui-tab-section [tabs]="tabs" [(activeTab)]="tab"></ui-tab-section>
+
+  @if (loading()) {
+    <div class="text-sm" style="color: var(--color-muted);">Loading arena...</div>
+  }
+
+  @if (arenaConfig(); as cfg) {
+    <div class="space-y-6">
+      @if (tab === "details") {
+        <section class="rounded-2xl border p-4 space-y-4"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <div class="grid gap-3 md:grid-cols-2">
+            <ui-input label="Arena ID" [(value)]="cfg.id"></ui-input>
+            <ui-input label="Name" [(value)]="cfg.name"></ui-input>
+          </div>
+
+          <ui-input label="Goal" [(value)]="cfg.goal"></ui-input>
+          <ui-textarea label="Description" rows="3" [(value)]="cfg.description"></ui-textarea>
+          <ui-chips label="Safety rules" [(value)]="cfg.safety"></ui-chips>
+
+          <div class="grid gap-3 md:grid-cols-2">
+            <ui-textarea label="Objective thesis" rows="3" [(value)]="cfg.objective.thesis"></ui-textarea>
+            <ui-chips label="Success definition" [(value)]="cfg.objective.successDefinition"></ui-chips>
+          </div>
+        </section>
+      }
+
+      @if (tab === "phases") {
+        <section class="rounded-2xl border p-4 space-y-4"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <h3 class="text-sm font-semibold">Constraints</h3>
+          <div class="grid gap-3 md:grid-cols-2">
+            <ui-input label="Max rounds" type="number" [(value)]="cfg.objective.constraints.maxRounds"></ui-input>
+            <div class="flex items-end">
+              <ui-toggle-button label="Host enabled" [(selected)]="cfg.objective.constraints.hostEnabled"></ui-toggle-button>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border p-4 space-y-4"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold">Round phases</h3>
+            <ui-button-pill color="transparent" (onClick)="addPhase()">Add phase</ui-button-pill>
+          </div>
+
+          @for (phase of cfg.phases; track $index; let phaseIndex = $index) {
+            <div class="rounded-xl border p-3 space-y-2" style="border-color: var(--color-border);">
+              <div class="grid gap-3 md:grid-cols-3">
+                <ui-input label="Phase ID" [(value)]="phase.id"></ui-input>
+                <ui-input label="Phase" [(value)]="phase.phase"></ui-input>
+                <ui-input label="Aggressiveness" [(value)]="phase.aggressiveness"></ui-input>
+              </div>
+              <ui-input label="Goal" [(value)]="phase.goal"></ui-input>
+              <div class="grid gap-3 md:grid-cols-2">
+                <ui-chips label="Primary criteria" [(value)]="phase.primaryCriteria"></ui-chips>
+                <ui-chips label="Secondary criteria" [(value)]="phase.secondaryCriteria"></ui-chips>
+              </div>
+              <ui-button-pill color="transparent" (onClick)="removePhase(phaseIndex)">Remove phase</ui-button-pill>
+            </div>
+          }
+        </section>
+      }
+
+      @if (tab === "global") {
+        <section class="rounded-2xl border p-4 space-y-4"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <h3 class="text-sm font-semibold">Language controls</h3>
+          <ui-chips label="Banned phrases" [(value)]="cfg.globalStyle.bannedPhrases"></ui-chips>
+        </section>
+
+        <section class="rounded-2xl border p-4 space-y-4"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <h3 class="text-sm font-semibold">Conversation rules</h3>
+          <div class="grid gap-3 md:grid-cols-2">
+            <ui-input label="Max comment words" type="number" [(value)]="cfg.globalStyle.conversationRules.maxCommentWords"></ui-input>
+            <ui-input label="Question max sentences" type="number" [(value)]="cfg.globalStyle.conversationRules.questionMaxSentences"></ui-input>
+          </div>
+        </section>
+      }
+
+      @if (tab === "criteria") {
+        <section class="rounded-2xl border p-4 space-y-4"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold">Global criteria</h3>
+            <ui-button-pill (onClick)="addCriterion()">Add criteria</ui-button-pill>
+          </div>
+
+          @for (criteria of cfg.criteria; track $index; let criteriaIndex = $index) {
+            <div class="rounded-xl border p-3 space-y-2" style="border-color: var(--color-border);">
+              <div class="grid gap-3 md:grid-cols-2">
+                <ui-input label="Criteria ID" [(value)]="criteria.id"></ui-input>
+                <ui-input label="Label" [(value)]="criteria.label"></ui-input>
+              </div>
+              <ui-textarea label="Description" rows="3" [(value)]="criteria.description"></ui-textarea>
+              <ui-chips label="Signals" [(value)]="criteria.signals"></ui-chips>
+              <ui-button-pill color="transparent" (onClick)="removeCriterion(criteriaIndex)">Remove criteria</ui-button-pill>
+            </div>
+          }
+        </section>
+      }
+
+      @if (tab === "judges") {
+        <section class="rounded-2xl border p-4 space-y-4"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold">Judges panel</h3>
+            <ui-button-pill (onClick)="addJudge()">Add judge</ui-button-pill>
+          </div>
+
+          @for (judge of cfg.judges; track $index; let judgeIndex = $index) {
+            <div class="rounded-xl border p-4 space-y-3" style="border-color: var(--color-border);">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold">{{ judge.label || 'Judge' }}</div>
+                <ui-button-pill color="transparent" (onClick)="removeJudge(judgeIndex)">Remove</ui-button-pill>
+              </div>
+
+              <div class="grid gap-3 md:grid-cols-3">
+                <ui-input label="Judge ID" [(value)]="judge.id"></ui-input>
+                <ui-input label="Label" [(value)]="judge.label"></ui-input>
+                <ui-input label="Tone" [(value)]="judge.tone"></ui-input>
+              </div>
+
+              <ui-chips label="Profile config" [(value)]="judge.profileConfig"></ui-chips>
+
+              <div class="rounded-xl border p-3 space-y-3" style="border-color: var(--color-border);">
+                <div class="text-xs font-semibold uppercase" style="color: var(--color-muted);">Persona</div>
+                <div class="grid gap-3 md:grid-cols-2">
+                  <ui-input label="Archetype" [(value)]="judge.persona.archetype"></ui-input>
+                  <ui-input label="Default stance" [(value)]="judge.persona.defaultStance"></ui-input>
+                </div>
+                <ui-input label="Voice" [(value)]="judge.persona.speakingStyle.voice"></ui-input>
+                <ui-chips label="Pet peeves" [(value)]="judge.persona.petPeeves"></ui-chips>
+                <ui-chips label="Banned phrases" [(value)]="judge.persona.speakingStyle.bannedPhrases"></ui-chips>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-semibold">Criteria</h4>
+                  <ui-button-pill color="transparent" (onClick)="addCriteria(judgeIndex)">Add criteria</ui-button-pill>
+                </div>
+
+                @for (criteria of judge.criteria ?? []; track $index; let criteriaIndex = $index) {
+                  <div class="rounded-xl border p-3 space-y-2" style="border-color: var(--color-border);">
+                    <div class="grid gap-3 md:grid-cols-2">
+                      <ui-input label="Criteria ID" [(value)]="criteria.id"></ui-input>
+                      <ui-input label="Weight" type="number" [(value)]="criteria.weight"></ui-input>
+                    </div>
+                    <ui-button-pill color="transparent" (onClick)="removeCriteria(judgeIndex, criteriaIndex)">Remove criteria</ui-button-pill>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
+      }
+
+      @if (tab === "test") {
+        <section class="rounded-2xl border p-4 space-y-3"
+                 style="border-color: var(--color-border); background: var(--color-surface); box-shadow: var(--shadow-elev);">
+          <h3 class="text-sm font-semibold">Config preview</h3>
+          <pre class="text-xs whitespace-pre-wrap rounded-lg border p-3"
+               style="border-color: var(--color-border); background: color-mix(in srgb, var(--color-surface) 94%, var(--color-muted) 6%);">
+{{ cfg | json }}
+          </pre>
+        </section>
+      }
+    </div>
+  } @else {
+    <div class="text-sm" style="color: var(--color-muted);">No arena loaded.</div>
+  }
+</div>

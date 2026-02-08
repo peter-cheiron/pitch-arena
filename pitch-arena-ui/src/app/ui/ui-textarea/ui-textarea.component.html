@@ -1,0 +1,31 @@
+<div
+  class="w-full rounded-lg px-3 py-3 transition-colors bg-[color:var(--color-surface,#ffffff)] focus-within:ring-2 focus-within:ring-[color:var(--color-ring,var(--color-primary,#10b981))] focus-within:ring-offset-1 focus-within:ring-offset-transparent"
+  [ngClass]="{
+    'border border-[color:var(--color-border,#e5e7eb)]': hasBorder,
+    'bg-[color:var(--color-border,#e5e7eb)]/30': disabled
+  }"
+>
+  <label
+    [for]="id"
+    class="block text-sm font-semibold leading-none mb-1 mt-1"
+    [ngClass]="disabled ? 'text-(--color-muted,#6b7280)' : 'text-[color:var(--color-text,#1f2937)]'"
+  >
+    {{ label }}
+    @if (required) {
+      <span class="text-(--color-muted,#6b7280) ml-0.5">*</span>
+    }
+  </label>
+
+  <textarea
+    [value]="value"
+    (input)="onValueChange($event)"
+    class="w-full border-none outline-none resize-none p-0 text-sm bg-transparent placeholder-[color:var(--color-muted,#6b7280)] placeholder:italic placeholder:sm"
+    [ngClass]="disabled ? 'text-(--color-muted,#6b7280)' : 'text-[color:var(--color-text,#1f2937)]'"
+    [id]="id"
+    [rows]="rows"
+    [placeholder]="placeholder"
+    [name]="name"
+    [disabled]="disabled"
+    [required]="required"
+  ></textarea>
+</div>

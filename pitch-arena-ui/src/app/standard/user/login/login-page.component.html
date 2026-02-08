@@ -1,0 +1,141 @@
+<div class="bg-white flex flex-col overflow-hidden ml-0 mb-[104px]">
+  <div class="flex flex-col w-full px-6 md:px-5">
+    <div class="flex gap-5 w-full max-w-[1207px] mt-5 flex-col md:flex-row">
+      <!-- TODO use theme variables Image Column (Hidden on Small Screens) -->
+      <div class="hidden md:block w-full md:w-[63%] mt-10 md:mt-0">
+        <img
+          src="/assets/images/pitch-arena.jpeg"
+          class="rounded-[16px] aspect-[0.93] object-contain object-center w-[584px] h-[636px] flex-shrink-0"
+          alt="{{ 'login.image_alt' | translate }}"
+        />
+      </div>
+
+      <!-- Form Column (Full Width on Small Screens) -->
+      <div class="w-full ml-0 md:w-[37%] md:mt-0 lg:mt-10">
+        <div class="mt-6 lg:mt-[150px] flex flex-col font-sans">
+          <h2
+            class="text-4xl font-bold mb-6"
+            [innerHTML]="'login.title' | translate"
+          ></h2>
+          <p class="text-lg mb-8">{{ 'login.google_only' | translate }}</p>
+          <!--<h2 class="text-[38px] font-bold leading-tight">
+            {{ 'login.title'}}
+          </h2>-->
+
+        </div>
+        <!-- Sign-In Buttons -->
+        @if (viewMode() === null) {
+<div
+         
+          class="flex flex-col gap-3 w-[290px] max-w-full text-[16px] font-bold mt-8"
+        >
+          <!--
+          <ui-button-pill
+            type="button"
+            color="primary"
+            [block]="true"
+            (onClick)="viewMode.set('email-password')"
+          >
+            <span>{{ "login.signin_email"}}</span>
+            <ui-icon-arrow-top-right class="ml-auto -mr-2" />
+          </ui-button-pill>
+          -->
+
+          <ui-button-pill
+            type="button"
+            color="primary"
+            [block]="true"
+            (onClick)="loginWithGoogle()"
+          >
+            <span>{{ "login.signin_google" | translate}}</span>
+            <ui-icon-google class="ml-auto -mr-2" />
+          </ui-button-pill>
+        </div>
+}
+
+        <!-- Email Login Form -->
+        @if (viewMode() === 'email-password') {
+<form
+         
+          class="flex flex-col gap-3 w-[290px] max-w-full mt-8"
+          (submit)="signInWithEmailAndPassword($event)"
+        >
+          <ui-input
+            [(value)]="email"
+            type="email"
+            [label]="'login.email_label' | translate"
+            [disabled]="loading()"
+            [placeholder]="'login.email_placeholder' | translate"
+            required="true"
+          />
+          <ui-input
+            [(value)]="password"
+            type="password"
+            [label]="'login.password_label' | translate"
+            [disabled]="loading()"
+            [placeholder]="'login.password_placeholder' | translate"
+            required="true"
+          />
+          <ui-button-pill type="submit">{{
+            "login.signin_email" | translate
+          }}</ui-button-pill>
+          @if (error()) {
+<div class="mt-4 text-red-500">
+            <div>{{ "login.error_message" | translate}}</div>
+          </div>
+}
+          <button
+            type="button"
+            class="text-[14px] text-gray-500 underline text-left mt-2"
+            (click)="viewMode.set('forgot-password')"
+          >
+            {{ "login.forgot_password" | translate}}
+          </button>
+        </form>
+}
+
+        <!-- Forgot Password Form -->
+        @if (viewMode() === 'forgot-password') {
+<form
+         
+          class="flex flex-col gap-3 w-[290px] max-w-full mt-8"
+          (submit)="sendPasswordResetEmail($event)"
+        >
+          <ui-input
+            [(value)]="email"
+            type="email"
+            [label]="'login.email_label' | translate"
+            [disabled]="loading()"
+            [placeholder]="'login.email_placeholder' | translate"
+            required="true"
+          />
+          <ui-button-pill type="submit">{{
+            "login.reset_password" | translate
+          }}</ui-button-pill>
+          <button
+            type="button"
+            class="text-[14px] text-gray-500 underline text-left mt-2"
+            (click)="viewMode.set(null)"
+          >
+            {{ "login.back_to_login" | translate}}
+          </button>
+        </form>
+}
+
+        @if (viewMode() === 'forgot-password-email-send') {
+<div class="mt-4">
+          <div>{{ "login.password_reset_sent" | translate}}</div>
+        </div>
+}
+
+        <!-- Signup Prompt -->
+        <p class="mt-12 text-[14px] font-normal">
+          {{ "login.no_account" | translate}}
+          <a routerLink="/signup" class="underline text-black">{{
+            "login.signup" | translate
+          }}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

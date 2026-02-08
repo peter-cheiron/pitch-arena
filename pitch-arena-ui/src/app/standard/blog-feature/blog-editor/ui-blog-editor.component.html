@@ -1,0 +1,40 @@
+<ui-tab-section [tabs]="tabs" (tabChanged)="setTab($event)">
+  <ui-button-pill right-actions (onClick)="new()">New</ui-button-pill>  
+  <ui-button-pill right-actions (onClick)="save()">Save</ui-button-pill>
+</ui-tab-section>
+
+<div class="m-8">
+  @if(currentTab === "preview"){
+    <ui-markdown-viewer [markdown]="blog.content"> </ui-markdown-viewer>
+  }@else if(currentTab === "tile"){
+  <div>
+    <ui-input
+      [(value)]="blog.title"
+      placeholder="Title"
+      label="Title"
+    ></ui-input>
+    <ui-textarea
+      [(value)]="blog.description"
+      placeholder="short description"
+      label="Short Description"
+    ></ui-textarea>
+    <ui-chips label="SEO keywords" [(value)]="blog.keywords">
+    </ui-chips>
+    Visible <ui-toggle-button [(selected)]="blog.visible"></ui-toggle-button>
+    <ui-image
+      [preview]="blog?.image"
+      placeholder="Tile Image"
+      [useAI]="false"
+      label="Image"
+      (fileChanged)="imageFile($event)"
+    ></ui-image>
+  </div>
+  }@else {
+  <ui-markdown-editor
+    [rows]="30"
+    [markdown]="blog.content"
+    (contentChange)="getMarkdownContent($event)"
+    [showPreview]="false"
+  ></ui-markdown-editor>
+  }
+</div>

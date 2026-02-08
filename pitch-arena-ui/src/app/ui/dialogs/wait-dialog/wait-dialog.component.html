@@ -1,0 +1,28 @@
+@if (visible()) {
+  <!-- Fullscreen overlay -->
+  <div class="fixed inset-0 z-[1000] flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-[1px]"></div>
+
+    <!-- Modal card -->
+    <div class="relative z-[1001] w-[90%] max-w-sm rounded-2xl bg-[var(--color-surface,#ffffff)] p-6 shadow-xl ring-1 ring-[var(--color-border,#e5f4ec)]">
+      <div class="flex items-center gap-4">
+        <!-- Spinner -->
+        <div class="h-10 w-10 shrink-0 animate-spin rounded-full border-4 border-[var(--color-border,#e5f4ec)] border-t-[var(--color-primary,#10b981)]" aria-hidden="true"></div>
+
+        <div class="min-w-0">
+          <div class="truncate text-base font-semibold text-[color:var(--color-text,#1f2937)]" [attr.aria-label]="aria()">
+            {{ displayed() }}
+          </div>
+          @if (subtext()) {
+            <p class="mt-0.5 text-sm text-(--color-muted,#6b7280)">{{ subtext() }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Progress bar (optional visual hint) -->
+      <div class="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-border,#e5f4ec)]">
+        <div class="h-full w-1/3 animate-[progress_1.2s_ease-in-out_infinite] rounded-full bg-[var(--color-primary,#10b981)]"></div>
+      </div>
+    </div>
+  </div>
+}

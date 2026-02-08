@@ -1,0 +1,84 @@
+<div class="max-w-6xl mx-auto p-4 space-y-6">
+  <!--
+  <div>
+    <ui-tab-section [tabs]="tabs" (tabChanged)="activateSection($event)">
+    </ui-tab-section>
+  </div>
+  -->
+
+  <!-- 📱 Tabs for mobile, Sidebar for desktop -->
+  <div class="flex flex-col md:flex-row gap-4">
+    <!-- 📄 Content Area -->
+    <div class="flex-1 space-y-6">
+      <!-- 👤 Details Section -->
+      @if (activeSection === 'profile') {
+<div
+       
+        class="bg-white border shadow rounded-xl p-6 space-y-4"
+      >
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-zinc-800">Profile Details</h2>
+          <button
+            (click)="doSavePerhaps()"
+            class="text-sm px-3 py-1 rounded-md border hover:bg-zinc-100"
+          >
+            {{ editMode ? "Save" : "Edit" }}
+          </button>
+        </div>
+
+        @if (editMode) {
+<div
+         
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div class="flex flex-col gap-4">
+            <ui-input [(value)]="profile.firstName" label="First Name"></ui-input>
+            <ui-input [(value)]="profile.lastName" label="Last Name"></ui-input>
+            <ui-input [(value)]="profile.email" label="Email"></ui-input>
+            <ui-input [(value)]="profile.displayName" label="Display Name"></ui-input>
+            <ui-input [(value)]="profile.demoAccessKey" label="Demo Key"></ui-input>
+            <ui-textarea [(value)]="profile.about" label="About me"></ui-textarea>
+            
+          </div>
+        </div>
+} @else {
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm text-zinc-500">First Name</label>
+              <p class="text-zinc-800 font-medium">{{ profile.firstName }}</p>
+            </div>
+            <div>
+              <label class="text-sm text-zinc-500">Last Name</label>
+              <p class="text-zinc-800 font-medium">{{ profile.lastName }}</p>
+            </div>
+            <div>
+              <label class="text-sm text-zinc-500">Nickname</label>
+              <p class="text-zinc-800">{{ profile.displayName }}</p>
+            </div>
+            <div>
+              <label class="text-sm text-zinc-500">Email</label>
+              <p class="text-zinc-800">{{ profile.email }}</p>
+            </div>
+            <div>
+              <label class="text-sm text-zinc-500">Location</label>
+              <p class="text-zinc-800 capitalize">
+                {{ profile?.location?.displayName }}
+              </p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm text-zinc-500">About</label>
+              <p class="text-zinc-800 whitespace-pre-line">
+                {{ profile.about }}
+              </p>
+            </div>
+          </div>
+        
+}
+
+        
+      </div>
+}
+
+    </div>
+  </div>

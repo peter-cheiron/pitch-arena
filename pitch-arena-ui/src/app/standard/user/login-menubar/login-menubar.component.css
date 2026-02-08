@@ -1,0 +1,55 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  font: 700 16px/1 Quattrocento Sans, -apple-system, Roboto, Helvetica, sans-serif;
+  margin-top: 18px;
+  
+  margin-right: 24px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 991px) {
+  .header {
+    flex-wrap: wrap;
+  }
+}
+
+.logo {
+  width: 152px;
+  max-width: 100%;
+  aspect-ratio: 4.22;
+  object-fit: contain;
+  object-position: center;
+  margin: auto 0;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cta-login,
+.cta-signup {
+  border-radius: 41px;
+  min-height: 48px;
+  padding: 16px;
+}
+
+.cta-login {
+  background: var(--Oth-0, #c0f177);
+  color: var(--Green-0, #0c190a);
+}
+
+.cta-signup {
+  border: 1px solid var(--Black, #000);
+  background: var(--White, #fff);
+  color: var(--Black, #000);
+}
+
+@media (max-width: 991px) {
+  .cta-signup {
+    white-space: initial;
+  }
+}

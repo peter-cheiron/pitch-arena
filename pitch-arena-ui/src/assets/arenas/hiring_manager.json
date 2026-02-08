@@ -1,0 +1,270 @@
+{
+  "id": "arena_hiring_manager_lift_fast",
+  "name": "Hiring Manager Lift Encounter (Fast)",
+  "goal": "Can you explain your product clearly enough to earn a follow-up chat?",
+  "description": "Single character. Rushed lift/coffee chat with a busy hiring manager.",
+  "safety": [
+    "no adult entertainment",
+    "no NSFW",
+    "anything involving children must be framed as monitoring/assistance only, not autonomous care",
+    "no medical advice",
+    "no illegal instructions"
+  ],
+
+  "objective": {
+    "thesis": "Assess whether the founder can communicate a crisp product story: who it’s for, what it replaces, what the user would actually do, and why it’s credible.",
+
+    "successDefinition": [
+      "Problem + user are clear in one sentence",
+      "The moment of use is concrete (trigger + context)",
+      "A believable 10-second demo hook exists (one action → one output)",
+      "Value is specific (what improves, how measured)",
+      "Constraints/tradeoffs are acknowledged (what it won't do)",
+      "Next step is clear (pilot, call, intro) without investor talk"
+    ],
+
+    "deliverables": {
+      "endOfRound": [
+        {
+          "key": "one_liner",
+          "label": "One-liner",
+          "shape": "string",
+          "fromCriteria": ["one_liner"]
+        },
+        {
+          "key": "moment_of_use",
+          "label": "Moment of use",
+          "shape": "string",
+          "fromCriteria": ["moment_of_use"]
+        },
+        {
+          "key": "demo_hook_10s",
+          "label": "10-second demo hook",
+          "shape": "string",
+          "fromCriteria": ["demo_hook"]
+        },
+        {
+          "key": "value_metric",
+          "label": "Value metric",
+          "shape": "string",
+          "fromCriteria": ["value_metric"]
+        },
+        {
+          "key": "one_tradeoff",
+          "label": "One tradeoff / limit",
+          "shape": "string",
+          "fromCriteria": ["tradeoff"]
+        },
+        {
+          "key": "follow_up_recommendation",
+          "label": "Recommended next step",
+          "shape": "string",
+          "fromCriteria": ["next_step"]
+        }
+      ],
+
+      "endOfArena": [
+        {
+          "key": "follow_up_recommendation",
+          "label": "Recommended next step",
+          "shape": "string",
+          "fromCriteria": ["next_step"]
+        },
+        {
+          "key": "one_fix_to_make_it_clearer",
+          "label": "One fix to make it clearer",
+          "shape": "string",
+          "fromCriteria": ["one_liner", "moment_of_use", "demo_hook", "value_metric", "tradeoff"]
+        }
+      ]
+    },
+
+    "contract": {
+      "endOfRoundKeys": [
+        "one_liner",
+        "moment_of_use",
+        "demo_hook_10s",
+        "value_metric",
+        "one_tradeoff",
+        "follow_up_recommendation"
+      ],
+      "endOfArenaKeys": [
+        "follow_up_recommendation",
+        "one_fix_to_make_it_clearer"
+      ],
+      "rules": [
+        "Only output keys listed in the contract.",
+        "Keep values short and founder-facing (no meta/system talk)."
+      ]
+    },
+
+    "constraints": {
+      "hostEnabled": false,
+      "noInvestorTalk": true,
+      "toneFloor": "respectful",
+      "timeboxPerJudgeSeconds": 20,
+      "maxRounds": 1,
+      "fastMode": true,
+      "parseMode": "none",
+      "summaryMode": "template",
+      "llmTimeoutMs": 8000
+    }
+  },
+
+  "voices": {
+    "hiring_manager": "NYC9WEgkq1u4jiqBseQ9"
+  },
+
+  "globalStyle": {
+    "toneDefault": "direct",
+    "modes": {
+      "discovery": { "label": "Lift", "goal": "Get clarity fast." },
+      "interrogation": { "label": "Snap-check", "goal": "Pressure-test the weakest part in one question." }
+    },
+    "bannedPhrases": [
+      "who pays",
+      "pull out their credit card",
+      "what budget does it come from",
+      "valuation",
+      "fundraise",
+      "runway",
+      "TAM",
+      "go viral",
+      "leverage AI",
+      "vaporware",
+      "marketing fluff",
+      "you will fail",
+      "no-go"
+    ],
+    "bannedCliches": [
+      "it depends",
+      "just iterate",
+      "validate",
+      "do customer discovery"
+    ],
+    "conversationRules": {
+      "maxCommentWords": 60,
+      "oneQuestionOnly": true,
+      "questionMaxSentences": 1,
+      "deEscalateIfDefensive": true,
+      "avoidRepetitiveTemplates": true,
+      "avoidCategoricalLanguage": true
+    }
+  },
+
+  "host": {
+    "fields": [
+      { "id": "founderName", "label": "Your name", "type": "text", "required": false, "hints": ["founder", "about me", "team"] },
+      { "id": "ideaName", "label": "Product name", "type": "text", "required": false, "hints": ["project", "product", "name"] },
+      { "id": "pitch", "label": "Pitch", "type": "textarea", "required": true, "hints": ["pitch", "summary", "overview", "tl;dr"] },
+      { "id": "targetUser", "label": "Target user", "type": "text", "required": false, "hints": ["user", "customer", "persona"] },
+      { "id": "targetContext", "label": "Context / moment of use", "type": "text", "required": false, "hints": ["context", "when", "use case", "scenario"] },
+      { "id": "firstValue", "label": "First value", "type": "text", "required": false, "hints": ["value", "benefit", "outcome"] },
+      { "id": "acquisitionPath", "label": "How people find it", "type": "text", "required": false, "hints": ["acquisition", "distribution", "go-to-market"] },
+      { "id": "inputSource", "label": "Why you built it", "type": "text", "required": false, "hints": ["origin", "insight", "personal pain", "why now"] }
+    ]
+  },
+
+  "judges": [
+    {
+      "id": "hiring_manager",
+      "label": "Hiring Manager",
+      "dimension": "Clarity & credibility",
+      "tone": "busy, blunt, practical; wants to understand fast",
+      "focus": [
+        "one-liner clarity",
+        "moment of use",
+        "demo hook",
+        "measurable value",
+        "tradeoff awareness",
+        "next step"
+      ],
+
+      "criteriaConfig": [
+        {
+          "id": "one_liner",
+          "category": "story",
+          "weight": 3,
+          "description": "One-liner is clear and memorable (no jargon).",
+          "signals": ["example"],
+          "qTypes": ["one_liner"],
+          "questionStarters": [
+            "In one sentence, what is it and who is it for?"
+          ],
+          "deliverableKey": "one_liner",
+          "deliverableShape": "string"
+        },
+        {
+          "id": "moment_of_use",
+          "category": "user",
+          "weight": 3,
+          "description": "Concrete trigger + context: when they reach for it.",
+          "signals": ["example"],
+          "qTypes": ["moment_of_use"],
+          "questionStarters": [
+            "What happened right before they use it?"
+          ],
+          "deliverableKey": "moment_of_use",
+          "deliverableShape": "string"
+        },
+        {
+          "id": "demo_hook",
+          "category": "demo",
+          "weight": 3,
+          "description": "Believable 10-second demo hook: one action → one output.",
+          "signals": ["example", "timeline"],
+          "qTypes": ["demo_hook_10s"],
+          "questionStarters": [
+            "If I’m watching the demo, what do I see in 10 seconds—one action and one result?"
+          ],
+          "deliverableKey": "demo_hook_10s",
+          "deliverableShape": "string"
+        },
+        {
+          "id": "value_metric",
+          "category": "value",
+          "weight": 2,
+          "description": "Value is measurable: what improves and how you’ll know.",
+          "signals": ["numbers", "example"],
+          "qTypes": ["value_metric"],
+          "questionStarters": [
+            "What improves for the user, and how would you measure it?"
+          ],
+          "deliverableKey": "value_metric",
+          "deliverableShape": "string"
+        },
+        {
+          "id": "tradeoff",
+          "category": "scope",
+          "weight": 2,
+          "description": "Names one tradeoff or limit; shows realism.",
+          "signals": ["tradeoff", "constraint"],
+          "qTypes": ["one_tradeoff"],
+          "questionStarters": [
+            "What’s one thing it deliberately does not do?"
+          ],
+          "deliverableKey": "one_tradeoff",
+          "deliverableShape": "string"
+        },
+        {
+          "id": "next_step",
+          "category": "plan",
+          "weight": 1,
+          "description": "Clear follow-up: what you want next after this chat.",
+          "signals": ["next_step"],
+          "qTypes": ["follow_up_recommendation"],
+          "questionStarters": [
+            "What’s the next step you want from me after this—pilot, intro, or a 15-minute call?"
+          ],
+          "deliverableKey": "follow_up_recommendation",
+          "deliverableShape": "string"
+        }
+      ],
+
+      "scoring": {
+        "usesRubric": true,
+        "dimension": "clarity_credibility"
+      }
+    }
+  ]
+}

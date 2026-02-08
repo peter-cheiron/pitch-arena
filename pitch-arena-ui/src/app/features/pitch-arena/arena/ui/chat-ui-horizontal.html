@@ -1,0 +1,134 @@
+    <div
+      class="flex h-[54vh] flex-col gap-4 rounded-3xl border p-4 lg:flex-row"
+      style="border-color: var(--color-border);
+             background: linear-gradient(135deg,
+               color-mix(in srgb, var(--color-bg) 82%, var(--color-surface)) 0%,
+               color-mix(in srgb, var(--color-surface) 70%, var(--color-bg)) 100%);"
+    >
+      <div class="flex min-h-0 flex-1 flex-col gap-3">
+        
+        <div
+          #chatWindow
+          class="flex-1 overflow-y-auto rounded-3xl border px-4 py-4 space-y-3 shadow-sm"
+          style="border-color: var(--color-border);
+                 background: color-mix(in srgb, var(--color-bg) 40%, var(--color-surface));"
+        >
+          @if (!messages.length) {
+            <div class="text-center text-xs" style="color: var(--color-muted);">
+              Start the conversation when you are ready.
+            </div>
+          }
+
+          @for (m of messages; track m.id) {
+            @if (m.role === 'system') {
+              <div class="flex justify-center">
+                <div
+                  class="text-[11px] px-3 py-1 rounded-full border"
+                  style="border-color: var(--color-border);
+                         background: color-mix(in srgb, var(--color-bg) 60%, var(--color-surface));
+                         color: var(--color-muted);"
+                >
+                  @if (m.title) {
+                    <span class="font-semibold" style="color: var(--color-text);">arena</span>
+                  }
+                  <span [ngClass]="{ 'ml-2': !!m.title }">{{ m.text }}</span>
+                </div>
+              </div>
+            } @else {
+              <div class="flex" [ngClass]="m.role === 'user' ? 'justify-end' : 'justify-start'">
+                <div class="max-w-[85%]">
+                  @if (m.role === 'ai') {
+                    <div class="mb-1 flex items-center justify-between gap-2">
+                      @if (m.title) {
+                        <div class="text-[11px]" style="color: var(--color-muted);">{{ m.title }}</div>
+                      } @else {
+                        <span></span>
+                      }
+
+                      <div class="flex items-center gap-2">
+                        <button
+                          type="button"
+                          class="text-[11px] px-2 py-1 rounded-full border transition active:scale-[0.99]"
+                          style="border-color: var(--color-border); background: var(--color-surface);"
+                          (click)="ensureVoice.emit(m.id)"
+                          [disabled]="m.audioState === 'loading'"
+                          title="Generate voice"
+                        >
+                          @if (m.audioState === 'loading') { … }
+                          @else { 🔊 }
+                        </button>
+
+                        @if (m.audioUrl) {
+                          <button
+                            type="button"
+                            class="text-[11px] px-2 py-1 rounded-full border transition active:scale-[0.99]"
+                            style="border-color: var(--color-border);
+                                   background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));"
+                            (click)="playVoice.emit(m)"
+                            title="Play / stop"
+                          >
+                            @if (playingMessageId === m.id) { ⏸ }
+                            @else { ▶ }
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  } @else if (m.title) {
+                    <div class="text-[11px] mb-1" style="color: var(--color-muted);">{{ m.title }}</div>
+                  }
+
+                  <div
+                    class="rounded-2xl border px-3 py-2 text-sm whitespace-pre-wrap"
+                    [ngStyle]="m.role === 'user' ? userBubbleStyle : aiBubbleStyle"
+                  >
+                    {{ m.text }}
+                  </div>
+
+                  @if (m.role === 'ai' && m.audioState === 'error') {
+                    <div class="mt-1 text-[11px]" style="color: var(--color-danger);">
+                      Voice generation failed.
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="flex w-full flex-col gap-3 lg:w-80">
+        
+        <textarea
+          class="flex-1 min-h-[140px] rounded-2xl border px-3 py-2 text-sm outline-none transition"
+          rows="6"
+          [ngModel]="inputText"
+          (ngModelChange)="onInputChange($event)"
+          [placeholder]="placeholder"
+          [disabled]="disabled || sending"
+          style="border-color: var(--color-border);
+                 background: color-mix(in srgb, var(--color-bg) 0%, var(--color-surface));
+                 color: var(--color-text);"
+        ></textarea>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="rounded-2xl px-4 py-2 text-sm font-semibold transition active:scale-[0.99] disabled:opacity-50"
+            [disabled]="!inputText.trim().length || disabled || sending"
+            (click)="submit()"
+          >
+            @if (sending) { Sending… } @else { Send }
+          </button>
+          <button
+            type="button"
+            class="rounded-2xl px-3 py-2 border text-sm transition active:scale-[0.99]"
+            style="border-color: var(--color-border); background: var(--color-surface);"
+            (click)="toggleRecording()"
+            [disabled]="disabled || sending"
+            title="Record voice"
+          >
+            @if (recording) { ⏹ Stop }
+            @else { 🎙 Speak }
+          </button>
+        </div>
+      </div>
+    </div>

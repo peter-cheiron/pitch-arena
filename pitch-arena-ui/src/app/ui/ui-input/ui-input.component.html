@@ -1,0 +1,67 @@
+@if (inline()) {
+<div
+  class="w-full flex items-center relative rounded border transition-all ease-in-out duration-100 bg-white outline outline-2 outline-transparent hover:border-gray-800 focus-within:border-gray-800 focus-within:outline-gray-800/20"
+  [class.bg-gray-100]="disabled()"
+>
+  <label
+    [for]="id"
+    class="text-sm font-bold pl-3 pr-2"
+    [class.text-gray-400]="disabled()"
+  >
+    {{ label() }}
+    @if (required()) {
+<span class="text-inherit">*</span>
+}
+  </label>
+
+  <input
+    [(ngModel)]="value" 
+    class="flex-1 py-2 border-none outline-none text-base bg-transparent placeholder-gray-400 placeholder:italic placeholder:sm"
+    [id]="id"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [required]="required()"
+    [pattern]="pattern()"
+    [name]="name()"
+    [min]="min()"
+    [max]="max()"
+    [step]="step()"
+    (keydown.enter)="emit()"
+  />
+</div>
+}
+
+@if (!inline()) {
+<div
+  class="w-full relative rounded border transition-all ease-in-out duration-100 bg-white outline outline-2 outline-transparent hover:border-gray-800 focus-within:border-gray-800 focus-within:outline-gray-800/20"
+  [class.bg-gray-100]="disabled()"
+>
+  <label
+    [for]="id"
+    class="absolute text-sm font-bold top-0 left-0 px-3 pt-3"
+    [class.text-gray-400]="disabled()"
+  >
+    {{ label() }}
+    @if (required()) {
+<span class="text-inherit">*</span>
+}
+  </label>
+
+  <input
+    [(ngModel)]="value"
+    class="w-full border-none outline-none px-3 pt-9 pb-3 text-base bg-transparent"
+    [id]="id"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [required]="required()"
+    [pattern]="pattern()"
+    [name]="name()"
+    [min]="min()"
+    [max]="max()"
+    [step]="step()"
+    (keydown.enter)="emit()"
+  />
+</div>
+}

@@ -1,0 +1,37 @@
+@if (componentType() === 'link') {
+<a
+ 
+  [routerLink]="routerLink()"
+  [queryParams]="queryParams()"
+  [class]="btnClass()"
+  (click)="onClick.emit($event)"
+>
+  <ng-container *ngTemplateOutlet="contentTpl" />
+</a>
+}
+@if (componentType() === 'href') {
+<a
+ 
+  [href]="href()"
+  [target]="target()"
+  [class]="btnClass()"
+  (click)="onClick.emit($event)"
+>
+  <ng-container *ngTemplateOutlet="contentTpl" />
+</a>
+}
+@if (componentType() === 'button') {
+<button
+ 
+  [type]="type()"
+  [disabled]="disabled()"
+  [ngClass]="disabled() ? 'opacity-50 cursor-not-allowed pointer-events-none' : btnClass()"
+  (click)="onClick.emit($event)"
+>
+  <ng-container *ngTemplateOutlet="contentTpl" />
+</button>
+}
+
+<ng-template #contentTpl>
+  <ng-content />
+</ng-template>

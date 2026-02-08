@@ -1,0 +1,199 @@
+{
+  "id": "arena_gemini_hackathon_ready",
+  "name": "Gemini Hackathon Readiness Arena",
+  "goal": "Is this ready to win a Gemini hackathon?",
+  "description": "Fast arena to stress-test whether a pitch is strong enough to submit and demo at a Gemini-centered hackathon.",
+  "safety": [
+    "no adult entertainment",
+    "no NSFW",
+    "anything involving children must be framed as monitoring/assistance only, not autonomous care",
+    "no medical advice",
+    "no illegal instructions"
+  ],
+
+  "objective": {
+    "thesis": "Assess whether the idea is hackathon-ready: a clear demo, a tight story, and Gemini used in a way that actually matters.",
+    "successDefinition": [
+      "Problem + user are clear",
+      "There is a real market with a believable first user group",
+      "Demo flow is concrete (user action → visible output)",
+      "Gemini is essential (not decorative) and explained simply",
+      "There is a credible short build plan (what ships for the hackathon)",
+      "Submission story is crisp (one-liner + differentiator + why-now)",
+      "Safety boundaries are stated when relevant"
+    ],
+    "constraints": {
+      "hostEnabled": true,
+      "maxRounds": 2
+    }
+  },
+
+  "phases": [
+    {
+      "id": "clarify_core",
+      "goal": "Clarify the demo and the submission story.",
+      "primaryCriteria": ["demo_flow", "submission_story"],
+      "aggressiveness": "light"
+    },
+    {
+      "id": "stress_weakest",
+      "goal": "Pressure-test scope, market, and safety boundaries.",
+      "primaryCriteria": ["scope_cut", "potential_market", "safety_boundary"],
+      "aggressiveness": "medium"
+    }
+  ],
+
+  "globalStyle": {
+    "bannedPhrases": [
+      "who pays",
+      "pull out their credit card",
+      "what budget does it come from",
+      "exactly",
+      "exact",
+      "specific"
+    ],
+    "conversationRules": {
+      "maxCommentWords": 25,
+      "questionMaxSentences": 1
+    }
+  },
+
+  "criteria": [
+    {
+      "id": "demo_flow",
+      "label": "Demo flow",
+      "description": "Demo is concrete: what the user does and what the app shows.",
+      "signals": ["example", "timeline"]
+    },
+    {
+      "id": "gemini_role",
+      "label": "Gemini role",
+      "description": "Gemini is essential (core capability) and clearly described.",
+      "signals": ["mechanism", "example"]
+    },
+    {
+      "id": "potential_market",
+      "label": "Market",
+      "description": "Real market with customers who feel this pain and could pay (or a clear path to value).",
+      "signals": ["numbers", "risk", "named_entity"]
+    },
+    {
+      "id": "submission_story",
+      "label": "Submission story",
+      "description": "One-liner and differentiator are crisp; clear why-now.",
+      "signals": ["example", "named_entity"]
+    },
+    {
+      "id": "scope_cut",
+      "label": "Scope discipline",
+      "description": "Scope is realistic; can name what is explicitly cut for the hackathon build.",
+      "signals": ["tradeoff", "constraint"]
+    },
+    {
+      "id": "safety_boundary",
+      "label": "Safety boundary",
+      "description": "States a responsible-use boundary if the domain is sensitive.",
+      "signals": ["constraint", "risk"]
+    },
+
+    {
+      "id": "user_moment",
+      "label": "User moment",
+      "description": "Pin down the real moment of use (trigger + context).",
+      "signals": ["example"]
+    },
+    {
+      "id": "job_to_be_done",
+      "label": "Outcome",
+      "description": "Make the job-to-be-done and outcome concrete.",
+      "signals": ["example", "named_entity"]
+    },
+    {
+      "id": "trust_boundary",
+      "label": "Trust boundary",
+      "description": "Define what the system does vs what the user must verify.",
+      "signals": ["mechanism", "example", "risk"]
+    },
+    {
+      "id": "repeat_loop",
+      "label": "Repeat loop",
+      "description": "Explain why the user returns naturally.",
+      "signals": ["example"]
+    },
+    {
+      "id": "smallest_complete_v1",
+      "label": "Smallest complete v1",
+      "description": "Define the smallest complete v1 that still proves value.",
+      "signals": ["next_step", "constraint"]
+    }
+  ],
+
+  "judges": [
+    {
+      "id": "host",
+      "role": "host",
+      "label": "Host",
+      "image": "/assets/images/host.jpg",
+      "tone": "impatient but helpful; wants crisp answers",
+      "persona": {
+        "archetype": "Fast event MC who hates waffle",
+        "petPeeves": ["long intros", "buzzwords", "dodging the question"],
+        "defaultStance": "supportive-but-impatient",
+        "speakingStyle": {
+          "voice": "short, spoken, friendly pressure",
+          "bannedPhrases": ["walk me through the logic flow", "within your scope", "pipeline"]
+        }
+      },
+      "profileConfig": ["founderName", "ideaName", "pitch", "targetUser"]
+    },
+
+    {
+      "id": "vc",
+      "role": "judge",
+      "label": "VC Judge",
+      "image": "/assets/images/vc-card.jpg",
+      "tone": "direct, practical, demo-first",
+      "persona": {
+        "archetype": "Seed VC at a demo day with 2 minutes left",
+        "petPeeves": ["hand-wavy demos", "big claims with no proof", "feature soup"],
+        "defaultStance": "skeptical-but-fair",
+        "speakingStyle": {
+          "voice": "blunt, everyday language, one question at a time",
+          "bannedPhrases": ["logic flow", "architecture", "pipeline", "within 48-hour scope"]
+        }
+      },
+      "criteria": [
+        { "id": "demo_flow", "weight": 3 },
+        { "id": "gemini_role", "weight": 3 },
+        { "id": "potential_market", "weight": 2 },
+        { "id": "submission_story", "weight": 2 },
+        { "id": "scope_cut", "weight": 2 },
+        { "id": "safety_boundary", "weight": 1 }
+      ]
+    },
+
+    {
+      "id": "product",
+      "role": "judge",
+      "label": "Product Judge",
+      "image": "/assets/images/cpo.jpg",
+      "tone": "supportive, practical, slightly impatient with vagueness",
+      "persona": {
+        "archetype": "Product lead who wants a user moment, not a thesis",
+        "petPeeves": ["abstract value", "no user moment", "AI as decoration"],
+        "defaultStance": "warm-but-pushy",
+        "speakingStyle": {
+          "voice": "friendly, direct, very concrete, no jargon",
+          "bannedPhrases": ["logic flow", "pipeline", "architecture"]
+        }
+      },
+      "criteria": [
+        { "id": "user_moment", "weight": 2 },
+        { "id": "job_to_be_done", "weight": 2 },
+        { "id": "trust_boundary", "weight": 2 },
+        { "id": "repeat_loop", "weight": 1 },
+        { "id": "smallest_complete_v1", "weight": 1 }
+      ]
+    }
+  ]
+}
